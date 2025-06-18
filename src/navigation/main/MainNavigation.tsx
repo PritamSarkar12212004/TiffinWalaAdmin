@@ -34,25 +34,7 @@ const MainNavigation = () => {
                     borderTopRightRadius: 30,
                     borderTopLeftRadius: 30
                 },
-                header(prop) {
-                    return <View className='w-full flex flex-row items-center justify-between h-28 px-3 pt-0 '>
-                        <View className='flex flex-row gap-3 h-full items-center justify-center'>
-                            <TouchableOpacity className='h-16 w-16 bg-white rounded-full flex items-center justify-center'>
-                                <Image source={Logo.MainLogo} className='h-12 w-12 rounded-full' resizeMode='cover' />
-                            </TouchableOpacity>
-                            <View className='flex   justify-between '>
-                                <Text className=' text-xl font-bold text-[#FF7622]'>
-                                    Tiffin Wala
-                                </Text>
-                            </View>
-                        </View>
-                        <View className='flex h-full  items-center justify-center' >
-                            <TouchableOpacity className='h-16 w-16 bg-[#98A8B8] rounded-full flex items-center justify-center'>
-
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                },
+                headerShown: false,
             }}>
                 <Tab.Screen name="DashBoard" component={DashBoard} options={{
                     tabBarIcon: ({ focused }) => (

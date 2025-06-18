@@ -1,12 +1,14 @@
 import React from 'react'
 import { createStackNavigator } from '@react-navigation/stack';
 import CommentScreen from '../../screens/main/page/CommentScreen';
-import DashBoardWraper from '../../layout/wraper/DashBoardWraper';
 import ItemList from '../../screens/main/page/ItemList';
+import SubpageWraper from '../../layout/wraper/SubpageWraper';
+import About from '../../screens/main/page/About';
+import TermsCondition from '../../screens/main/page/TermsCondition';
 const Stack = createStackNavigator();
 const MainStacknavigation = () => {
     return (
-        <DashBoardWraper>
+        <SubpageWraper>
             <Stack.Navigator screenOptions={{
                 headerShown: false
             }}>
@@ -20,8 +22,18 @@ const MainStacknavigation = () => {
                         animation: 'slide_from_bottom'
                     }
                 } />
+                <Stack.Screen name="About" component={About} options={
+                    {
+                        animation: 'slide_from_bottom'
+                    }
+                } />
+                <Stack.Screen name="TermsCondition" component={TermsCondition} options={
+                    {
+                        animation: 'slide_from_bottom'
+                    }
+                } />
             </Stack.Navigator>
-        </DashBoardWraper>
+        </SubpageWraper>
     )
 }
 
