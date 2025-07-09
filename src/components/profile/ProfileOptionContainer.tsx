@@ -4,7 +4,7 @@ import ProMainOptionCard from './ProMainOptionCard'
 
 const ProfileOptionContainer = ({ options }: any) => {
     return (
-        <View className='flex bg-[#dadfe4] rounded-3xl px-7 py-4 gap-3'>
+        <View className='w-full mb-3'>
             {
                 options.map((option: any, index: number) => (
                     <ProMainOptionCard key={index} option={option} />

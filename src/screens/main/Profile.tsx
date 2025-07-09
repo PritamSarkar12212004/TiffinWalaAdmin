@@ -7,20 +7,64 @@ import ProfileView from '../../components/profile/ProfileView'
 const Profile = () => {
   const navigation = useNavigation()
 
-
-
   const options1 = [
     {
       title: 'Personal Information',
       icon: 'user',
       color: '#FB6F3D',
       function: () => {
-        navigation.navigate('PersonalInfo', { profileInfo: profileInfo, location: location })
+        navigation.navigate({
+          name: 'page',
+          params: {
+            screen: 'PersonalInfo',
+          },
+        })
       }
     },
-
+    {
+      title: 'Settings',
+      icon: 'gare',
+      color: '#4ECDC4',
+      function: () => {
+        navigation.navigate({
+          name: 'page',
+          params: {
+            screen: 'Settings',
+          },
+        })
+      }
+    },
+    // {
+    //   title: 'Privacy Settings',
+    //   icon: 'eye',
+    //   color: '#45B7D1',
+    //   function: () => {
+    //     navigation.navigate({
+    //       name: 'page',
+    //       params: {
+    //         screen: 'PrivacySettings',
+    //       },
+    //     })
+    //   }
+    // },
   ]
+
+
+
   const options3 = [
+    {
+      title: 'Help Center',
+      icon: 'question-circle',
+      color: '#42A5F5',
+      function: () => {
+        navigation.navigate({
+          name: 'page',
+          params: {
+            screen: 'HelpCenter',
+          },
+        })
+      }
+    },
     {
       title: 'Terms & Conditions',
       icon: 'paperclip',
@@ -34,9 +78,10 @@ const Profile = () => {
         })
       }
     },
+
     {
       title: 'About App',
-      icon: 'gear',
+      icon: 'info-circle',
       color: '#FB6D3A',
       function: () => {
         navigation.navigate({
@@ -45,32 +90,20 @@ const Profile = () => {
             screen: 'About',
           },
         })
-
       }
     },
   ]
-  const options4 = [
-    {
-      title: 'Log Out',
-      icon: 'right-from-bracket',
-      color: '#FB4A59',
-      function: async () => {
 
-      }
-    },
-
-
-  ]
+ 
 
   return (
     <View className='flex-1 bg-[#F3F3F3] px-3 pt-2'>
-      <ScrollView className='flex-1 pt-5 '>
-        <View className='flex-1 flex gap-10 mb-20'>
+      <ScrollView className='flex-1 pt-5 ' showsVerticalScrollIndicator={false}>
+        <View className='flex-1 flex gap-6 mb-20 pb-12'>
           <ProfileView />
-          <View className='flex-1 flex gap-5'>
+          <View className='flex-1 flex gap-4'>
             <ProfileOptionContainer options={options1} />
             <ProfileOptionContainer options={options3} />
-            <ProfileOptionContainer options={options4} />
           </View>
         </View>
       </ScrollView>

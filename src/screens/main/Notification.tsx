@@ -1,41 +1,57 @@
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
 import React from 'react';
+
 
 const notifications = Array.from({ length: 15 }).map((_, i) => ({
   id: i + 1,
   name: 'Pritam Sarkar',
   action: 'Following Sai Mess',
   date: 'Today',
+  avatar: 'https://randomuser.me/api/portraits/men/3.jpg',
+  image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80',
 }));
 
 const Notification = () => {
   return (
-    <ScrollView className="flex-1 ">
-      <View className="w-full px-4 gap-5 py-4 mb-32">
-        {notifications.map((item) => (
-          <TouchableOpacity
-            key={item.id}
-            activeOpacity={0.8}
-            className="w-full border-b border-zinc-300 pb-4 flex-row items-center gap-3"
-          >
-            {/* Left Avatar */}
-            <View className="h-16 w-16 bg-zinc-400 rounded-full" />
+    <View style={{ flex: 1, backgroundColor: '#F3F3F3' }}>
+      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+        <View style={{ width: '100%', paddingHorizontal: 16, gap: 18, paddingTop: 18,}} className='pb-32'>
+          {notifications.map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              activeOpacity={0.85}
+              style={{
+                backgroundColor: '#fff',
+                borderRadius: 22,
+                flexDirection: 'row',
+                alignItems: 'center',
+                padding: 16,
+                shadowColor: '#FF7622',
+                shadowOpacity: 0.08,
+                shadowRadius: 8,
+                shadowOffset: { width: 0, height: 4 },
+                elevation: 2,
+              }}
+            >
+              {/* Left Avatar */}
+              <Image source={{ uri: item.avatar }} style={{ width: 56, height: 56, borderRadius: 28, marginRight: 14, backgroundColor: '#eee' }} />
 
-            {/* Text Content */}
-            <View className="flex-1">
-              <View className="flex-row flex-wrap items-center gap-1">
-                <Text className="text-lg font-semibold text-zinc-800">{item.name}</Text>
-                <Text className="text-base text-zinc-600">{item.action}</Text>
+              {/* Text Content */}
+              <View style={{ flex: 1 }}>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 4 }}>
+                  <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#222' }}>{item.name}</Text>
+                  <Text style={{ fontSize: 16, color: '#666' }}> {item.action}</Text>
+                </View>
+                <Text style={{ fontSize: 13, color: '#FF7622', marginTop: 2, fontWeight: '600' }}>{item.date}</Text>
               </View>
-              <Text className="text-sm text-zinc-400 mt-1">{item.date}</Text>
-            </View>
 
-            {/* Right Image */}
-            <View className="h-16 w-16 bg-zinc-400 rounded-2xl" />
-          </TouchableOpacity>
-        ))}
-      </View>
-    </ScrollView>
+              {/* Right Image */}
+              <Image source={{ uri: item.image }} style={{ width: 56, height: 56, borderRadius: 16, marginLeft: 14, backgroundColor: '#eee' }} />
+            </TouchableOpacity>
+          ))}
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 

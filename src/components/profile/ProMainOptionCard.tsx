@@ -7,16 +7,21 @@ const ProMainOptionCard = ({
     index,
 }: any) => {
     return (
-        <TouchableOpacity onPress={() => option.function()} activeOpacity={0.8} key={index} className='w-full py-2 flex flex-row items-center justify-between' >
-            <View className='flex flex-row items-center  gap-5'>
-                <View className='h-16 w-16 rounded-full bg-white flex items-center justify-center'>
-                    <Icon name={option.icon} size={25} color={option.color} type={'solid'} />
-
+        <TouchableOpacity
+            onPress={() => option.function()}
+            activeOpacity={0.85}
+            key={index}
+            className='w-full flex-row items-center justify-between bg-white rounded-2xl shadow-md py-4 px-4 mb-3'
+            style={{ elevation: 3 }}
+        >
+            <View className='flex-row items-center gap-4'>
+                <View className='h-12 w-12 rounded-full items-center justify-center' style={{ backgroundColor: option.color + '22' }}>
+                    <Icon name={option.icon} size={24} color={option.color} type={'solid'} />
                 </View>
-                <Text className='text-xl font-semibold'>{option.title}</Text>
+                <Text className='text-lg font-semibold text-gray-900'>{option.title}</Text>
             </View>
-            <View className='flex items-center justify-center'>
-                <Icon name='chevron-right' size={20} color='gray' type={'solid'} />
+            <View className='items-center justify-center'>
+                <Icon name='chevron-right' size={20} color='#B0B0B0' type={'solid'} />
             </View>
         </TouchableOpacity>
     )

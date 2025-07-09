@@ -12,20 +12,28 @@ import SingleImgPicker from '../../functions/image/SingleImgPicker';
 import useProductCreate from '../../hooks/useProductCreate';
 import UploaderWraper from '../../layout/error/UploaderWraper';
 import { userContext } from '../../util/context/ContextProvider';
+import SectionCard from '../../components/elements/SectionCard';
+import ImagePickerCard from '../../components/elements/ImagePickerCard';
+import PillToggle from '../../components/elements/PillToggle';
+import GradientButton from '../../components/elements/GradientButton';
+import LinearGradient from 'react-native-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 
 const UploadProduct = () => {
-
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [price, setPrice] = useState('')
-
+  const navigation = useNavigation();
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [price, setPrice] = useState('');
   const [foodType, setFoodType] = useState<string[]>([]);
   const [openDays, setOpenDays] = useState<string[]>([]);
   const [mainImage, setMainImage] = useState<any>(null);
   const [menuImages, setMenuImages] = useState<any[]>(Array(6).fill(null));
-  const { createProduct } = useProductCreate()
-  const CreateProfileFunc = () => {
-    createProduct({
+  const [loading, setLoading] = useState(false);
+  const { createProduct } = useProductCreate();
+
+  const CreateProfileFunc = async () => {
+    setLoading(true);
+    await createProduct({
       title,
       description,
       price,
@@ -33,23 +41,24 @@ const UploadProduct = () => {
       openDays,
       mainImage,
       menuImages,
-    })
-  }
+    });
+    setLoading(false);
+  };
 
   const foodTypeData = [
-    { id: 1, name: 'Veg', icon: 'leaf', color: 'green' },
-    { id: 2, name: 'Non-Veg', icon: 'drumstick-bite', color: 'red' },
-    { id: 3, name: 'Vegan', icon: 'apple-whole', color: 'orange' },
+    { id: 1, name: 'Veg', icon: 'leaf', color: '#22c55e' },
+    { id: 2, name: 'Non-Veg', icon: 'drumstick-bite', color: '#ef4444' },
+    { id: 3, name: 'Vegan', icon: 'apple-whole', color: '#f59e42' },
   ];
 
   const openDaysData = [
-    { id: 1, name: 'Monday', color: 'red' },
-    { id: 2, name: 'Tuesday', color: 'orange' },
-    { id: 3, name: 'Wednesday', color: 'green' },
-    { id: 4, name: 'Thursday', color: 'red' },
-    { id: 5, name: 'Friday', color: 'orange' },
-    { id: 6, name: 'Saturday', color: 'green' },
-    { id: 7, name: 'Sunday', color: 'red' },
+    { id: 1, name: 'Monday', color: '#ef4444' },
+    { id: 2, name: 'Tuesday', color: '#f59e42' },
+    { id: 3, name: 'Wednesday', color: '#22c55e' },
+    { id: 4, name: 'Thursday', color: '#ef4444' },
+    { id: 5, name: 'Friday', color: '#f59e42' },
+    { id: 6, name: 'Saturday', color: '#22c55e' },
+    { id: 7, name: 'Sunday', color: '#ef4444' },
   ];
 
   const daySelector = (day: string) => {
@@ -78,149 +87,117 @@ const UploadProduct = () => {
     });
   };
 
+  const removeMenuImage = (index: number) => {
+    const newImages = [...menuImages];
+    newImages[index] = null;
+    setMenuImages(newImages);
+  };
+
   return (
-    <UploaderWraper>
+    <UploaderWraper isVisible={false}>
       <ScrollView showsHorizontalScrollIndicator={false} className='flex-1 bg-[#F3F3F3]'>
         <View className='flex-1 px-4 gap-4 mb-40 bg-[#F3F3F3]'>
-
           {/* Item Name */}
-          <View className='w-full flex gap-2'>
-            <Text className='text-xl font-semibold tracking-widest'>ITEM NAME</Text>
+          <SectionCard title='Item Name'>
             <TextInput
-              onChangeText={(title) => setTitle(title)}
+              onChangeText={setTitle}
               value={title}
               placeholder='Mess / Tiffin Name'
-              className='w-full h-16 border-2 border-gray-200 rounded-xl px-3 bg-[#E8EAED] text-gray-600 placeholder:text-gray-600'
+              className='w-full h-14 border-2 border-gray-200 rounded-xl px-3 bg-[#E8EAED] text-gray-600 placeholder:text-gray-600 text-base'
             />
-          </View>
+          </SectionCard>
 
           {/* Description */}
-          <View className='w-full flex gap-2'>
-            <Text className='text-xl font-semibold tracking-widest'>Description</Text>
+          <SectionCard title='Description'>
             <TextInput
-              onChangeText={(description) => setDescription(description)}
+              onChangeText={setDescription}
               value={description}
               multiline
               numberOfLines={4}
               placeholder='Write something about the Mess / Tiffin service...'
               textAlignVertical='top'
-              className='w-full h-32 border-2 border-gray-200 rounded-xl px-3 py-2 bg-[#E8EAED] text-gray-600 placeholder:text-gray-600'
+              className='w-full h-28 border-2 border-gray-200 rounded-xl px-3 py-2 bg-[#E8EAED] text-gray-600 placeholder:text-gray-600 text-base'
             />
-          </View>
+          </SectionCard>
 
           {/* Main Image */}
-          <View className='w-full flex gap-2'>
-            <Text className='text-lg font-semibold tracking-widest'>UPLOAD MESS PHOTO</Text>
-            <TouchableOpacity
-              activeOpacity={0.8}
+          <SectionCard title='Upload Mess Photo'>
+            <ImagePickerCard
+              image={mainImage}
               onPress={pickMainImage}
-              className='w-full h-56 gap-3 rounded-3xl border-dashed border-zinc-400 border-2 bg-[#E8EAED] flex items-center justify-center'
-            >
-              {mainImage ? (
-                <Image source={{ uri: mainImage }} className='w-full h-full rounded-3xl' resizeMode='cover' />
-              ) : (
-                <View className='flex items-center justify-center'>
-                  <View className='p-7 rounded-full bg-zinc-200'>
-                    <Icon name='upload' size={24} color='#523BB1' type='solid' />
-                  </View>
-                  <Text className='text-center text-gray-600 font-semibold'>Add Photo</Text>
-                </View>
-              )}
-            </TouchableOpacity>
-          </View>
+              label='Add Photo'
+            />
+          </SectionCard>
 
           {/* Menu Images */}
-          <View className='w-full flex gap-2'>
-            <Text className='text-lg font-semibold tracking-widest'>UPLOAD MENU PHOTO</Text>
+          <SectionCard title='Upload Menu Photos'>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <View className='flex flex-row gap-3'>
                 {menuImages.map((img, index) => (
-                  <TouchableOpacity
+                  <ImagePickerCard
                     key={index}
+                    image={img}
                     onPress={() => pickMenuImage(index)}
-                    activeOpacity={0.8}
-                    className='w-56 h-56 gap-3 rounded-3xl border-dashed border-zinc-400 border-2 bg-[#E8EAED] flex items-center justify-center'
-                  >
-                    {img ? (
-                      <Image source={{ uri: img }} className='w-full h-full rounded-3xl' resizeMode='cover' />
-                    ) : (
-                      <View className='flex items-center justify-center'>
-                        <View className='p-7 rounded-full bg-zinc-200'>
-                          <Icon name='upload' size={24} color='#523BB1' type='solid' />
-                        </View>
-                        <Text className='text-center text-gray-600 font-semibold'>Add Photo</Text>
-                      </View>
-                    )}
-                  </TouchableOpacity>
+                    label='Add Photo'
+                    removable={!!img}
+                    onRemove={() => removeMenuImage(index)}
+                  />
                 ))}
               </View>
             </ScrollView>
-          </View>
+          </SectionCard>
 
           {/* Price */}
-          <View className='flex w-full gap-1'>
-            <Text className='text-xl tracking-widest'>Price</Text>
+          <SectionCard title='Price'>
             <TextInput
-              onChangeText={(price) => setPrice(price)}
+              onChangeText={setPrice}
               value={price}
-
               placeholder='₹ 0000'
               keyboardType='number-pad'
-              className='w-36 h-16 border-2 border-gray-200 rounded-xl text-lg font-bold px-3 bg-[#E8EAED] text-gray-600 placeholder:text-gray-600'
+              className='w-36 h-14 border-2 border-gray-200 rounded-xl text-lg font-bold px-3 bg-[#E8EAED] text-gray-600 placeholder:text-gray-600'
             />
-          </View>
+          </SectionCard>
 
           {/* Food Type */}
-          <View className='flex w-full gap-1'>
-            <Text className='text-xl tracking-widest'>Food Type</Text>
-            <View className='w-full flex flex-row gap-4'>
+          <SectionCard title='Food Type'>
+            <View className='w-full flex flex-row flex-wrap gap-2'>
               {foodTypeData.map((item, index) => (
-                <TouchableOpacity
+                <PillToggle
                   key={index}
-                  activeOpacity={0.8}
+                  label={item.name}
+                  icon={item.icon}
+                  selected={foodType.includes(item.name)}
+                  color={item.color}
                   onPress={() => foodSelector(item.name)}
-                  className={`w-[30%] flex flex-row items-center justify-between px-3 h-12 ${foodType.includes(item.name)
-                    ? 'bg-[#FFEBE4] border-[#FB6D3A] border-[1px] rounded-2xl'
-                    : 'border-[#9C9BA6] border-[1px] rounded-2xl'
-                    }`}
-                >
-                  <Text className='font-bold text-gray-700'>
-                    <Icon color={item.color} size={16} name={item.icon} type='solid' /> {item.name}
-                  </Text>
-                </TouchableOpacity>
+                />
               ))}
             </View>
-          </View>
+          </SectionCard>
 
           {/* Open Days */}
-          <View className='flex w-full gap-1'>
-            <Text className='text-xl tracking-widest'>Mess Open Days</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} className='w-full'>
-              <View className='flex flex-row gap-4'>
-                {openDaysData.map((item, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    activeOpacity={0.8}
-                    onPress={() => daySelector(item.name)}
-                    className={`px-3 flex flex-row items-center justify-between h-12 mb-2 ${openDays.includes(item.name)
-                      ? 'bg-[#FFEBE4] border-[#FB6D3A] border-[1px] rounded-2xl'
-                      : 'border-[#9C9BA6] border-[1px] rounded-2xl'
-                      }`}
-                  >
-                    <Icon color={item.color} size={16} name='calendar' type='solid' />
-                    <Text className='font-bold text-gray-700 ml-2'>{item.name}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </ScrollView>
-          </View>
+          <SectionCard title='Mess Open Days'>
+            <View className='w-full flex flex-row flex-wrap gap-2'>
+              {openDaysData.map((item, index) => (
+                <PillToggle
+                  key={index}
+                  label={item.name}
+                  icon='calendar'
+                  selected={openDays.includes(item.name)}
+                  color={item.color}
+                  onPress={() => daySelector(item.name)}
+                />
+              ))}
+            </View>
+          </SectionCard>
 
           {/* Upload Button */}
-          <View className='flex w-full gap-1 mt-8'>
-            <TouchableOpacity onPress={() => CreateProfileFunc()} activeOpacity={0.8} className='w-full h-16 bg-[#FF7622] rounded-2xl flex items-center justify-center flex-row gap-3'>
-              <Icon color='white' size={16} name='upload' type='solid' />
-              <Text className='text-white font-bold text-lg'>Upload Mess Services</Text>
-            </TouchableOpacity>
+          <View className='flex w-full gap-1 mt-4 mb-8'>
+            <GradientButton
+              onPress={CreateProfileFunc}
+              title={loading ? 'Uploading...' : 'Upload Mess Services'}
+              icon='upload'
+              loading={loading}
+            />
           </View>
         </View>
       </ScrollView>

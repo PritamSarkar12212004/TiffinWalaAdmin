@@ -1,62 +1,133 @@
-import { Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
-import NavigationProfile from '../../../../components/main/profile/navigation/NavigationProfile'
-import ProfileView from '../../../../components/main/profile/elements/ProfileView'
+import { Text, TouchableOpacity, View, ScrollView, Alert } from 'react-native'
+import React, { useState } from 'react'
 import { useNavigation, useRoute } from '@react-navigation/native'
-import FIcon from '../../../../layout/icon/FIcon'
+import Icon from '../../../MainLogo/icon/Icon'
+import { LinearGradient } from 'react-native-linear-gradient'
+import PageNavigation from '../../../layout/navigation/PageNavigation'
 
 const PersonalInfo = () => {
     const navigation = useNavigation()
     const route = useRoute()
-    const { profileInfo, location } = route.params
+
+    // Mock data - replace with actual user data
+    const [userData, setUserData] = useState({
+        name: "John Doe",
+        email: "john.doe@tiffinwala.com",
+        phone: "+91 7796419792",
+        address: "123 Main Street, Mumbai, Maharashtra",
+        role: "Admin",
+        joinDate: "15 March 2024",
+        status: "Active"
+    })
+
     const options = [
         {
-            title: profileInfo.User_Name,
+            title: userData.name,
+            subtitle: "Full Name",
             icon: 'user',
             color: '#FB6F3D',
             function: () => {
-
+                navigation.navigate('ProfileEdit', { field: 'name', value: userData.name })
             }
         },
         {
-            title: location.address,
+            title: userData.email,
+            subtitle: "Email Address",
+            icon: 'envelope',
+            color: '#369BFF',
+            function: () => {
+                navigation.navigate('ProfileEdit', { field: 'email', value: userData.email })
+            }
+        },
+        {
+            title: userData.phone,
+            subtitle: "Phone Number",
+            icon: 'phone',
+            color: '#2AE1E1',
+            function: () => {
+                navigation.navigate('ProfileEdit', { field: 'phone', value: userData.phone })
+            }
+        },
+        {
+            title: userData.address,
+            subtitle: "Address",
             icon: 'location-dot',
             color: '#413DFB',
             function: () => {
+                navigation.navigate('ProfileEdit', { field: 'address', value: userData.address })
             }
         },
         {
-            title: profileInfo.User_Phone_Number,
-            icon: 'phone',
-            color: '#369BFF',
-            function: () => { }
+            title: userData.role,
+            subtitle: "Role",
+            icon: 'user-tie',
+            color: '#FF6B6B',
+            function: () => {
+                Alert.alert("Role", "Admin role cannot be changed")
+            }
         },
-
+        {
+            title: userData.joinDate,
+            subtitle: "Joined Date",
+            icon: 'calendar',
+            color: '#4ECDC4',
+            function: () => {
+                Alert.alert("Join Date", "Join date cannot be modified")
+            }
+        }
     ]
+
     return (
-        <View className='flex-1 bg-[#F3F3F3] px-3 pt-2'>
-            <NavigationProfile path='Personal Info' option='Edit' func={() => {
-                navigation.navigate('ProfileEdit', { location, profileInfo })
-            }} />
-            <View className='flex-1  pt-5  flex gap-10'>
-                <ProfileView profileInfo={profileInfo} />
-                <View className='w-fuul  flex '>
-                    <View className='flex bg-[#dadfe4] rounded-3xl px-7 py-4 gap-3'>
-                        {
-                            options.map((item, index) => {
-                                return <TouchableOpacity onPress={() => item.function()} activeOpacity={0.8} key={index} className='w-full py-2 flex flex-row items-center justify-between' >
-                                    <View className='flex flex-row items-center  gap-5'>
-                                        <View className='h-16 w-16 rounded-full bg-white flex items-center justify-center'>
-                                            <FIcon name={item.icon} size={25} color={item.color} />
-                                        </View>
-                                        <Text className='text-xl flex-auto font-semibold text-wrap'>{item.title}</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            })
-                        }
+        <View className='flex-1 bg-[#F8F9FA]'>
+            {/* Header */}
+            <View className='px-4'>
+                <PageNavigation route={"Personal Information"} />
+            </View>
+            <ScrollView className='flex-1 px-4 pt-6'>
+                <View className='flex gap-4 mb-6'>
+                    {options.map((item, index) => (
+                        <TouchableOpacity
+                            key={index}
+                            onPress={item.function}
+                            activeOpacity={0.8}
+                            className='bg-white rounded-2xl p-4 shadow-sm border border-gray-100'
+                        >
+                            <View className='flex-row items-center gap-4'>
+                                <View
+                                    className='w-12 h-12 rounded-xl items-center justify-center'
+                                    style={{ backgroundColor: `${item.color}15` }}
+                                >
+                                    <Icon name={item.icon} size={20} color={item.color} type={"solid"} />
+                                </View>
+                                <View className='flex-1'>
+                                    <Text className='text-gray-600 text-xs font-medium'>{item.subtitle}</Text>
+                                    <Text className='text-gray-900 text-base font-semibold mt-1'>{item.title}</Text>
+                                </View>
+                                <Icon name='chevron-right' size={16} color='#9CA3AF' type={"solid"}  />
+                            </View>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+
+                {/* Additional Info Section */}
+                <View className='bg-white rounded-2xl p-4 mb-6 shadow-sm border border-gray-100'>
+                    <Text className='text-gray-900 text-lg font-bold mb-3'>Account Statistics</Text>
+                    <View className='flex-row justify-between'>
+                        <View className='items-center'>
+                            <Text className='text-2xl font-bold text-[#FF7622]'>156</Text>
+                            <Text className='text-gray-600 text-xs'>Orders Handled</Text>
+                        </View>
+                        <View className='items-center'>
+                            <Text className='text-2xl font-bold text-[#FF7622]'>89%</Text>
+                            <Text className='text-gray-600 text-xs'>Satisfaction Rate</Text>
+                        </View>
+                        <View className='items-center'>
+                            <Text className='text-2xl font-bold text-[#FF7622]'>24</Text>
+                            <Text className='text-gray-600 text-xs'>Days Active</Text>
+                        </View>
                     </View>
                 </View>
-            </View>
+            </ScrollView>
         </View>
     )
 }
