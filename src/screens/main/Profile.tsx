@@ -23,7 +23,7 @@ const Profile = () => {
     },
     {
       title: 'Settings',
-      icon: 'gare',
+      icon: 'gear',
       color: '#4ECDC4',
       function: () => {
         navigation.navigate({
@@ -54,7 +54,7 @@ const Profile = () => {
   const options3 = [
     {
       title: 'Help Center',
-      icon: 'question-circle',
+      icon: 'info',
       color: '#42A5F5',
       function: () => {
         navigation.navigate({
@@ -81,7 +81,7 @@ const Profile = () => {
 
     {
       title: 'About App',
-      icon: 'info-circle',
+      icon: 'eject',
       color: '#FB6D3A',
       function: () => {
         navigation.navigate({

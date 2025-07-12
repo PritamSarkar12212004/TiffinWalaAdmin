@@ -21,53 +21,53 @@ const MainStacknavigation = () => {
             }}>
                 <Stack.Screen name="comment" component={CommentScreen} options={
                     {
-                        animation: 'slide_from_bottom'
+                        animation: 'slide_from_right'
                     }
                 } />
                 <Stack.Screen name="ItemList" component={ItemList} options={
                     {
-                        animation: 'slide_from_bottom'
+                        animation: 'slide_from_right'
                     }
                 } />
                 <Stack.Screen name="About" component={About} options={
                     {
-                        animation: 'slide_from_bottom'
+                        animation: 'slide_from_right'
                     }
                 } />
                 <Stack.Screen name="TermsCondition" component={TermsCondition} options={
                     {
-                        animation: 'slide_from_bottom'
+                        animation: 'slide_from_right'
                     }
                 } />
                 <Stack.Screen name="PersonalInfo" component={PersonalInfo} options={
                     {
-                        animation: 'slide_from_bottom'
+                        animation: 'slide_from_right'
                     }
                 } />
                 <Stack.Screen name="ProfileEdit" component={ProfileEdit} options={
                     {
-                        animation: 'slide_from_bottom'
+                        animation: 'slide_from_right'
                     }
                 } />
                 <Stack.Screen name="Settings" component={SettingsScreen} options={
                     {
-                        animation: 'slide_from_bottom'
+                        animation: 'slide_from_right'
                     }
                 } />
                
                 <Stack.Screen name="PrivacySettings" component={PrivacySettingsScreen} options={
                     {
-                        animation: 'slide_from_bottom'
+                        animation: 'slide_from_right'
                     }
                 } />
                 <Stack.Screen name="HelpCenter" component={HelpCenterScreen} options={
                     {
-                        animation: 'slide_from_bottom'
+                        animation: 'slide_from_right'
                     }
                 } />
                 <Stack.Screen name="ContactSupport" component={ContactSupportScreen} options={
                     {
-                        animation: 'slide_from_bottom'
+                        animation: 'slide_from_right'
                     }
                 } />
             </Stack.Navigator>

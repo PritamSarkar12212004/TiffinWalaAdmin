@@ -116,18 +116,18 @@ const DashBoard = () => {
         {/* Top Metrics Row */}
         <View style={styles.metricsRow}>
           <MetricCard
-            title="Total Orders"
-            value="1,234"
-            subtitle="+12% from last month"
-            icon="shopping-cart"
+            title="Total Views"
+            value="5483"
+            subtitle=""
+            icon="street-view"
             color="#6366F1"
             gradient={true}
           />
           <MetricCard
-            title="Revenue"
-            value="₹45,678"
-            subtitle="+8% from last month"
-            icon="rupee-sign"
+            title="Total Like"
+            value="986"
+            subtitle=""
+            icon="heart"
             color="#10B981"
             gradient={true}
           />
@@ -136,16 +136,16 @@ const DashBoard = () => {
         {/* Second Metrics Row */}
         <View style={styles.metricsRow}>
           <MetricCard
-            title="Active Users"
-            value="892"
-            subtitle="+5% from last week"
+            title="Followers"
+            value="400"
+            subtitle=""
             icon="users"
             color="#3B82F6"
           />
           <MetricCard
             title="Products"
-            value="156"
-            subtitle="+3 new this week"
+            value="2"
+            subtitle=""
             icon="box"
             color="#8B5CF6"
           />
@@ -153,9 +153,8 @@ const DashBoard = () => {
 
         {/* Charts Section */}
         <View style={styles.chartsSection}>
-
           {/* Order Status Pie Chart */}
-          <ChartCard title="Order Status Overview" icon="chart-pie" iconColor="#10B981">
+          {/* <ChartCard title="Order Status Overview" icon="chart-pie" iconColor="#10B981">
             <View style={styles.pieChartContainer}>
               <PieChart
                 data={pieData}
@@ -182,7 +181,7 @@ const DashBoard = () => {
                 ))}
               </View>
             </View>
-          </ChartCard>
+          </ChartCard> */}
 
           {/* Revenue Growth Line Chart */}
           <ChartCard title="Revenue Trends" icon="trending-up" iconColor="#10B981">
@@ -224,7 +223,7 @@ const DashBoard = () => {
           </ChartCard>
 
           {/* Monthly Orders Bar Chart */}
-          <ChartCard title="Monthly Orders" icon="calendar" iconColor="#8B5CF6">
+          <ChartCard title="Monthly Traffic" icon="calendar" iconColor="#8B5CF6">
             <BarChart
               barWidth={14}
               noOfSections={4}
@@ -243,7 +242,7 @@ const DashBoard = () => {
         </View>
 
         {/* Quick Actions */}
-        <View style={styles.quickActionsCard}>
+        {/* <View style={styles.quickActionsCard}>
           <View style={styles.cardHeader}>
             <Text style={styles.cardTitle}>Quick Actions</Text>
             <Text style={styles.cardSubtitle}>Manage your business efficiently</Text>
@@ -274,7 +273,7 @@ const DashBoard = () => {
               <Text style={styles.actionText}>Export Data</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </View> */}
 
         {/* Recent Activity */}
         <View style={styles.recentActivityCard}>
