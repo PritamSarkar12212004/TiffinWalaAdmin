@@ -14,7 +14,7 @@ const ProfileEdit = () => {
     // Mock user data - replace with actual data
     const [userData, setUserData] = useState({
         name: "John Doe",
-        email: "john.doe@tiffinwala.com",
+        gendr: "Male",
         phone: "+91 7796419792",
         address: "123 Main Street, Mumbai, Maharashtra",
         bio: "Experienced admin managing tiffin services with passion for quality food delivery.",
@@ -23,7 +23,7 @@ const ProfileEdit = () => {
 
     const [formData, setFormData] = useState({
         name: userData.name,
-        email: userData.email,
+        gender: userData.gendr,
         phone: userData.phone,
         address: userData.address,
         bio: userData.bio
@@ -120,7 +120,7 @@ const ProfileEdit = () => {
                 {/* Form Fields */}
                 <View className='bg-white rounded-2xl p-6 mb-6 shadow-sm border border-gray-100'>
                     {renderField('name', 'Full Name', 'Enter your full name')}
-                    {renderField('email', 'Email Address', 'Enter your email address', 'email-address')}
+                    {renderField('gender', 'Gender', 'Enter your Gender')}
                     {renderField('phone', 'Phone Number', 'Enter your phone number', 'phone-pad')}
                     {renderField('address', 'Address', 'Enter your address', 'default', true)}
                     {renderField('bio', 'Bio', 'Tell us about yourself', 'default', true)}
@@ -137,7 +137,7 @@ const ProfileEdit = () => {
                         {loading ? (
                             <ActivityIndicator size="small" color="white" />
                         ) : (
-                            <Icon name='arrow-right' size={20} color='white' type={"solid"}  />
+                            <Icon name='arrow-right' size={20} color='white' type={"solid"} />
                         )}
                         <Text className='text-white text-lg font-bold ml-2'>
                             {loading ? 'Saving...' : 'Save Changes'}

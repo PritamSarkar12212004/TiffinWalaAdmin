@@ -1,49 +1,57 @@
-import React, { useRef, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import Icon from '../../MainLogo/icon/Icon';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp } from '@react-navigation/native';
-
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { OtpInput } from "react-native-otp-entry";
+import useResendOtpApi from '../../hooks/api/Auth/useResendOtpApi';
+import useVarifyOtpData from '../../hooks/api/Auth/useVarifyOtpData';
 interface OtpVerifyScreenProps {
   navigation: StackNavigationProp<any, any>;
   route: RouteProp<any, any>;
 }
 
 const OtpVerifyScreen: React.FC<OtpVerifyScreenProps> = ({ navigation, route }) => {
-  const [otp, setOtp] = useState<string[]>(['', '', '', '']);
+  const RouteParams = useRoute();
+
+  const { ResendApi } = useResendOtpApi()
+  const [otp, setOtp] = useState<string>('');
   const [timer, setTimer] = useState(30);
-  const inputRefs = [useRef<TextInput>(null), useRef<TextInput>(null), useRef<TextInput>(null), useRef<TextInput>(null)];
-  const mobile = route?.params?.mobile || '';
-
-  React.useEffect(() => {
-    if (timer > 0) {
-      const interval = setInterval(() => setTimer(t => t - 1), 1000);
-      return () => clearInterval(interval);
-    }
-  }, [timer]);
-
-  const handleChange = (text: string, idx: number) => {
-    if (/^[0-9]?$/.test(text)) {
-      const newOtp = [...otp];
-      newOtp[idx] = text;
-      setOtp(newOtp);
-      if (text && idx < 3 && inputRefs[idx + 1].current) {
-        inputRefs[idx + 1].current!.focus();
-      }
-      if (!text && idx > 0 && inputRefs[idx - 1].current) {
-        inputRefs[idx - 1].current!.focus();
-      }
-    }
-  };
+  const [navbigateOtp, setNavigateOtp] = useState(RouteParams.params.otp)
+  const { varifyOtpData } = useVarifyOtpData()
 
   const handleResend = () => {
-    setTimer(30);
-    // trigger resend OTP logic here
+    ResendApi(RouteParams.params.phone, setNavigateOtp, setTimer)
   };
 
   const handleChangeNumber = () => {
     navigation.goBack();
   };
+  const handleOpt = (enteredOtp: string) => {
+    if (enteredOtp === navbigateOtp) {
+      const status = true
+      varifyOtpData(status, RouteParams.params.phone,navigation)
+    } else {
+      console.log("login Error");
+    }
+  };
+
+  useEffect(() => {
+    if (timer === 0) return;
+
+    const interval = setInterval(() => {
+      setTimer(prev => {
+        if (prev === 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [timer]);
+
 
   return (
     <KeyboardAvoidingView
@@ -59,25 +67,74 @@ const OtpVerifyScreen: React.FC<OtpVerifyScreenProps> = ({ navigation, route }) 
             <Icon name="lock" size={54} type="solid" color="#10B981" />
           </View>
           <Text style={styles.title}>Verify OTP</Text>
-          <Text style={styles.subtitle}>Enter the 4-digit code sent to <Text style={styles.mobileText}>+91 {mobile}</Text></Text>
+          {/* <Text style={styles.subtitle}>Enter the 4-digit code sent to <Text style={styles.mobileText}>+91 {mobile}</Text></Text> */}
           <TouchableOpacity style={styles.changeNumberBtn} onPress={handleChangeNumber}>
             <Text style={styles.changeNumberText}>Change number</Text>
           </TouchableOpacity>
+          {/* OTP Input */}
           <View style={styles.otpRow}>
-            {otp.map((digit, idx) => (
-              <TextInput
-                key={idx}
-                ref={inputRefs[idx]}
-                style={[styles.otpInput, digit ? styles.otpInputFilled : null]}
-                keyboardType="number-pad"
-                maxLength={1}
-                value={digit}
-                onChangeText={text => handleChange(text, idx)}
-                autoFocus={idx === 0}
-                returnKeyType="next"
-                selectionColor="#10B981"
-              />
-            ))}
+            <OtpInput
+              numberOfDigits={4}
+              focusColor="#10B981"
+              autoFocus={false}
+              hideStick={true}
+              placeholder={''}
+              blurOnFilled={true}
+              disabled={false}
+              type="numeric"
+              secureTextEntry={false}
+              focusStickBlinkingDuration={500}
+              onFilled={(text) => { setOtp(text); handleOpt(text); }}
+              textInputProps={{
+                accessibilityLabel: "One-Time Password",
+              }}
+              textProps={{
+                accessibilityRole: "text",
+                accessibilityLabel: "OTP digit",
+                allowFontScaling: false,
+              }}
+              theme={{
+                containerStyle: {
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  gap: 16,
+                  marginBottom: 24,
+                  marginTop: 8,
+                },
+                pinCodeContainerStyle: {
+                  width: 54,
+                  height: 62,
+                  borderRadius: 14,
+                  backgroundColor: '#F1F5F9',
+                  borderWidth: 2,
+                  borderColor: '#E2E8F0',
+                  marginHorizontal: 2,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                },
+                focusedPinCodeContainerStyle: {
+                  borderColor: '#10B981',
+                  backgroundColor: '#D1FAE5',
+                },
+                filledPinCodeContainerStyle: {
+                  borderColor: '#10B981',
+                  backgroundColor: '#D1FAE5',
+                },
+                pinCodeTextStyle: {
+                  fontSize: 26,
+                  fontWeight: '700',
+                  color: '#1E293B',
+                },
+                placeholderTextStyle: {
+                  color: '#CBD5E1',
+                  fontSize: 26,
+                },
+                disabledPinCodeContainerStyle: {
+                  backgroundColor: '#E5E7EB',
+                  borderColor: '#CBD5E1',
+                },
+              }}
+            />
           </View>
           <View style={styles.timerRow}>
             <Icon name="clock" size={16} type="solid" color="#6366F1" />
@@ -86,7 +143,7 @@ const OtpVerifyScreen: React.FC<OtpVerifyScreenProps> = ({ navigation, route }) 
           <TouchableOpacity onPress={handleResend} disabled={timer > 0} style={[styles.resendBtn, timer > 0 && { opacity: 0.5 }]}>
             <Text style={styles.resendBtnText}>Resend OTP</Text>
           </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.9} style={styles.submitBtn} className='w-full'>
+          <TouchableOpacity onPress={() => handleOpt(otp)} activeOpacity={0.9} style={styles.submitBtn} className='w-full'>
             <Text style={styles.submitText}>Verify</Text>
           </TouchableOpacity>
         </View>

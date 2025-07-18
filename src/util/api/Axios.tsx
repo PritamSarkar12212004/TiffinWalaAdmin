@@ -1,5 +1,5 @@
 import axios from 'axios';
 const api = axios.create({
-    baseURL: 'https://flea-enabling-egret.ngrok-free.app',
+    baseURL: 'http://192.168.1.7:3000',
 });
 export default api;

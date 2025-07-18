@@ -1,15 +1,32 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, KeyboardAvoidingView, Platform, Alert, ActivityIndicator } from 'react-native';
 import Icon from '../../MainLogo/icon/Icon';
 import { StackNavigationProp } from '@react-navigation/stack';
+import useLoginApi from '../../hooks/api/Auth/useLoginApi';
+import { useNavigation } from '@react-navigation/native';
 
 interface LoginScreenProps {
   navigation: StackNavigationProp<any, any>;
 }
-
-const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
+const LoginScreen: React.FC<LoginScreenProps> = () => {
+  const { login } = useLoginApi()
+  const Routenavigation = useNavigation()
   const [mobile, setMobile] = useState('');
-
+  const [loading, setloading] = useState(false)
+  const inputValidation = (text: any) => {
+    const cleaned = text.replace(/[^0-9]/g, '');
+    if (cleaned.length <= 10) {
+      setMobile(cleaned);
+    }
+  }
+  const handleChange = () => {
+    if (mobile.length == 10) {
+      setloading(true)
+      login(mobile, setloading, Routenavigation)
+      console.log(mobile)
+      // Alert.alert("enter 10 Digit Mobile Number")
+    }
+  }
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -36,7 +53,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
               placeholder="Enter mobile number"
               placeholderTextColor="#94A3B8"
               value={mobile}
-              onChangeText={setMobile}
+              onChangeText={(text) => inputValidation(text)}
               keyboardType="phone-pad"
               maxLength={10}
               autoFocus
@@ -52,9 +69,10 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
             className='w-full'
             style={[styles.otpBtn, { opacity: mobile.length === 10 ? 1 : 0.5 }]}
             disabled={mobile.length !== 10}
-            onPress={() => navigation.navigate('OtpVerifyScreen', { mobile })}
+            onPress={() => handleChange()}
           >
-            <Text style={styles.otpBtnText}>Send OTP</Text>
+            {loading ? <ActivityIndicator size={'small'} color={"white"} /> : <Text style={styles.otpBtnText}>Send OTP</Text>
+            }
           </TouchableOpacity>
         </View>
         {/* Footer */}
@@ -155,17 +173,24 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   otpBtn: {
-    backgroundColor: '#6366F1',
-    borderRadius: 14,
-    paddingVertical: 15,
+    backgroundColor: '#6366F1', // Indigo-500
+    borderRadius: 16,
+    height: 50,
+    paddingHorizontal: 24,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: 12,
+
+    // iOS shadow
     shadowColor: '#6366F1',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
-    shadowRadius: 8,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+
+    // Android elevation
+    elevation: 4,
   },
+
   otpBtnText: {
     color: 'white',
     fontWeight: '700',

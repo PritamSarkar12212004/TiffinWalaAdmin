@@ -17,7 +17,8 @@ const PersonalInfo = () => {
         address: "123 Main Street, Mumbai, Maharashtra",
         role: "Admin",
         joinDate: "15 March 2024",
-        status: "Active"
+        status: "Active",
+        gender: "Male"
     })
 
     const options = [
@@ -31,12 +32,12 @@ const PersonalInfo = () => {
             }
         },
         {
-            title: userData.email,
-            subtitle: "Email Address",
-            icon: 'envelope',
-            color: '#369BFF',
+            title: userData.gender,
+            subtitle: "Gender",
+            icon: 'person',
+            color: '#FF0000',
             function: () => {
-                navigation.navigate('ProfileEdit', { field: 'email', value: userData.email })
+                navigation.navigate('ProfileEdit', { field: 'name', value: userData.name })
             }
         },
         {
@@ -103,7 +104,7 @@ const PersonalInfo = () => {
                                     <Text className='text-gray-600 text-xs font-medium'>{item.subtitle}</Text>
                                     <Text className='text-gray-900 text-base font-semibold mt-1'>{item.title}</Text>
                                 </View>
-                                <Icon name='chevron-right' size={16} color='#9CA3AF' type={"solid"}  />
+                                <Icon name='chevron-right' size={16} color='#9CA3AF' type={"solid"} />
                             </View>
                         </TouchableOpacity>
                     ))}
