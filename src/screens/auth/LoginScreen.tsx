@@ -56,7 +56,6 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
               onChangeText={(text) => inputValidation(text)}
               keyboardType="phone-pad"
               maxLength={10}
-              autoFocus
             />
           </View>
 

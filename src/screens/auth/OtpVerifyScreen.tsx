@@ -30,7 +30,7 @@ const OtpVerifyScreen: React.FC<OtpVerifyScreenProps> = ({ navigation, route }) 
   const handleOpt = (enteredOtp: string) => {
     if (enteredOtp === navbigateOtp) {
       const status = true
-      varifyOtpData(status, RouteParams.params.phone,navigation)
+      varifyOtpData(status, RouteParams.params.phone, navigation)
     } else {
       console.log("login Error");
     }
