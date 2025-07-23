@@ -1,6 +1,5 @@
 const Token = {
   AuthToken: {
-    LoginToken: 'LoginToken',
     IsSignToken: 'IsSignToken',
   },
   DataToken: {

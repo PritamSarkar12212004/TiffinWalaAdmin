@@ -18,6 +18,7 @@ const OtpVerifyScreen: React.FC<OtpVerifyScreenProps> = ({ navigation, route }) 
   const [otp, setOtp] = useState<string>('');
   const [timer, setTimer] = useState(30);
   const [navbigateOtp, setNavigateOtp] = useState(RouteParams.params.otp)
+  
   const { varifyOtpData } = useVarifyOtpData()
 
   const handleResend = () => {

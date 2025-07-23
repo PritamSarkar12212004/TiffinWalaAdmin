@@ -11,7 +11,9 @@ const useVarifyOtpData = () => {
         if (res.data.login) {
           console.log('login');
         } else {
-          navigation.navigate('UserProfileSetup');
+          navigation.navigate('UserProfileSetup', {
+            phone: phone,
+          });
         }
       })
       .catch(err => {
