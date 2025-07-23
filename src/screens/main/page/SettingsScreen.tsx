@@ -1,8 +1,9 @@
-import { View, Text, TouchableOpacity, ScrollView, Switch, Alert } from 'react-native'
+import { View, Text, TouchableOpacity, ScrollView, Switch } from 'react-native'
 import React, { useState } from 'react'
-import { useNavigation } from '@react-navigation/native'
+import { CommonActions, useNavigation } from '@react-navigation/native'
 import Icon from '../../../MainLogo/icon/Icon'
 import PageNavigation from '../../../layout/navigation/PageNavigation'
+import LogutFunc from '../../../functions/helper/LogutFunc'
 
 const SettingsScreen = () => {
     const navigation = useNavigation()
@@ -26,7 +27,7 @@ const SettingsScreen = () => {
                     title: "Privacy Settings",
                     icon: 'eye',
                     color: '#45B7D1',
-                    action: () => navigation.navigate('PrivacySettings')
+                    action: () => navigation.navigate('PrivacySettings' as never)
                 }
             ]
         },
@@ -74,26 +75,25 @@ const SettingsScreen = () => {
                     title: "Help Center",
                     icon: 'question-circle',
                     color: '#42A5F5',
-                    action: () => navigation.navigate('HelpCenter')
+                    action: () => navigation.navigate('HelpCenter' as never)
                 },
                 {
                     title: "Contact Support",
                     icon: 'headset',
                     color: '#AB47BC',
-                    action: () => navigation.navigate('ContactSupport')
+                    action: () => navigation.navigate('ContactSupport' as never)
                 },
                 {
                     title: "Report a Bug",
                     icon: 'bug',
                     color: '#EF5350',
-                    action: () => navigation.navigate('ReportBug')
+                    action: () => navigation.navigate('ReportBug' as never)
                 }
             ]
         },
 
     ]
-
-    const renderSettingItem = (item, index) => {
+    const renderSettingItem = (item: any, index: any) => {
         return (
             <TouchableOpacity
                 key={index}
@@ -162,14 +162,7 @@ const SettingsScreen = () => {
                 {/* Logout Button */}
                 <TouchableOpacity
                     onPress={() => {
-                        Alert.alert(
-                            "Logout",
-                            "Are you sure you want to logout?",
-                            [
-                                { text: "Cancel", style: "cancel" },
-                                { text: "Logout", style: "destructive" }
-                            ]
-                        )
+                        LogutFunc({ navigation: navigation, CommonActions: CommonActions })
                     }}
                     activeOpacity={0.8}
                     className='bg-red-500 rounded-2xl p-4 mb-32'

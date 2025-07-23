@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import Icon from '../../MainLogo/icon/Icon';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute, CommonActions } from '@react-navigation/native';
 import { OtpInput } from "react-native-otp-entry";
 import useResendOtpApi from '../../hooks/api/Auth/useResendOtpApi';
 import useVarifyOtpData from '../../hooks/api/Auth/useVarifyOtpData';
@@ -18,8 +18,9 @@ const OtpVerifyScreen: React.FC<OtpVerifyScreenProps> = ({ navigation, route }) 
   const [otp, setOtp] = useState<string>('');
   const [timer, setTimer] = useState(30);
   const [navbigateOtp, setNavigateOtp] = useState(RouteParams.params.otp)
-  
+
   const { varifyOtpData } = useVarifyOtpData()
+
 
   const handleResend = () => {
     ResendApi(RouteParams.params.phone, setNavigateOtp, setTimer)
@@ -31,7 +32,7 @@ const OtpVerifyScreen: React.FC<OtpVerifyScreenProps> = ({ navigation, route }) 
   const handleOpt = (enteredOtp: string) => {
     if (enteredOtp === navbigateOtp) {
       const status = true
-      varifyOtpData(status, RouteParams.params.phone, navigation)
+      varifyOtpData(status, RouteParams.params.phone, navigation, CommonActions)
     } else {
       console.log("login Error");
     }

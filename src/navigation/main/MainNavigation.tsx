@@ -6,9 +6,8 @@ import Notification from '../../screens/main/Notification';
 import Profile from '../../screens/main/Profile';
 import UploadProduct from '../../screens/main/UploadProduct';
 import Icon from '../../MainLogo/icon/Icon';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import Risehand from '../../screens/main/Risehand';
-import Logo from '../../constant/logo/Logo';
 const Tab = createBottomTabNavigator();
 
 const MainNavigation = () => {
