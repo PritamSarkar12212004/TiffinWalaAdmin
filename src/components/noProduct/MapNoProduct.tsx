@@ -9,7 +9,6 @@ const MapNoProduct = ({ navigation }) => {
 
     // Assume this is coming from your context or props
     const hasProducts = false; // Change this based on your actual product check
-
     return (
         <View className="flex-1">
             <MapView
@@ -36,7 +35,7 @@ const MapNoProduct = ({ navigation }) => {
                         {/* Icon Container */}
                         <View className="w-[140px] h-[140px] rounded-full bg-orange-500/5 justify-center items-center mb-6">
                             <View className="w-[100px] h-[100px] rounded-full bg-orange-500/10 justify-center items-center">
-                                <Icon name="map-marker-alt" size={50} type="solid" color="#FF7622" />
+                                <Icon name="location-dot" size={50} type="solid" color="#FF7622" />
                             </View>
                         </View>
 
@@ -50,7 +49,7 @@ const MapNoProduct = ({ navigation }) => {
                         {/* Features Preview */}
                         <View className="flex-row justify-around w-full mb-10">
                             <View className="items-center bg-white p-4 rounded-2xl shadow-sm w-[28%]">
-                                <Icon name="map-marked-alt" size={24} type="solid" color="#FF7622" />
+                                <Icon name="road" size={24} type="solid" color="#FF7622" />
                                 <Text className="mt-2 text-xs font-semibold text-slate-500 text-center">
                                     Track Orders
                                 </Text>
@@ -76,7 +75,7 @@ const MapNoProduct = ({ navigation }) => {
                             onPress={() => navigation.navigate('UploadProduct')}
                         >
                             <View className="flex-row items-center gap-2">
-                                <Icon name="plus-circle" size={20} type="solid" color="white" />
+                                <Icon name="bowl-food" size={20} type="solid" color="white" />
                                 <Text className="text-white text-base font-semibold">
                                     Add Your First Product
                                 </Text>

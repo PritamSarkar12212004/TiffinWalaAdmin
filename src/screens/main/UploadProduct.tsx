@@ -1,26 +1,19 @@
 import {
   View,
-  Text,
   TextInput,
   ScrollView,
-  TouchableOpacity,
-  Image,
 } from 'react-native';
 import React, { useState } from 'react';
-import Icon from '../../MainLogo/icon/Icon';
 import SingleImgPicker from '../../functions/image/SingleImgPicker';
 import useProductCreate from '../../hooks/useProductCreate';
 import UploaderWraper from '../../layout/error/UploaderWraper';
-import { userContext } from '../../util/context/ContextProvider';
 import SectionCard from '../../components/elements/SectionCard';
 import ImagePickerCard from '../../components/elements/ImagePickerCard';
 import PillToggle from '../../components/elements/PillToggle';
 import GradientButton from '../../components/elements/GradientButton';
-import LinearGradient from 'react-native-linear-gradient';
-import { useNavigation } from '@react-navigation/native';
+import { userContext } from '../../util/context/ContextProvider';
 
 const UploadProduct = () => {
-  const navigation = useNavigation();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
@@ -30,6 +23,7 @@ const UploadProduct = () => {
   const [menuImages, setMenuImages] = useState<any[]>(Array(6).fill(null));
   const [loading, setLoading] = useState(false);
   const { createProduct } = useProductCreate();
+  const { adminDatabase } = userContext()
 
   const CreateProfileFunc = async () => {
     setLoading(true);
@@ -41,6 +35,7 @@ const UploadProduct = () => {
       openDays,
       mainImage,
       menuImages,
+      adminDatabase
     });
     setLoading(false);
   };

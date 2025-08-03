@@ -27,7 +27,7 @@ const ImagePickerCard: React.FC<ImagePickerCardProps> = ({ image, onPress, label
               className='absolute top-2 right-2 w-8 h-8 bg-[#FB4A59] rounded-full items-center justify-center border-2 border-white z-10'
               activeOpacity={0.8}
             >
-              <Icon name='times' size={16} color='white' type='solid' />
+              <Icon name='xmark' size={16} color='white' type='solid' />
             </TouchableOpacity>
           )}
         </>

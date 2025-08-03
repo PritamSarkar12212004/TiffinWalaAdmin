@@ -38,7 +38,7 @@ const NoNotificaProduct = () => {
             </Text>
           </View>
           <View className="items-center bg-white p-4 rounded-2xl shadow-sm w-[28%]">
-            <Icon name="shopping-cart" size={24} type="solid" color="#6366F1" />
+            <Icon name="bowl-food" size={24} type="solid" color="#6366F1" />
             <Text className="mt-2 text-xs font-semibold text-slate-500 text-center">
               Orders
             </Text>
@@ -52,15 +52,15 @@ const NoNotificaProduct = () => {
           </Text>
           <View className="space-y-3">
             <View className="flex-row items-center gap-3">
-              <Icon name="check-circle" size={16} type="solid" color="#10B981" />
+              <Icon name="circle-dot" size={16} type="solid" color="#10B981" />
               <Text className="text-slate-600">Add attractive product photos</Text>
             </View>
             <View className="flex-row items-center gap-3">
-              <Icon name="check-circle" size={16} type="solid" color="#10B981" />
+              <Icon name="circle-dot" size={16} type="solid" color="#10B981" />
               <Text className="text-slate-600">Share your store link</Text>
             </View>
             <View className="flex-row items-center gap-3">
-              <Icon name="check-circle" size={16} type="solid" color="#10B981" />
+              <Icon name="circle-dot" size={16} type="solid" color="#10B981" />
               <Text className="text-slate-600">Engage with customer reviews</Text>
             </View>
           </View>
@@ -73,7 +73,7 @@ const NoNotificaProduct = () => {
           className="w-full bg-orange-500 py-4 px-6 rounded-2xl shadow-lg shadow-orange-500/30 mb-4"
         >
           <View className="flex-row items-center justify-center gap-2">
-            <Icon name="plus-circle" size={20} type="solid" color="white" />
+            <Icon name="bowl-food" size={20} type="solid" color="white" />
             <Text className="text-white text-base font-semibold">
               Add Your First Product
             </Text>
