@@ -5,16 +5,18 @@ import api from '../util/api/Axios';
 interface ProductData {
   title: string;
   description: string;
-  price: number;
-  foodType: string;
+  price: any;
+  foodType: any;
   openDays: string[];
   mainImage: File;
   menuImages: File[];
   adminDatabase: any;
+  setLoading: any;
+  fildReseter: Function;
+  errorHandler: any;
 }
 
 const useProductCreate = () => {
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const createProduct = async (
@@ -27,6 +29,9 @@ const useProductCreate = () => {
       mainImage,
       menuImages,
       adminDatabase,
+      setLoading,
+      fildReseter,
+      errorHandler,
     }: ProductData,
     onSuccess?: () => void,
   ) => {
@@ -57,10 +62,12 @@ const useProductCreate = () => {
           longitude: adminDatabase.User_Address.longitude,
         })
         .then(res => {
+          fildReseter();
           console.log(res.data);
         })
         .catch(err => {
           console.log(err);
+          errorHandler(false);
         });
       if (onSuccess) onSuccess();
     } catch (err: any) {
@@ -73,7 +80,6 @@ const useProductCreate = () => {
 
   return {
     createProduct,
-    loading,
     error,
   };
 };

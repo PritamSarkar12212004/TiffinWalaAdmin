@@ -2,6 +2,8 @@ import {
   View,
   TextInput,
   ScrollView,
+  Modal,
+  Text,
 } from 'react-native';
 import React, { useState } from 'react';
 import SingleImgPicker from '../../functions/image/SingleImgPicker';
@@ -10,8 +12,14 @@ import UploaderWraper from '../../layout/error/UploaderWraper';
 import SectionCard from '../../components/elements/SectionCard';
 import ImagePickerCard from '../../components/elements/ImagePickerCard';
 import PillToggle from '../../components/elements/PillToggle';
+import { BlurView } from '@react-native-community/blur';
 import GradientButton from '../../components/elements/GradientButton';
 import { userContext } from '../../util/context/ContextProvider';
+import Animation from '../../constant/animation/Animation';
+import AnimationComp from '../../components/elements/AnimationComp';
+import { foodTypeData, openDaysData } from '../../demo/data/UploadProductData';
+import UploadingModel from '../../components/modal/Upload/UploadingModel';
+import UploaddingErrorModal from '../../components/modal/Upload/UploaddingErrorModal';
 
 const UploadProduct = () => {
   const [title, setTitle] = useState('');
@@ -24,6 +32,8 @@ const UploadProduct = () => {
   const [loading, setLoading] = useState(false);
   const { createProduct } = useProductCreate();
   const { adminDatabase } = userContext()
+  const [uploadStatus, setUploadStatus] = useState<string | any>('uploading')
+
 
   const CreateProfileFunc = async () => {
     setLoading(true);
@@ -35,27 +45,77 @@ const UploadProduct = () => {
       openDays,
       mainImage,
       menuImages,
-      adminDatabase
+      adminDatabase,
+      setLoading,
+      fildReseter,
+      errorHandler
     });
-    setLoading(false);
   };
+  const fildReseter = () => {
+    setTitle('')
+    setDescription('')
+    setPrice('')
+    setFoodType([])
+    setOpenDays([])
+    setMainImage(null)
+    setMenuImages(Array(6).fill(null))
+  }
+  const errorHandler = (status: any) => {
+    fildReseter()
+    setUploadStatus(status)
+  }
+  const validateFields = (): boolean => {
+    const errors: string[] = [];
 
-  const foodTypeData = [
-    { id: 1, name: 'Veg', icon: 'leaf', color: '#22c55e' },
-    { id: 2, name: 'Non-Veg', icon: 'drumstick-bite', color: '#ef4444' },
-    { id: 3, name: 'Vegan', icon: 'apple-whole', color: '#f59e42' },
-  ];
+    // Title validation
+    if (!title.trim()) {
+      errors.push('Mess/Tiffin name is required');
+    } else if (title.length < 3) {
+      errors.push('Name must be at least 3 characters long');
+    }
 
-  const openDaysData = [
-    { id: 1, name: 'Monday', color: '#ef4444' },
-    { id: 2, name: 'Tuesday', color: '#f59e42' },
-    { id: 3, name: 'Wednesday', color: '#22c55e' },
-    { id: 4, name: 'Thursday', color: '#ef4444' },
-    { id: 5, name: 'Friday', color: '#f59e42' },
-    { id: 6, name: 'Saturday', color: '#22c55e' },
-    { id: 7, name: 'Sunday', color: '#ef4444' },
-  ];
+    // Description validation
+    if (!description.trim()) {
+      errors.push('Description is required');
+    } else if (description.length < 20) {
+      errors.push('Description must be at least 20 characters long');
+    }
 
+    // Price validation
+    if (!price) {
+      errors.push('Price is required');
+    } else if (isNaN(Number(price)) || Number(price) <= 0) {
+      errors.push('Please enter a valid price');
+    }
+
+    // Main image validation
+    if (!mainImage) {
+      errors.push('Main photo is required');
+    }
+
+    // Menu images validation
+    const hasMenuImages = menuImages.some(img => img !== null);
+    if (!hasMenuImages) {
+      errors.push('At least one menu photo is required');
+    }
+
+    // Food type validation
+    if (foodType.length === 0) {
+      errors.push('Please select at least one food type');
+    }
+
+    // Open days validation
+    if (openDays.length === 0) {
+      errors.push('Please select at least one open day');
+    }
+
+    setValidationErrors(errors);
+    if (errors.length > 0) {
+      setShowValidationModal(true);
+      return false;
+    }
+    return true;
+  };
   const daySelector = (day: string) => {
     setOpenDays(prev =>
       prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day]
@@ -88,8 +148,33 @@ const UploadProduct = () => {
     setMenuImages(newImages);
   };
 
+
   return (
-    <UploaderWraper isVisible={false}>
+    <UploaderWraper isVisible={loading}>
+      <Modal
+        visible={loading}
+        transparent
+        animationType="fade"
+      >
+        <BlurView
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            bottom: 0,
+            right: 0,
+          }}
+          blurType="light"
+          blurAmount={10}
+          reducedTransparencyFallbackColor="white"
+        >
+          {
+            uploadStatus === 'uploading' ? <UploadingModel AnimationComp={AnimationComp} Animation={Animation} />
+              : uploadStatus === 'error' ? <UploaddingErrorModal AnimationComp={AnimationComp} Animation={Animation} setIsError={setUploadStatus} setLoading={setLoading} fildReseter={fildReseter} CreateProfileFunc={CreateProfileFunc} /> : null
+          }
+
+        </BlurView>
+      </Modal>
       <ScrollView showsHorizontalScrollIndicator={false} className='flex-1 bg-[#F3F3F3]'>
         <View className='flex-1 px-4 gap-4 mb-40 bg-[#F3F3F3]'>
           {/* Item Name */}
