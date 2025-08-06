@@ -205,7 +205,7 @@ const UploadProduct = () => {
       </Modal>
 
       <ScrollView showsHorizontalScrollIndicator={false} className='flex-1 bg-[#F3F3F3]'>
-        <View className='flex-1 px-4 gap-4 mb-40 bg-[#F3F3F3]'>
+        <View className='flex-1 px-4 mt-10 gap-4 mb-40 bg-[#F3F3F3]'>
           {/* Item Name */}
           <SectionCard title='Item Name'>
             <TextInput

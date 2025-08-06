@@ -14,10 +14,16 @@ const useMainDataRicive = () => {
       })
       .then(async res => {
         await getStorage(Token.DataToken.UserProductCount).then(res => {
-          console.log(res);
           setAdminProductCount(res);
         });
-        setAdminDatabase(res.data.data);
+        console.log(res.data);
+        setAdminDatabase({
+          AdminFollowers: res.data.productData.AdminFollowers,
+          AdminTotoalLikes: res.data.productData.ProductTotalLike,
+          AdminProducts: res.data.productData.AdminProducts,
+          AdminTotoalViwers: res.data.productData.ProductTotalViews,
+          adminMainData: res.data.data,
+        });
         return true;
       })
       .catch(err => {

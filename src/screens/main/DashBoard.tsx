@@ -56,8 +56,9 @@ const DashBoard = () => {
 
 
   const { riciveData } = useMainDataRicive();
-  const { adminLocalData, setAdminDatabase, adminProductCount, setAdminLocalData, setAdminProductCount, loading, setloading } = userContext();
+  const { adminLocalData, adminDatabase, setAdminDatabase, adminProductCount, setAdminLocalData, setAdminProductCount, loading, setloading } = userContext();
 
+  console.log(adminDatabase);
   useEffect(() => {
     const fetchData = async () => {
       if (adminLocalData?.User_Phone_Number) {
@@ -70,14 +71,11 @@ const DashBoard = () => {
         setloading(false);
       }
     };
-
     fetchData();
   }, [loading]);
-
-
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {loading ? (
+      {loading | adminDatabase ? (
         <DashboardSkeleton />
       ) : (
         <View style={styles.content}>
@@ -95,39 +93,18 @@ const DashBoard = () => {
             adminProductCount ? <>
               {/* Top Metrics Row */}
               <View style={styles.metricsRow}>
-                <MetricCard title="Total Views" value="5483" icon="street-view" color="#6366F1" gradient />
-                <MetricCard title="Total Like" value="986" icon="heart" color="#10B981" gradient />
+                <MetricCard title="Total Views" value={adminDatabase.AdminTotoalViwers} icon="street-view" color="#6366F1" gradient />
+                <MetricCard title="Total Like" value={adminDatabase.AdminTotoalLikes} icon="heart" color="#10B981" gradient />
               </View>
 
               {/* Second Metrics Row */}
               <View style={styles.metricsRow}>
-                <MetricCard title="Followers" value="400" icon="users" color="#3B82F6" />
-                <MetricCard title="Products" value="2" icon="box" color="#8B5CF6" />
+                <MetricCard title="Followers" value={adminDatabase.AdminFollowers} icon="users" color="#3B82F6" />
+                <MetricCard title="Products" value={adminDatabase.AdminProducts} icon="box" color="#8B5CF6" />
               </View>
 
               {/* Charts Section */}
               <View style={styles.chartsSection}>
-                <ChartCard title="Revenue Trends" icon="trending-up" iconColor="#10B981">
-                  <LineChart
-                    data={lineData}
-                    thickness={3}
-                    color="#10B981"
-                    hideDataPoints={false}
-                    areaChart
-                    startFillColor="#10B98115"
-                    endFillColor="#10B98105"
-                    yAxisColor="transparent"
-                    xAxisColor="transparent"
-                    yAxisTextStyle={{ color: '#64748B', fontSize: 10 }}
-                    xAxisLabelTextStyle={{ color: '#64748B', fontSize: 10 }}
-                    curved
-                    maxValue={5000}
-                    noOfSections={4}
-                    yAxisLabelPrefix="₹"
-                    height={160}
-                  />
-                </ChartCard>
-
                 <ChartCard title="Weekly Traffic" icon="chart-bar" iconColor="#6366F1">
                   <BarChart
                     barWidth={18}
@@ -161,35 +138,7 @@ const DashBoard = () => {
                 </ChartCard>
               </View>
 
-              {/* Recent Activity */}
-              <View style={styles.recentActivityCard}>
-                <View style={styles.cardHeader}>
-                  <Text style={styles.cardTitle}>Recent Activity</Text>
-                  <TouchableOpacity activeOpacity={0.7} style={styles.seeAllButton}>
-                    <Text style={styles.seeAllText}>View All</Text>
-                    <Icon name="chevron-right" size={14} type="solid" color="#6366F1" />
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.activityList}>
-                  {[
-                    { icon: 'shopping-cart', text: 'New order #1234 received', time: '2 min ago', color: '#10B981' },
-                    { icon: 'user-plus', text: 'New user registered', time: '5 min ago', color: '#3B82F6' },
-                    { icon: 'star', text: '5-star review received', time: '10 min ago', color: '#F59E0B' },
-                    { icon: 'exclamation-triangle', text: 'Low stock alert', time: '15 min ago', color: '#EF4444' },
-                  ].map((activity, index) => (
-                    <View key={index} style={styles.activityItem}>
-                      <View style={[styles.activityIcon, { backgroundColor: activity.color + '15' }]}>
-                        <Icon name={activity.icon} size={16} type="solid" color={activity.color} />
-                      </View>
-                      <View style={styles.activityContent}>
-                        <Text style={styles.activityText}>{activity.text}</Text>
-                        <Text style={styles.activityTime}>{activity.time}</Text>
-                      </View>
-                      <View style={styles.activityIndicator} />
-                    </View>
-                  ))}
-                </View>
-              </View>
+
             </> : <View className='flex-1 flex items-center justify-center'><DashBoardNoProduct navigation={navigation} /></View>
           }
         </View>
