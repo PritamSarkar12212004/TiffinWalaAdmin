@@ -14,73 +14,59 @@ interface ProductData {
   setLoading: any;
   fildReseter: Function;
   errorHandler: any;
+  setUploadStatus: any;
 }
 
 const useProductCreate = () => {
-  const [error, setError] = useState<string | null>(null);
-
-  const createProduct = async (
-    {
-      title,
-      description,
-      price,
-      foodType,
-      openDays,
-      mainImage,
-      menuImages,
-      adminDatabase,
-      setLoading,
-      fildReseter,
-      errorHandler,
-    }: ProductData,
-    onSuccess?: () => void,
-  ) => {
+  const createProduct = async ({
+    title,
+    description,
+    price,
+    foodType,
+    openDays,
+    mainImage,
+    menuImages,
+    adminDatabase,
+    setLoading,
+    fildReseter,
+    errorHandler,
+    setUploadStatus,
+  }: ProductData) => {
     setLoading(true);
-    setError(null);
+    const uploadedMainImage = await CloudanerysingleImgIpload(
+      mainImage,
+      'image',
+    );
 
-    try {
-      const uploadedMainImage = await CloudanerysingleImgIpload(
-        mainImage,
-        'image',
-      );
-
-      const uploadedMenuImages = await Promise.all(
-        menuImages.map(image => CloudanerysingleImgIpload(image, 'image')),
-      );
-      await api
-        .post('/product/create', {
-          title: title,
-          description: description,
-          price: price,
-          foodTypes: foodType,
-          availableDays: openDays,
-          images: uploadedMainImage,
-          menuItems: uploadedMenuImages,
-          userId: adminDatabase._id,
-          address: adminDatabase.User_Address.address,
-          latitude: adminDatabase.User_Address.latitude,
-          longitude: adminDatabase.User_Address.longitude,
-        })
-        .then(res => {
-          fildReseter();
-          console.log(res.data);
-        })
-        .catch(err => {
-          console.log(err);
-          errorHandler(false);
-        });
-      if (onSuccess) onSuccess();
-    } catch (err: any) {
-      console.error('Product creation failed:', err);
-      setError(err?.message || 'Failed to create product');
-    } finally {
-      setLoading(false);
-    }
+    const uploadedMenuImages = await Promise.all(
+      menuImages.map(image => CloudanerysingleImgIpload(image, 'image')),
+    );
+    await api
+      .post('/product/create', {
+        title: title,
+        description: description,
+        price: price,
+        foodTypes: foodType,
+        availableDays: openDays,
+        images: uploadedMainImage,
+        menuItems: uploadedMenuImages,
+        userId: adminDatabase._id,
+        address: adminDatabase.User_Address.address,
+        latitude: adminDatabase.User_Address.latitude,
+        longitude: adminDatabase.User_Address.longitude,
+      })
+      .then(res => {
+        fildReseter();
+      })
+      .catch(err => {
+        console.log(err);
+        setUploadStatus('error');
+        // errorHandler(null);
+      });
   };
 
   return {
     createProduct,
-    error,
   };
 };
 

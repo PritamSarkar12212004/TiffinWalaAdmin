@@ -9,7 +9,6 @@ const MainProfileSetup = () => {
     const { createProfile } = useCreateProfileApi()
     const navigation = useNavigation()
     const route = useRoute()
-    console.log(route.params);
     useEffect(() => {
         const setprofile = () => {
             createProfile({ data: route.params, navigation: navigation })

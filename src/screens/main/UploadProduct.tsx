@@ -3,16 +3,14 @@ import {
   TextInput,
   ScrollView,
   Modal,
-  Text,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import SingleImgPicker from '../../functions/image/SingleImgPicker';
 import useProductCreate from '../../hooks/useProductCreate';
 import UploaderWraper from '../../layout/error/UploaderWraper';
 import SectionCard from '../../components/elements/SectionCard';
 import ImagePickerCard from '../../components/elements/ImagePickerCard';
 import PillToggle from '../../components/elements/PillToggle';
-import { BlurView } from '@react-native-community/blur';
 import GradientButton from '../../components/elements/GradientButton';
 import { userContext } from '../../util/context/ContextProvider';
 import Animation from '../../constant/animation/Animation';
@@ -20,6 +18,7 @@ import AnimationComp from '../../components/elements/AnimationComp';
 import { foodTypeData, openDaysData } from '../../demo/data/UploadProductData';
 import UploadingModel from '../../components/modal/Upload/UploadingModel';
 import UploaddingErrorModal from '../../components/modal/Upload/UploaddingErrorModal';
+import ValidationErrorModal from '../../components/modal/Upload/ValidationErrorModal';
 
 const UploadProduct = () => {
   const [title, setTitle] = useState('');
@@ -32,11 +31,17 @@ const UploadProduct = () => {
   const [loading, setLoading] = useState(false);
   const { createProduct } = useProductCreate();
   const { adminDatabase } = userContext()
-  const [uploadStatus, setUploadStatus] = useState<string | any>('uploading')
-
+  const [uploadStatus, setUploadStatus] = useState<string | any>(null)
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   const CreateProfileFunc = async () => {
+    if (!validateFields()) {
+      setLoading(true);
+      setUploadStatus('validation')
+      return;
+    }
     setLoading(true);
+    setUploadStatus('uploading')
     await createProduct({
       title,
       description,
@@ -48,7 +53,8 @@ const UploadProduct = () => {
       adminDatabase,
       setLoading,
       fildReseter,
-      errorHandler
+      errorHandler,
+      setUploadStatus
     });
   };
   const fildReseter = () => {
@@ -72,6 +78,8 @@ const UploadProduct = () => {
       errors.push('Mess/Tiffin name is required');
     } else if (title.length < 3) {
       errors.push('Name must be at least 3 characters long');
+    } else if (title.length > 50) {
+      errors.push('Name must be less than 50 characters');
     }
 
     // Description validation
@@ -79,13 +87,22 @@ const UploadProduct = () => {
       errors.push('Description is required');
     } else if (description.length < 20) {
       errors.push('Description must be at least 20 characters long');
+    } else if (description.length > 500) {
+      errors.push('Description must be less than 500 characters');
     }
 
     // Price validation
     if (!price) {
       errors.push('Price is required');
-    } else if (isNaN(Number(price)) || Number(price) <= 0) {
-      errors.push('Please enter a valid price');
+    } else {
+      const priceNum = Number(price);
+      if (isNaN(priceNum)) {
+        errors.push('Price must be a valid number');
+      } else if (priceNum <= 0) {
+        errors.push('Price must be greater than 0');
+      } else if (priceNum > 100000) {
+        errors.push('Price must be less than ₹100,000');
+      }
     }
 
     // Main image validation
@@ -93,28 +110,32 @@ const UploadProduct = () => {
       errors.push('Main photo is required');
     }
 
-    // Menu images validation
-    const hasMenuImages = menuImages.some(img => img !== null);
-    if (!hasMenuImages) {
-      errors.push('At least one menu photo is required');
+    // Menu images validation - Require exactly 6 images
+    const filledMenuImages = menuImages.filter(img => img !== null);
+    if (filledMenuImages.length === 0) {
+      errors.push('Menu photos are required');
+    } else if (filledMenuImages.length < 6) {
+      const remaining = 6 - filledMenuImages.length;
+      errors.push(`Please upload ${remaining} more menu photo${remaining > 1 ? 's' : ''}. (${filledMenuImages.length}/6 uploaded)`);
     }
 
     // Food type validation
     if (foodType.length === 0) {
       errors.push('Please select at least one food type');
+    } else if (foodType.length > 3) {
+      errors.push('Maximum 3 food types can be selected');
     }
 
     // Open days validation
     if (openDays.length === 0) {
       errors.push('Please select at least one open day');
+    } else if (openDays.length > 7) {
+      errors.push('Invalid number of open days selected');
     }
 
+    // Set validation errors and return result
     setValidationErrors(errors);
-    if (errors.length > 0) {
-      setShowValidationModal(true);
-      return false;
-    }
-    return true;
+    return errors.length === 0;
   };
   const daySelector = (day: string) => {
     setOpenDays(prev =>
@@ -147,6 +168,9 @@ const UploadProduct = () => {
     newImages[index] = null;
     setMenuImages(newImages);
   };
+  useEffect(() => {
+
+  }, [uploadStatus])
 
 
   return (
@@ -156,25 +180,30 @@ const UploadProduct = () => {
         transparent
         animationType="fade"
       >
-        <BlurView
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            bottom: 0,
-            right: 0,
-          }}
-          blurType="light"
-          blurAmount={10}
-          reducedTransparencyFallbackColor="white"
-        >
-          {
-            uploadStatus === 'uploading' ? <UploadingModel AnimationComp={AnimationComp} Animation={Animation} />
-              : uploadStatus === 'error' ? <UploaddingErrorModal AnimationComp={AnimationComp} Animation={Animation} setIsError={setUploadStatus} setLoading={setLoading} fildReseter={fildReseter} CreateProfileFunc={CreateProfileFunc} /> : null
-          }
-
-        </BlurView>
+        {uploadStatus ? uploadStatus === 'uploading' ? (
+          <UploadingModel AnimationComp={AnimationComp} Animation={Animation} />
+        ) : uploadStatus === 'error' ? (
+          <UploaddingErrorModal
+            AnimationComp={AnimationComp}
+            Animation={Animation}
+            setIsError={setUploadStatus}
+            setLoading={setLoading}
+            fildReseter={fildReseter}
+            CreateProfileFunc={CreateProfileFunc}
+          />
+        ) : uploadStatus === 'validation' ? (
+          <ValidationErrorModal
+            errors={validationErrors}
+            onClose={() => {
+              setUploadStatus(null);
+              setLoading(false);
+            }}
+            AnimationComp={AnimationComp}
+            Animation={Animation}
+          />
+        ) : null : null}
       </Modal>
+
       <ScrollView showsHorizontalScrollIndicator={false} className='flex-1 bg-[#F3F3F3]'>
         <View className='flex-1 px-4 gap-4 mb-40 bg-[#F3F3F3]'>
           {/* Item Name */}

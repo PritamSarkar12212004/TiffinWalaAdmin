@@ -13,11 +13,10 @@ interface OtpVerifyScreenProps {
 
 const OtpVerifyScreen: React.FC<OtpVerifyScreenProps> = ({ navigation, route }) => {
   const RouteParams = useRoute();
-
   const { ResendApi } = useResendOtpApi()
   const [otp, setOtp] = useState<string>('');
   const [timer, setTimer] = useState(30);
-  const [navbigateOtp, setNavigateOtp] = useState(RouteParams.params.otp)
+  const [navbigateOtp, setNavigateOtp] = useState<any>(RouteParams.params.otp)
 
   const { varifyOtpData } = useVarifyOtpData()
 

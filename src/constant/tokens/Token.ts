@@ -5,6 +5,7 @@ const Token = {
   DataToken: {
     UserInformation: 'UserInformation',
     UserLocation: 'UserLocation',
+    UserProductCount: 'UserProductCount',
   },
 };
 export default Token;

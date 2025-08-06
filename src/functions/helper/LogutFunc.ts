@@ -6,6 +6,7 @@ const LogutFunc = async ({navigation, CommonActions}: any) => {
     deleteStorage(Token.AuthToken.IsSignToken),
     deleteStorage(Token.DataToken.UserInformation),
     deleteStorage(Token.DataToken.UserLocation),
+    deleteStorage(Token.DataToken.UserProductCount),
   ]);
 
   navigation.dispatch(

@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native'
+import { View, Text, TouchableOpacity, ActivityIndicator,  } from 'react-native'
 import React, { useState, useRef, useEffect } from 'react'
 import AuthHeader from '../../components/header/AuthHeader'
 import MapView, { Marker } from 'react-native-maps'

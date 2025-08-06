@@ -11,6 +11,9 @@ export const ContextProvider = ({ children }: { children: React.ReactNode }) => 
     // admin DataBase Riciver
     const [adminDatabase, setAdminDatabase] = useState<any | null>(null)
 
+    // admin Data Product Count
+    const [adminProductCount, setAdminProductCount] = useState<any | null | boolean>(null)
+
     // error wrapper
     const [Uploader, setUploader] = useState<{
         status: boolean;
@@ -29,7 +32,9 @@ export const ContextProvider = ({ children }: { children: React.ReactNode }) => 
                 adminLocalData,
                 setAdminLocalData,
                 adminDatabase,
-                setAdminDatabase
+                setAdminDatabase,
+                adminProductCount,
+                setAdminProductCount
             }}
         >
             {children}

@@ -1,6 +1,6 @@
 import { ScrollView, View } from 'react-native'
 import React from 'react'
-import { useNavigation, useRoute } from '@react-navigation/native'
+import { useNavigation } from '@react-navigation/native'
 import ProfileOptionContainer from '../../components/profile/ProfileOptionContainer'
 import ProfileView from '../../components/profile/ProfileView'
 
@@ -18,7 +18,7 @@ const Profile = () => {
           params: {
             screen: 'PersonalInfo',
           },
-        })
+        } as never)
       }
     },
     {
@@ -31,7 +31,7 @@ const Profile = () => {
           params: {
             screen: 'Settings',
           },
-        })
+        }as never)
       }
     },
     // {
@@ -62,7 +62,7 @@ const Profile = () => {
           params: {
             screen: 'HelpCenter',
           },
-        })
+        } as never)
       }
     },
     {
@@ -75,7 +75,7 @@ const Profile = () => {
           params: {
             screen: 'TermsCondition',
           },
-        })
+        }as never)
       }
     },
 
@@ -89,12 +89,12 @@ const Profile = () => {
           params: {
             screen: 'About',
           },
-        })
+        } as never)
       }
     },
   ]
 
- 
+
 
   return (
     <View className='flex-1 bg-[#F3F3F3] px-3 pt-2'>

@@ -7,7 +7,6 @@ const useLoginApi = () => {
         number: phone,
       })
       .then(res => {
-        console.log(res.data.data);
         setloading(false);
         if (res.status == 200) {
           Routenavigation.navigate('OtpVerifyScreen', {

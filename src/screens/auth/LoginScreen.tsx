@@ -23,8 +23,6 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
     if (mobile.length == 10) {
       setloading(true)
       login(mobile, setloading, Routenavigation)
-      console.log(mobile)
-      // Alert.alert("enter 10 Digit Mobile Number")
     }
   }
   return (

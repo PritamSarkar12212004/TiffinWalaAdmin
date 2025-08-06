@@ -2,6 +2,15 @@ import Token from '../../../constant/tokens/Token';
 import setStorage from '../../../functions/token/setStorage';
 import api from '../../../util/api/Axios';
 const useVarifyOtpData = () => {
+  const productCount = async (length: any) => {
+    if (length <= 0) {
+      setStorage(Token.DataToken.UserProductCount, false);
+    } else {
+      setStorage(Token.DataToken.UserProductCount, true);
+    }
+    return true;
+  };
+
   const varifyOtpData = async (
     status: any,
     phone: any,
@@ -20,6 +29,7 @@ const useVarifyOtpData = () => {
           });
         } else {
           await Promise.all([
+            productCount(res.data.data.User_Post_Count),
             setStorage(Token.DataToken.UserInformation, res.data.data),
             setStorage(
               Token.DataToken.UserLocation,
