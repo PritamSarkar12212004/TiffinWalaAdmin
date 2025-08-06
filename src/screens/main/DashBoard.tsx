@@ -9,6 +9,8 @@ import { userContext } from '../../util/context/ContextProvider';
 import DashBoardNoProduct from '../../components/noProduct/DashBoardNoProduct';
 import { useNavigation } from '@react-navigation/native';
 import { barData, lineData, monthlyOrdersData } from '../../demo/data/DasboardData';
+import setStorage from '../../functions/token/setStorage';
+import Token from '../../constant/tokens/Token';
 
 const { width } = Dimensions.get('window');
 const DashBoard = () => {
@@ -48,15 +50,14 @@ const DashBoard = () => {
     </View>
   );
 
-  const [loading, setloading] = useState(true);
+
   const { riciveData } = useMainDataRicive();
-  const { adminLocalData, setAdminDatabase, adminProductCount, setAdminProductCount } = userContext();
+  const { adminLocalData, setAdminDatabase, adminProductCount, setAdminProductCount, loading, setloading } = userContext();
   useEffect(() => {
-    setloading(true);
     riciveData(adminLocalData.User_Phone_Number, setAdminDatabase, setAdminProductCount).then(() => {
       setloading(false);
     });
-  }, []);
+  }, [loading]);
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>

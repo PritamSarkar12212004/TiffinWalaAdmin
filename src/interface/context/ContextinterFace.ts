@@ -7,6 +7,8 @@ interface ContextinterFace {
   setAdminDatabase: any;
   adminProductCount: any;
   setAdminProductCount: any;
+  loading: any;
+  setloading: any;
 }
 
 export {ContextinterFace};

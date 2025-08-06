@@ -18,6 +18,7 @@ const useMainDataRicive = () => {
           setAdminProductCount(res);
         });
         setAdminDatabase(res.data.data);
+        return true;
       })
       .catch(err => {
         console.log(err);

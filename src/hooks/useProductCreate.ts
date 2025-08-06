@@ -1,4 +1,3 @@
-import {useState} from 'react';
 import CloudanerysingleImgIpload from '../functions/image/CloudanerysingleImgIpload';
 import api from '../util/api/Axios';
 
@@ -28,8 +27,6 @@ const useProductCreate = () => {
     menuImages,
     adminDatabase,
     setLoading,
-    fildReseter,
-    errorHandler,
     setUploadStatus,
   }: ProductData) => {
     setLoading(true);
@@ -56,12 +53,13 @@ const useProductCreate = () => {
         longitude: adminDatabase.User_Address.longitude,
       })
       .then(res => {
-        fildReseter();
+        setUploadStatus('success');
+        setLoading(false);
       })
       .catch(err => {
         console.log(err);
         setUploadStatus('error');
-        // errorHandler(null);
+        setLoading(false);
       });
   };
 

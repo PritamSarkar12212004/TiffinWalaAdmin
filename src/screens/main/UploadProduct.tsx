@@ -19,6 +19,7 @@ import { foodTypeData, openDaysData } from '../../demo/data/UploadProductData';
 import UploadingModel from '../../components/modal/Upload/UploadingModel';
 import UploaddingErrorModal from '../../components/modal/Upload/UploaddingErrorModal';
 import ValidationErrorModal from '../../components/modal/Upload/ValidationErrorModal';
+import SuccessFullModel from '../../components/modal/Upload/SuccessFullModel';
 
 const UploadProduct = () => {
   const [title, setTitle] = useState('');
@@ -171,8 +172,6 @@ const UploadProduct = () => {
   useEffect(() => {
 
   }, [uploadStatus])
-
-
   return (
     <UploaderWraper isVisible={loading}>
       <Modal
@@ -201,7 +200,8 @@ const UploadProduct = () => {
             AnimationComp={AnimationComp}
             Animation={Animation}
           />
-        ) : null : null}
+        ) : uploadStatus === 'success' ? <SuccessFullModel AnimationComp={AnimationComp} Animation={Animation} setUploadStatus={setUploadStatus} /> : null
+          : null}
       </Modal>
 
       <ScrollView showsHorizontalScrollIndicator={false} className='flex-1 bg-[#F3F3F3]'>
