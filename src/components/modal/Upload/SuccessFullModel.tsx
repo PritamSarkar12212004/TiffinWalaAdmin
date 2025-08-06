@@ -6,23 +6,38 @@ import Token from '../../../constant/tokens/Token';
 import setStorage from '../../../functions/token/setStorage';
 import { userContext } from '../../../util/context/ContextProvider';
 import { useNavigation } from '@react-navigation/native';
+import getStorage from '../../../functions/token/getStorage';
 
-const SuccessFullModel = ({ AnimationComp, Animation, setUploadStatus }: any) => {
-    const { setloading } = userContext()
+const SuccessFullModel = ({ AnimationComp, Animation, setUploadStatus, setloader, fildReseter }: any) => {
+    const { setloading, loading } = userContext()
     const Navigation = useNavigation()
     useEffect(() => {
-        setTimeout(() => {
-            Promise.all([
-                deleteStorage(Token.DataToken.UserProductCount)
-            ]).then((res) => {
-                console.log(res);
-                Promise.all([
-                    setStorage(Token.DataToken.UserProductCount, true)
-                ]).then(async () => {
-                    await setloading(true)
-                    await setUploadStatus(null),
-                        Navigation.navigate('DashBoard' as never)
-                })
+        setTimeout(async () => {
+            await getStorage(Token.DataToken.UserProductCount).then((res) => {
+                if (res == false) {
+                    Promise.all([
+                        deleteStorage(Token.DataToken.UserProductCount)
+                    ]).then(() => {
+                        Promise.all([
+                            setStorage(Token.DataToken.UserProductCount, true)
+                        ]).then(async () => {
+                            await setloading(!loading)
+                            await setloader(false)
+                            await fildReseter()
+                            await setUploadStatus(null),
+                                Navigation.navigate('DashBoard' as never)
+                        })
+                    })
+                } else {
+                    const func = async () => {
+                        await setloading(!loading)
+                        await setloader(false)
+                        await fildReseter()
+                        await setUploadStatus(null),
+                            Navigation.navigate('DashBoard' as never)
+                    }
+                    func()
+                }
             })
         }, 2000);
     }, [])

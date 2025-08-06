@@ -15,8 +15,8 @@ const DonePage = () => {
                 })
             )
         }
-            , 2000); // Redirect after 2 seconds
-        return () => clearTimeout(timer); // Cleanup the timer on unmount
+            , 2000);
+        return () => clearTimeout(timer);
     }, [navigation]);
     return (
         <View className='flex-1  bg-white justify-center items-center p-6'>

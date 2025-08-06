@@ -15,7 +15,6 @@ const useVarifyOtpData = () => {
     status: any,
     phone: any,
     navigation: any,
-    CommonActions: any,
   ) => {
     await api
       .post('/auth/otp/provide-data', {

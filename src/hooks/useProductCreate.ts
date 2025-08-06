@@ -52,9 +52,8 @@ const useProductCreate = () => {
         latitude: adminDatabase.User_Address.latitude,
         longitude: adminDatabase.User_Address.longitude,
       })
-      .then(res => {
-        setUploadStatus('success');
-        setLoading(false);
+      .then(async () => {
+        await setUploadStatus('success');
       })
       .catch(err => {
         console.log(err);

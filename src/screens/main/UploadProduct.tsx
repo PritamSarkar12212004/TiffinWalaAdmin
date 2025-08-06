@@ -200,7 +200,7 @@ const UploadProduct = () => {
             AnimationComp={AnimationComp}
             Animation={Animation}
           />
-        ) : uploadStatus === 'success' ? <SuccessFullModel AnimationComp={AnimationComp} Animation={Animation} setUploadStatus={setUploadStatus} /> : null
+        ) : uploadStatus === 'success' ? <SuccessFullModel AnimationComp={AnimationComp} Animation={Animation} setUploadStatus={setUploadStatus} setloader={setLoading} fildReseter={fildReseter} /> : null
           : null}
       </Modal>
 

@@ -15,7 +15,7 @@ const useLoginApi = () => {
           });
         }
       })
-      .catch(err => {
+      .catch(() => {
         setloading(false);
       });
   };

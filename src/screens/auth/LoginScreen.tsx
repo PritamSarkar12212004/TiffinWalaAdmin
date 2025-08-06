@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, KeyboardAvoidingView, Platform, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import Icon from '../../MainLogo/icon/Icon';
 import { StackNavigationProp } from '@react-navigation/stack';
 import useLoginApi from '../../hooks/api/Auth/useLoginApi';

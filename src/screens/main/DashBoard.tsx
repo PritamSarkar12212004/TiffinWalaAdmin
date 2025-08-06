@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import Icon from '../../MainLogo/icon/Icon';
 import { BarChart, LineChart } from 'react-native-gifted-charts';
 import DashboardSkeleton from '../../layout/skelaton/DashBoardSkeleton';
@@ -9,8 +9,9 @@ import { userContext } from '../../util/context/ContextProvider';
 import DashBoardNoProduct from '../../components/noProduct/DashBoardNoProduct';
 import { useNavigation } from '@react-navigation/native';
 import { barData, lineData, monthlyOrdersData } from '../../demo/data/DasboardData';
-import setStorage from '../../functions/token/setStorage';
+import getStorage from '../../functions/token/getStorage';
 import Token from '../../constant/tokens/Token';
+
 
 const { width } = Dimensions.get('window');
 const DashBoard = () => {
@@ -51,13 +52,28 @@ const DashBoard = () => {
   );
 
 
+
+
+
   const { riciveData } = useMainDataRicive();
-  const { adminLocalData, setAdminDatabase, adminProductCount, setAdminProductCount, loading, setloading } = userContext();
+  const { adminLocalData, setAdminDatabase, adminProductCount, setAdminLocalData, setAdminProductCount, loading, setloading } = userContext();
+
   useEffect(() => {
-    riciveData(adminLocalData.User_Phone_Number, setAdminDatabase, setAdminProductCount).then(() => {
-      setloading(false);
-    });
+    const fetchData = async () => {
+      if (adminLocalData?.User_Phone_Number) {
+        await riciveData(adminLocalData.User_Phone_Number, setAdminDatabase, setAdminProductCount);
+        setloading(false);
+      } else {
+        const userInfo = await getStorage(Token.DataToken.UserInformation);
+        await setAdminLocalData(userInfo);
+        await riciveData(userInfo.User_Phone_Number, setAdminDatabase, setAdminProductCount);
+        setloading(false);
+      }
+    };
+
+    fetchData();
   }, [loading]);
+
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>

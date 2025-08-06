@@ -9,10 +9,9 @@ import { useNavigation, useRoute } from '@react-navigation/native'
 import type { KeyboardTypeOptions } from 'react-native'
 
 const UserProfileSetup = () => {
-  const route = useRoute<any>() // allow any params for now
+  const route = useRoute<any>()
   const navigation = useNavigation<any>()
   const [profileImage, setProfileImage] = useState<string | null>(null)
-
   const [fildInputContainer, setFildInputContainer] = useState<{
     Name: string,
     email: string,
