@@ -9,7 +9,6 @@ import Icon from '../../MainLogo/icon/Icon';
 import { TouchableOpacity, View } from 'react-native';
 import Risehand from '../../screens/main/Risehand';
 const Tab = createBottomTabNavigator();
-
 const MainNavigation = () => {
     return (
         <DashBoardWraper>

@@ -1,20 +1,53 @@
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions, Image } from 'react-native';
 import React, { useEffect } from 'react';
 import Icon from '../../MainLogo/icon/Icon';
-import { BarChart, LineChart } from 'react-native-gifted-charts';
+import { BarChart } from 'react-native-gifted-charts';
 import DashboardSkeleton from '../../layout/skelaton/DashBoardSkeleton';
 import { ChartCardProps, MetricCardProps } from '../../interface/dashboard/MetricCardProps';
 import useMainDataRicive from '../../hooks/api/main/DataRiciver/useMainDataRicive';
 import { userContext } from '../../util/context/ContextProvider';
 import DashBoardNoProduct from '../../components/noProduct/DashBoardNoProduct';
 import { useNavigation } from '@react-navigation/native';
-import { barData, lineData, monthlyOrdersData } from '../../demo/data/DasboardData';
+import { barData, monthlyOrdersData } from '../../demo/data/DasboardData';
 import getStorage from '../../functions/token/getStorage';
 import Token from '../../constant/tokens/Token';
 
 
 const { width } = Dimensions.get('window');
 const DashBoard = () => {
+  const dummyTiffins = [
+    {
+      id: 1,
+      postCoverImage: ['https://source.unsplash.com/800x600/?tiffin,food'],
+      postTitle: 'Healthy Veg Tiffin',
+      postDescription: 'A delicious veg tiffin including roti, sabzi, rice, dal & salad.',
+      postPrice: 120,
+      postLocation: 'Nagpur, Maharashtra',
+      productLikes: [1, 2, 3],
+      postTotalViews: [1, 2, 3, 4, 5],
+    },
+    {
+      id: 2,
+      postCoverImage: ['https://source.unsplash.com/800x600/?lunchbox'],
+      postTitle: 'Spicy Non-Veg Tiffin',
+      postDescription: 'Includes spicy chicken curry, rice, salad, and roti.',
+      postPrice: 150,
+      postLocation: 'Pune, Maharashtra',
+      productLikes: [1],
+      postTotalViews: [1, 2, 3],
+    },
+    {
+      id: 3,
+      postCoverImage: ['https://source.unsplash.com/800x600/?veg-thali'],
+      postTitle: 'Simple Veg Tiffin',
+      postDescription: 'Home-cooked thali with roti, dal, rice, and a sweet.',
+      postPrice: 100,
+      postLocation: 'Mumbai, Maharashtra',
+      productLikes: [],
+      postTotalViews: [1],
+    },
+  ];
+
   const navigation = useNavigation()
   const MetricCard: React.FC<MetricCardProps> = ({ title, value, icon, color, gradient = false, subtitle }) => (
     <TouchableOpacity activeOpacity={0.9} style={styles.metricCard}>
@@ -58,7 +91,6 @@ const DashBoard = () => {
   const { riciveData } = useMainDataRicive();
   const { adminLocalData, adminDatabase, setAdminDatabase, adminProductCount, setAdminLocalData, setAdminProductCount, loading, setloading } = userContext();
 
-  console.log(adminDatabase);
   useEffect(() => {
     const fetchData = async () => {
       if (adminLocalData?.User_Phone_Number) {
@@ -75,7 +107,7 @@ const DashBoard = () => {
   }, [loading]);
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {loading | adminDatabase ? (
+      {loading ? (
         <DashboardSkeleton />
       ) : (
         <View style={styles.content}>
@@ -136,14 +168,77 @@ const DashBoard = () => {
                     height={160}
                   />
                 </ChartCard>
+                <View style={{ marginTop: 30 }}>
+                  <View className='w-full flex flex-row items-center justify-between'>
+                    <Text style={{ fontSize: 22, fontWeight: '800', color: '#1E293B', marginBottom: 16 }}>Your Tiffins</Text>
+                    <View className='flex flex-row items-center justify-center gap-2'><Text style={styles.seeAllText} >View All</Text><Icon name="chevron-right" size={14} type="solid" color="#6366F1" />
+                    </View>
+                  </View>
+
+                  {adminDatabase.ProductData && adminDatabase.ProductData.map((item: any, index: any) => (
+                    index < 2 && <TouchableOpacity key={item?._id}
+                      // onPress={() => navigation.navigate('ProductDetails', { item })}
+                      activeOpacity={0.9}
+                      style={{
+                        marginBottom: 20,
+                        backgroundColor: 'white',
+                        borderRadius: 20,
+                        padding: 16,
+                        shadowColor: '#000',
+                        shadowOffset: { width: 0, height: 4 },
+                        shadowOpacity: 0.08,
+                        shadowRadius: 12,
+                        elevation: 6,
+                      }}
+                    >
+                      <View
+                        style={{
+                          borderRadius: 16,
+                          overflow: 'hidden',
+                          marginBottom: 12,
+                        }}
+                      >
+                        <Image
+                          source={{ uri: item?.postCoverImage[0] }}
+                          style={{ width: '100%', }}
+                          className='h-72'
+                          resizeMode="cover"
+                        />
+                      </View>
+
+                      {/* Title and Description */}
+                      <Text style={{ fontSize: 18, fontWeight: '700', color: '#1E293B' }}>{item?.postTitle}</Text>
+                      <Text style={{ fontSize: 14, color: '#64748B', marginVertical: 6 }}>
+                        {item?.postDescription.slice(0, 80)}...
+                      </Text>
+
+                      {/* Info Row */}
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
+                        <Text style={{ color: '#10B981', fontWeight: '700' }}>₹{item?.postPrice}</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Icon name="heart" size={14} type="solid" color="#EF4444" />
+                            <Text style={{ marginLeft: 4, fontSize: 12 }}>{item?.productLikes.length}</Text>
+                          </View>
+                          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Icon name="eye" size={14} type="solid" color="#6366F1" />
+                            <Text style={{ marginLeft: 4, fontSize: 12 }}>{item?.postTotalViews.length}</Text>
+                          </View>
+                        </View>
+                      </View>
+
+                      {/* Location */}
+                      <Text style={{ fontSize: 12, color: '#94A3B8', marginTop: 4 }}>📍 {item?.postLocation}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
               </View>
-
-
             </> : <View className='flex-1 flex items-center justify-center'><DashBoardNoProduct navigation={navigation} /></View>
           }
         </View>
-      )}
-    </ScrollView>
+      )
+      }
+    </ScrollView >
   );
 };
 

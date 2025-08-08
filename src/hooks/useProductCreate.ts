@@ -10,10 +10,10 @@ interface ProductData {
   mainImage: File;
   menuImages: File[];
   adminDatabase: any;
-  setLoading: any;
-  fildReseter: Function;
-  errorHandler: any;
-  setUploadStatus: any;
+  setLoading: (loading: boolean) => void;
+  fildReseter?: () => void;
+  errorHandler?: (err: any) => void;
+  setUploadStatus: (status: 'success' | 'error') => void;
 }
 
 const useProductCreate = () => {
@@ -28,43 +28,48 @@ const useProductCreate = () => {
     adminDatabase,
     setLoading,
     setUploadStatus,
+    fildReseter,
+    errorHandler,
   }: ProductData) => {
-    setLoading(true);
-    const uploadedMainImage = await CloudanerysingleImgIpload(
-      mainImage,
-      'image',
-    );
+    console.log(adminDatabase);
+    try {
+      setLoading(true);
+      console.log('🚀 Starting product creation...');
 
-    const uploadedMenuImages = await Promise.all(
-      menuImages.map(image => CloudanerysingleImgIpload(image, 'image')),
-    );
-    await api
-      .post('/product/create', {
-        title: title,
-        description: description,
-        price: price,
+      const uploadedMainImage = await CloudanerysingleImgIpload(
+        mainImage,
+        'image',
+      );
+
+      const uploadedMenuImages = await Promise.all(
+        menuImages.map(image => CloudanerysingleImgIpload(image, 'image')),
+      );
+
+      await api.post('/product/create', {
+        title,
+        description,
+        price,
         foodTypes: foodType,
         availableDays: openDays,
         images: uploadedMainImage,
         menuItems: uploadedMenuImages,
-        userId: adminDatabase._id,
-        address: adminDatabase.User_Address.address,
-        latitude: adminDatabase.User_Address.latitude,
-        longitude: adminDatabase.User_Address.longitude,
-      })
-      .then(async () => {
-        await setUploadStatus('success');
-      })
-      .catch(err => {
-        console.log(err);
-        setUploadStatus('error');
-        setLoading(false);
+        userId: adminDatabase.adminMainData._id,
+        address: adminDatabase.adminMainData.User_Address.address,
+        latitude: adminDatabase.adminMainData.User_Address.latitude,
+        longitude: adminDatabase.adminMainData.User_Address.longitude,
       });
+
+      setUploadStatus('success');
+
+      if (fildReseter) fildReseter();
+    } catch (err) {
+      console.error('❌ Error creating product:', err);
+      setUploadStatus('error');
+      if (errorHandler) errorHandler(err);
+    }
   };
 
-  return {
-    createProduct,
-  };
+  return {createProduct};
 };
 
 export default useProductCreate;

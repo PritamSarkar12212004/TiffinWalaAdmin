@@ -16,13 +16,13 @@ const useMainDataRicive = () => {
         await getStorage(Token.DataToken.UserProductCount).then(res => {
           setAdminProductCount(res);
         });
-        console.log(res.data);
         setAdminDatabase({
           AdminFollowers: res.data.productData.AdminFollowers,
           AdminTotoalLikes: res.data.productData.ProductTotalLike,
           AdminProducts: res.data.productData.AdminProducts,
           AdminTotoalViwers: res.data.productData.ProductTotalViews,
           adminMainData: res.data.data,
+          ProductData: res.data.productData.productData,
         });
         return true;
       })
