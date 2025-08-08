@@ -61,11 +61,15 @@ const useProductCreate = () => {
 
       setUploadStatus('success');
 
-      if (fildReseter) fildReseter();
+      if (fildReseter) {
+        fildReseter();
+      }
     } catch (err) {
       console.error('❌ Error creating product:', err);
       setUploadStatus('error');
-      if (errorHandler) errorHandler(err);
+      if (errorHandler) {
+        errorHandler(err);
+      }
     }
   };
 

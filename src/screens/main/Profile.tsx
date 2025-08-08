@@ -1,11 +1,13 @@
-import { ScrollView, View } from 'react-native'
+import { ActivityIndicator, ScrollView, View } from 'react-native'
 import React from 'react'
 import { useNavigation } from '@react-navigation/native'
 import ProfileOptionContainer from '../../components/profile/ProfileOptionContainer'
 import ProfileView from '../../components/profile/ProfileView'
+import { userContext } from '../../util/context/ContextProvider'
 
 const Profile = () => {
   const navigation = useNavigation()
+  const { adminDatabase } = userContext()
 
   const options1 = [
     {
@@ -19,7 +21,7 @@ const Profile = () => {
             screen: 'PersonalInfo',
           },
         } as never)
-      }
+      },
     },
     {
       title: 'Settings',
@@ -31,7 +33,7 @@ const Profile = () => {
           params: {
             screen: 'Settings',
           },
-        }as never)
+        } as never)
       }
     },
     // {
@@ -75,7 +77,7 @@ const Profile = () => {
           params: {
             screen: 'TermsCondition',
           },
-        }as never)
+        } as never)
       }
     },
 
@@ -97,16 +99,19 @@ const Profile = () => {
 
 
   return (
-    <View className='flex-1 bg-[#F3F3F3] px-3 pt-2'>
-      <ScrollView className='flex-1 pt-5 ' showsVerticalScrollIndicator={false}>
-        <View className='flex-1 flex gap-6 mb-20 pb-12'>
-          <ProfileView />
-          <View className='flex-1 flex gap-4'>
-            <ProfileOptionContainer options={options1} />
-            <ProfileOptionContainer options={options3} />
+    <View className='flex-1 bg-white px-3 pt-2'>
+      {
+        adminDatabase ? <ScrollView className='flex-1 pt-5 ' showsVerticalScrollIndicator={false}>
+          <View className='flex-1 flex gap-6 mb-20 pb-12'>
+            <ProfileView />
+            <View className='flex-1 flex gap-4'>
+              <ProfileOptionContainer options={options1} />
+              <ProfileOptionContainer options={options3} />
+            </View>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView> : <ActivityIndicator size={"large"} />
+      }
+
     </View>
   )
 }

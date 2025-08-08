@@ -4,8 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 const SubpageWraper = ({ children }: any) => {
     return (
-        <SafeAreaView className='flex-1 bg-[#F3F3F3]  '>
-            <StatusBar backgroundColor={"#F3F3F3"} barStyle={'dark-content'} />
+        <SafeAreaView className='flex-1 bg-white'>
+            <StatusBar backgroundColor={"white"} barStyle={'dark-content'} />
             {
                 children
             }

@@ -2,14 +2,15 @@ import { View, Text, Image, TouchableOpacity } from 'react-native'
 import React from 'react'
 import LinearGradient from 'react-native-linear-gradient'
 import Icon from '../../MainLogo/icon/Icon'
+import { userContext } from '../../util/context/ContextProvider'
 
 const ProfileView = () => {
-    // Placeholder user data
+    const { adminDatabase } = userContext()
     const user = {
-        name: 'John Doe',
-        email: 'john.doe@tiffinwala.com',
-        phone: '+91 7796419792',
-        image: null // Replace with image uri if available
+        name: adminDatabase.adminMainData.User_Name,
+        email: adminDatabase.adminMainData.User_Email,
+        phone: '+91 ' + adminDatabase.adminMainData.User_Phone_Number,
+        image: adminDatabase.adminMainData.User_Image
     }
     return (
         <LinearGradient

@@ -1,4 +1,5 @@
 import Token from '../../../constant/tokens/Token';
+import CloudanerysingleImgIpload from '../../../functions/image/CloudanerysingleImgIpload';
 import setStorage from '../../../functions/token/setStorage';
 import api from '../../../util/api/Axios';
 const useCreateProfileApi = () => {
@@ -11,29 +12,39 @@ const useCreateProfileApi = () => {
     return true;
   };
 
-  const createProfile = ({data, navigation}: any) => {
-    api
-      .post('/auth/profile-create', {
-        Description: data.Description,
-        Name: data.Name,
-        email: data.email,
-        phone: data.phone,
-        profileImage: data.profileImage,
-        location: data.location,
-        gender: data.gender,
-      })
-      .then(async res => {
-        await Promise.all([
-          await productCount(res.data.data.User_Post_Count),
-          setStorage(Token.DataToken.UserInformation, res.data.data),
-          setStorage(Token.DataToken.UserLocation, res.data.data.User_Address),
-          setStorage(Token.AuthToken.IsSignToken, true),
-        ])
-          .then(() => {
-            navigation.replace('DonePage');
+  const createProfile = async ({data, navigation}: any) => {
+    await CloudanerysingleImgIpload(data.profileImage, 'image')
+      .then(async result => {
+        await api
+          .post('/auth/profile-create', {
+            Description: data.Description,
+            Name: data.Name,
+            email: data.email,
+            phone: data.phone,
+            profileImage: result,
+            location: data.location,
+            gender: data.gender,
+          })
+          .then(async res => {
+            await Promise.all([
+              await productCount(res.data.data.User_Post_Count),
+              setStorage(Token.DataToken.UserInformation, res.data.data),
+              setStorage(
+                Token.DataToken.UserLocation,
+                res.data.data.User_Address,
+              ),
+              setStorage(Token.AuthToken.IsSignToken, true),
+            ])
+              .then(() => {
+                navigation.replace('DonePage');
+              })
+              .catch(err => {
+                console.error('Error setting storage:', err);
+                navigation.replace('ErrorPage');
+              });
           })
           .catch(err => {
-            console.error('Error setting storage:', err);
+            console.log(err);
             navigation.replace('ErrorPage');
           });
       })

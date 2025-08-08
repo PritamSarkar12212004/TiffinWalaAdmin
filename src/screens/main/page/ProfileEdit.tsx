@@ -1,68 +1,130 @@
-import { View, TouchableOpacity, Image, ScrollView, Text, TextInput, Alert, ActivityIndicator } from 'react-native'
-import React, { useState } from 'react'
+import { View, TouchableOpacity, Image, ScrollView, Text, TextInput, Alert, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
 import { useNavigation, useRoute } from '@react-navigation/native'
-import { LinearGradient } from 'react-native-linear-gradient'
 import Icon from '../../../MainLogo/icon/Icon'
 import SingleImgPicker from '../../../functions/image/SingleImgPicker'
 import PageNavigation from '../../../layout/navigation/PageNavigation'
+import { userContext } from '../../../util/context/ContextProvider'
+import MapView, { Marker } from 'react-native-maps'
+import GetCurrentLocation from '../../../functions/location/GetCurrentLocation'
+import useUpdateProfile from '../../../hooks/api/main/Profile/useUpdateProfile'
 
 const ProfileEdit = () => {
     const navigation = useNavigation();
     const route = useRoute();
-    const { field, value } = route.params || {};
+    const { field }: any = route.params || {};
+    const { adminDatabase } = userContext()
+    const { updateProfile } = useUpdateProfile()
 
-    // Mock user data - replace with actual data
-    const [userData, setUserData] = useState({
-        name: "John Doe",
-        gendr: "Male",
-        phone: "+91 7796419792",
-        address: "123 Main Street, Mumbai, Maharashtra",
-        bio: "Experienced admin managing tiffin services with passion for quality food delivery.",
-        profileImage: null
-    })
-
-    const [formData, setFormData] = useState({
-        name: userData.name,
-        gender: userData.gendr,
-        phone: userData.phone,
-        address: userData.address,
-        bio: userData.bio
-    })
-
+    const userData = {
+        name: adminDatabase.adminMainData.User_Name,
+        email: adminDatabase.adminMainData.User_Email,
+        phone: '+91 ' + adminDatabase.adminMainData.User_Phone_Number,
+        address: adminDatabase.adminMainData.User_Address.address,
+        role: "Admin",
+        joinDate: "15 March 2024",
+        status: "Active",
+        gender: adminDatabase.adminMainData.User_Gender,
+        User_Bio: adminDatabase.adminMainData.User_Bio,
+        profileImage: adminDatabase.adminMainData.User_Image,
+        latitude: adminDatabase.adminMainData.User_Address.latitude,
+        longitude: adminDatabase.adminMainData.User_Address.longitude
+    }
     const [image, setImage] = useState(userData.profileImage)
+    const [selectedImg, serSelectedImg] = useState<any | null>(null)
     const [loading, setLoading] = useState(false)
     const [activeField, setActiveField] = useState(field || 'name')
+    const mapRef = useRef<MapView>(null);
+    const [currentLocation, setcurrentLocation] = useState<any | null>(null);
+    const [error, setError] = useState<string | null>(null);
+
+    const [formData, setFormData] = useState({
+        profileImage: userData.profileImage,
+        name: userData.name,
+        gender: userData.gender,
+        phone: userData.phone,
+        address: userData.address,
+        bio: userData.User_Bio,
+        email: userData.email,
+        latitude: userData.latitude,
+        longitude: userData.longitude,
+    })
+
+
 
     const handleSave = async () => {
         setLoading(true)
-        try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 2000))
-
-            // Update user data
-            setUserData(prev => ({
-                ...prev,
-                ...formData,
-                profileImage: image
-            }))
-
-            Alert.alert("Success", "Profile updated successfully!")
-            navigation.goBack()
-        } catch (error) {
-            Alert.alert("Error", "Failed to update profile. Please try again.")
-        } finally {
-            setLoading(false)
+        const payload = {
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            address: formData.address,
+            bio: formData.bio,
+            gender: formData.gender,
+            profileImage: formData.profileImage,
+            selectImage: selectedImg,
+            id: adminDatabase.adminMainData._id,
+            latitude: formData.latitude,
+            longitude: formData.longitude,
         }
+        const payloadHelper = {
+            setLoading: setLoading
+        }
+        updateProfile({
+            payload: payload,
+            payloadHelper: payloadHelper
+        })
     }
-
-    const updateField = (fieldName, value) => {
+    const updateField = (fieldName: any, value: any) => {
         setFormData(prev => ({
             ...prev,
             [fieldName]: value
         }))
     }
+    const region = adminDatabase.adminMainData.User_Address.address
+        ? {
+            latitude: adminDatabase.adminMainData.User_Address.latitude,
+            longitude: adminDatabase.adminMainData.User_Address.longitude,
+            latitudeDelta: 0.005,
+            longitudeDelta: 0.005,
+        }
+        : {
+            latitude: 21.146633,
+            longitude: 79.08886,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+        };
 
-    const renderField = (fieldName, label, placeholder, keyboardType = 'default', multiline = false) => {
+    // Animate to marker when currentLocation is set
+    useEffect(() => {
+        if (currentLocation && mapRef.current) {
+            mapRef.current.animateToRegion({
+                latitude: currentLocation.latitude,
+                longitude: currentLocation.longitude,
+                latitudeDelta: 0.002,
+                longitudeDelta: 0.002,
+            }, 800);
+        }
+    }, [currentLocation]);
+
+    const [mapLoading, setmaploadeng] = useState(false)
+    const handleLocation = async () => {
+        setError(null);
+        try {
+            await GetCurrentLocation({ setLoading: setmaploadeng, setLocation: setcurrentLocation }).getCurrentLocation();
+        } catch (err: any) {
+            setError('Failed to get location. Please enable location services and try again.');
+        }
+    }
+    const SetCurrentLocation = () => {
+        setFormData(prev => ({
+            ...prev,
+            address: currentLocation.address,
+            latitude: currentLocation.latitude,
+            longitude: currentLocation.longitude
+        }))
+    }
+    const renderField = (fieldName: any, label: any, placeholder: any, keyboardType = 'default', multiline = false) => {
         const isActive = activeField === fieldName
         return (
             <View className='mb-6'>
@@ -86,75 +148,141 @@ const ProfileEdit = () => {
     }
 
     return (
-        <View className='flex-1 bg-[#F8F9FA]'>
-            <View className='px-4'>
-                <PageNavigation route={"Edit Profile"} />
-            </View>
-            <ScrollView className='flex-1 px-4 pt-6'>
-                {/* Profile Image Section */}
-                <View className='items-center mb-8'>
-                    <View className='relative'>
-                        <TouchableOpacity
-                            activeOpacity={0.9}
-                            onPress={() => SingleImgPicker({ setImage })}
-                            className='w-32 h-32 rounded-full bg-gray-200 items-center justify-center overflow-hidden border-4 border-white shadow-lg'
-                        >
-                            {image ? (
-                                <Image source={{ uri: image }} className='w-full h-full rounded-full' />
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
+        >
+            <View className='flex-1 bg-white'>
+                <View className='px-4'>
+                    <PageNavigation route={"Edit Profile"} />
+                </View>
+                <ScrollView className='flex-1 px-4 pt-6'>
+                    {/* Profile Image Section */}
+                    <View className='items-center mb-8'>
+                        <View className='relative'>
+                            <TouchableOpacity
+                                activeOpacity={0.9}
+                                onPress={() => SingleImgPicker({ setMainImage: serSelectedImg })}
+                                className='w-32 h-32 rounded-full bg-gray-200 items-center justify-center overflow-hidden border-4 border-white shadow-lg'
+                            >
+                                {selectedImg ? (
+                                    <Image source={{ uri: selectedImg }} className='w-full h-full rounded-full' />
+                                ) : (
+                                    <Image source={{ uri: image }} className='w-full h-full rounded-full' />
+
+                                )}
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => SingleImgPicker({ setImage })}
+                                className='absolute bottom-2 right-2 w-8 h-8 bg-[#FF7622] rounded-full items-center justify-center border-2 border-white'
+                            >
+                                <Icon name='camera' type={'solid'} size={14} color='white' />
+                            </TouchableOpacity>
+                        </View>
+                        <Text className='text-gray-600 text-sm mt-2'>Tap to change photo</Text>
+                    </View>
+
+                    {/* Form Fields */}
+                    <View className='bg-white rounded-2xl p-6 mb-6 shadow-sm border border-gray-100'>
+                        {renderField('name', 'Full Name', 'Enter your full name')}
+                        {renderField('gender', 'Gender', 'Enter your Gender')}
+                        {renderField('phone', 'Phone Number', 'Enter your phone number', 'phone-pad')}
+                        {renderField('address', 'Address', 'Enter your address', 'default', true)}
+                        <View className='flex'>
+                            <View className='h-96 mt-5 relative'>
+                                <MapView
+                                    scrollEnabled={false}
+                                    zoomEnabled={false}
+                                    ref={mapRef}
+                                    style={{ flex: 1, borderRadius: 20 }}
+                                    region={region}
+                                    provider='google'
+                                    userInterfaceStyle="light"
+                                >
+                                    {currentLocation ? (
+                                        <Marker
+                                            coordinate={{
+                                                latitude: currentLocation.latitude,
+                                                longitude: currentLocation.longitude,
+                                            }}
+                                            title="Your Location"
+                                            description="This is your current location"
+                                        />
+                                    ) : <Marker
+                                        coordinate={{
+                                            latitude: adminDatabase.adminMainData.User_Address.latitude,
+                                            longitude: adminDatabase.adminMainData.User_Address.longitude,
+                                        }}
+                                        title="Your Location"
+                                        description="This is your current location"
+                                    />}
+                                </MapView>
+                                <View className='w-full absolute bottom-0 py-5 h-20  rounded-t-[40px] flex items-center justify-between shadow-lg'>
+                                    <View className='w-full px-10 h-full flex items-center justify-between gap-3'>
+                                        {error && <Text style={{ color: '#ef4444', marginTop: 4, fontWeight: '500', fontSize: 15 }}>{error}</Text>}
+                                        <TouchableOpacity
+                                            activeOpacity={0.85}
+                                            onPress={() => {
+                                                if (currentLocation) {
+                                                    SetCurrentLocation()
+
+                                                } else {
+                                                    handleLocation();
+                                                }
+                                            }}
+                                            className={`w-full h-14 flex items-center justify-center rounded-full bottom-5 ${currentLocation ? 'bg-green-600' : 'bg-[#FF2374]'}`}
+                                            style={{ shadowColor: '#FF2374', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 6 }}
+                                        >
+                                            {mapLoading ? (
+                                                <ActivityIndicator size="large" color="#fff" />
+                                            ) : currentLocation ? (
+                                                <Text className='text-white font-semibold text-lg'>Update Location</Text>
+                                            ) : (
+                                                <Text className='text-white font-semibold text-lg'>Get Current Location</Text>
+                                            )}
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </View>
+                        </View>
+                        {renderField('bio', 'Bio', 'Tell us about yourself', 'default', true)}
+                    </View>
+
+                    {/* Save Button */}
+                    <TouchableOpacity
+                        onPress={handleSave}
+                        disabled={loading}
+                        activeOpacity={0.8}
+                        className='bg-[#FF7622] rounded-2xl p-4 mb-6 shadow-sm'
+                    >
+                        <View className='flex-row items-center justify-center'>
+                            {loading ? (
+                                <ActivityIndicator size="small" color="white" />
                             ) : (
-                                <View className='w-full h-full bg-gradient-to-br from-[#FF7622] to-[#FF8A4C] items-center justify-center'>
-                                    <Icon name='user' size={40} color='white' />
+                                <View className='flex flex-row items-center justify-center gap-3'>
+                                    <Text className='text-white text-lg font-bold ml-2'>
+                                        {loading ? 'Saving...' : 'Save Changes'}
+                                    </Text>
+                                    <Icon name='arrow-right' size={20} color='white' type={"solid"} />
                                 </View>
                             )}
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={() => SingleImgPicker({ setImage })}
-                            className='absolute bottom-2 right-2 w-8 h-8 bg-[#FF7622] rounded-full items-center justify-center border-2 border-white'
-                        >
-                            <Icon name='camera' size={14} color='white' />
-                        </TouchableOpacity>
-                    </View>
-                    <Text className='text-gray-600 text-sm mt-2'>Tap to change photo</Text>
-                </View>
 
-                {/* Form Fields */}
-                <View className='bg-white rounded-2xl p-6 mb-6 shadow-sm border border-gray-100'>
-                    {renderField('name', 'Full Name', 'Enter your full name')}
-                    {renderField('gender', 'Gender', 'Enter your Gender')}
-                    {renderField('phone', 'Phone Number', 'Enter your phone number', 'phone-pad')}
-                    {renderField('address', 'Address', 'Enter your address', 'default', true)}
-                    {renderField('bio', 'Bio', 'Tell us about yourself', 'default', true)}
-                </View>
+                        </View>
+                    </TouchableOpacity>
 
-                {/* Save Button */}
-                <TouchableOpacity
-                    onPress={handleSave}
-                    disabled={loading}
-                    activeOpacity={0.8}
-                    className='bg-[#FF7622] rounded-2xl p-4 mb-6 shadow-sm'
-                >
-                    <View className='flex-row items-center justify-center'>
-                        {loading ? (
-                            <ActivityIndicator size="small" color="white" />
-                        ) : (
-                            <Icon name='arrow-right' size={20} color='white' type={"solid"} />
-                        )}
-                        <Text className='text-white text-lg font-bold ml-2'>
-                            {loading ? 'Saving...' : 'Save Changes'}
-                        </Text>
-                    </View>
-                </TouchableOpacity>
+                    {/* Cancel Button */}
+                    <TouchableOpacity
+                        onPress={() => navigation.goBack()}
+                        activeOpacity={0.8}
+                        className='bg-gray-100 rounded-2xl p-4 mb-44'
+                    >
+                        <Text className='text-gray-700 text-lg font-semibold text-center'>Cancel</Text>
+                    </TouchableOpacity>
+                </ScrollView>
+            </View>
+        </KeyboardAvoidingView>
 
-                {/* Cancel Button */}
-                <TouchableOpacity
-                    onPress={() => navigation.goBack()}
-                    activeOpacity={0.8}
-                    className='bg-gray-100 rounded-2xl p-4 mb-44'
-                >
-                    <Text className='text-gray-700 text-lg font-semibold text-center'>Cancel</Text>
-                </TouchableOpacity>
-            </ScrollView>
-        </View>
     )
 }
 

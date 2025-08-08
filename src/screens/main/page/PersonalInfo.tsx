@@ -2,23 +2,23 @@ import { Text, TouchableOpacity, View, ScrollView, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import Icon from '../../../MainLogo/icon/Icon'
-import { LinearGradient } from 'react-native-linear-gradient'
 import PageNavigation from '../../../layout/navigation/PageNavigation'
+import { userContext } from '../../../util/context/ContextProvider'
 
 const PersonalInfo = () => {
     const navigation = useNavigation()
-    const route = useRoute()
+    const { adminDatabase } = userContext()
 
-    // Mock data - replace with actual user data
+
     const [userData, setUserData] = useState({
-        name: "John Doe",
-        email: "john.doe@tiffinwala.com",
-        phone: "+91 7796419792",
-        address: "123 Main Street, Mumbai, Maharashtra",
+        name: adminDatabase.adminMainData.User_Name,
+        email: adminDatabase.adminMainData.User_Email,
+        phone: '+91 ' + adminDatabase.adminMainData.User_Phone_Number,
+        address: adminDatabase.adminMainData.User_Address.address,
         role: "Admin",
         joinDate: "15 March 2024",
         status: "Active",
-        gender: "Male"
+        gender: adminDatabase.adminMainData.User_Gender
     })
 
     const options = [
@@ -79,7 +79,7 @@ const PersonalInfo = () => {
     ]
 
     return (
-        <View className='flex-1 bg-[#F8F9FA]'>
+        <View className='flex-1 bg-white'>
             {/* Header */}
             <View className='px-4'>
                 <PageNavigation route={"Personal Information"} />

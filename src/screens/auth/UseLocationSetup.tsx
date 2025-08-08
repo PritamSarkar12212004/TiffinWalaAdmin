@@ -51,8 +51,6 @@ const UseLocationSetup = () => {
         }
     }
 
-
-
     return (
         <View className='flex-1 pt-3 bg-white'>
             <View className='w-full px-4'>
