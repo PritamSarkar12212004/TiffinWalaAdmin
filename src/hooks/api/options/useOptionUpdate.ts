@@ -1,4 +1,3 @@
-import Token from '../../../constant/tokens/Token';
 import setStorage from '../../../functions/token/setStorage';
 import api from '../../../util/api/Axios';
 
@@ -10,6 +9,7 @@ const useOptionUpdate = () => {
       id: any;
       path: any;
       value: any;
+      token: any;
     };
   }) => {
     api
@@ -19,15 +19,7 @@ const useOptionUpdate = () => {
         value: payload.value,
       })
       .then(res => {
-        console.log(res.data.data);
-        if (payload.path === 'Notification.AllowPushNotifications') {
-          setStorage(
-            Token.PrivacyToken.Notification.AllowPsuhNotifications,
-            res.data.data,
-          );
-        } else {
-          setStorage(Token.PrivacyToken.Profile.ShowLocation, res.data.data);
-        }
+        setStorage(payload.token, res.data.data);
       })
       .catch(err => {
         console.log(err);

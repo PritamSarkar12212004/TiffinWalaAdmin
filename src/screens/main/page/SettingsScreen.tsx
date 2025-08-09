@@ -4,37 +4,9 @@ import { CommonActions, useNavigation } from '@react-navigation/native'
 import Icon from '../../../MainLogo/icon/Icon'
 import PageNavigation from '../../../layout/navigation/PageNavigation'
 import LogutFunc from '../../../functions/helper/LogutFunc'
-import { userContext } from '../../../util/context/ContextProvider'
-import useOptionUpdate from '../../../hooks/api/options/useOptionUpdate'
-import getStorage from '../../../functions/token/getStorage'
-import Token from '../../../constant/tokens/Token'
 
 const SettingsScreen = () => {
     const navigation = useNavigation();
-    const { updateOption } = useOptionUpdate();
-    const { adminDatabase } = userContext();
-    const [loading, setloading] = useState(true)
-    const [notifications, setNotifications] = useState<null | boolean>(null);
-    const [locationServices, setLocationServices] = useState<null | boolean>(null);
-    Promise.all([
-        getStorage(Token.PrivacyToken.Notification.AllowPsuhNotifications),
-        getStorage(Token.PrivacyToken.Profile.ShowLocation)
-    ]).then(async (res) => {
-        setNotifications(res[0])
-        setLocationServices(res[1])
-        setloading(false)
-    })
-
-    const updateFieldFunc = async (path: string, value: any) => {
-        const payload = {
-            id: adminDatabase.adminMainData._id,
-            path: path,
-            value: value,
-        }
-        await updateOption({
-            payload: payload,
-        });
-    };
 
     const settingsSections = [
         {
@@ -46,36 +18,6 @@ const SettingsScreen = () => {
                     color: '#45B7D1',
                     action: () => navigation.navigate('PrivacySettings' as never)
                 }
-            ]
-        },
-        {
-            title: "Preferences",
-            items: [
-                {
-                    title: "Notifications",
-                    icon: 'bell',
-                    color: '#FFA726',
-                    type: 'switch',
-                    value: notifications,
-                    onValueChange: setNotifications,
-                    action: () => {
-                        setNotifications(!notifications);
-                        updateFieldFunc('Notification.AllowPushNotifications', !notifications);
-                    }
-                },
-                {
-                    title: "Location Services",
-                    icon: 'location-dot',
-                    color: '#66BB6A',
-                    type: 'switch',
-                    value: locationServices,
-                    onValueChange: setLocationServices,
-                    action: () => {
-                        setLocationServices(!locationServices);
-                        updateFieldFunc('Profile.ShowLocation', !locationServices);
-                    }
-
-                },
             ]
         },
         {
@@ -134,14 +76,7 @@ const SettingsScreen = () => {
             </TouchableOpacity>
         )
     }
-    if (loading) {
-        return (
-            <View className="flex-1 justify-center items-center bg-white">
-                <ActivityIndicator size="large" color="#FF7622" />
-                <Text className="mt-2 text-gray-500">Loading Privacy Settings...</Text>
-            </View>
-        );
-    }
+
     return (
         <View className='flex-1 bg-white'>
             <View className='px-4'>
