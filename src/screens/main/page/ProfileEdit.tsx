@@ -1,4 +1,4 @@
-import { View, TouchableOpacity, Image, ScrollView, Text, TextInput, Alert, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native'
+import { View, TouchableOpacity, Image, ScrollView, Text, TextInput, ActivityIndicator, KeyboardAvoidingView, Platform, Modal, StyleSheet } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import Icon from '../../../MainLogo/icon/Icon'
@@ -8,6 +8,10 @@ import { userContext } from '../../../util/context/ContextProvider'
 import MapView, { Marker } from 'react-native-maps'
 import GetCurrentLocation from '../../../functions/location/GetCurrentLocation'
 import useUpdateProfile from '../../../hooks/api/main/Profile/useUpdateProfile'
+import { Picker } from '@react-native-picker/picker';
+import UploadingModel from '../../../components/modal/Upload/UploadingModel'
+import AnimationComp from '../../../components/elements/AnimationComp'
+import Animation from '../../../constant/animation/Animation'
 
 const ProfileEdit = () => {
     const navigation = useNavigation();
@@ -37,6 +41,7 @@ const ProfileEdit = () => {
     const mapRef = useRef<MapView>(null);
     const [currentLocation, setcurrentLocation] = useState<any | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [genderModal, setGenderModal] = useState(false);
 
     const [formData, setFormData] = useState({
         profileImage: userData.profileImage,
@@ -49,9 +54,6 @@ const ProfileEdit = () => {
         latitude: userData.latitude,
         longitude: userData.longitude,
     })
-
-
-
     const handleSave = async () => {
         setLoading(true)
         const payload = {
@@ -157,7 +159,17 @@ const ProfileEdit = () => {
                 <View className='px-4'>
                     <PageNavigation route={"Edit Profile"} />
                 </View>
+
                 <ScrollView className='flex-1 px-4 pt-6'>
+                    <Modal statusBarTranslucent transparent visible={loading} style={{
+                        height: "100%",
+                        width: "100%",
+                        justifyContent: "center",
+                        alignItems: "center"
+                    }} animationType='fade'>
+
+                        <UploadingModel AnimationComp={AnimationComp} Animation={Animation} />
+                    </Modal>
                     {/* Profile Image Section */}
                     <View className='items-center mb-8'>
                         <View className='relative'>
@@ -186,7 +198,57 @@ const ProfileEdit = () => {
                     {/* Form Fields */}
                     <View className='bg-white rounded-2xl p-6 mb-6 shadow-sm border border-gray-100'>
                         {renderField('name', 'Full Name', 'Enter your full name')}
-                        {renderField('gender', 'Gender', 'Enter your Gender')}
+                        {/* Gender Select */}
+                        {/* Gender Select */}
+                        <View className='mb-6'>
+                            <Text className='text-gray-700 text-sm font-semibold mb-2'>Gender</Text>
+                            <TouchableOpacity
+                                activeOpacity={0.8}
+                                onPress={() => setGenderModal(true)}
+                                className={`border-2 rounded-xl p-4 flex-row items-center justify-between ${activeField === 'gender' ? 'border-[#FF7622] bg-white' : 'border-gray-200 bg-gray-50'}`}
+                                onFocus={() => setActiveField('gender')}
+                                onBlur={() => setActiveField(null)}
+                            >
+                                <Text className={`text-base ${formData.gender ? 'text-gray-900' : 'text-gray-400'}`}>
+                                    {formData.gender || 'Select Gender'}
+                                </Text>
+                                <Icon name="chevron-down" type="solid" size={16} color="#888" />
+                            </TouchableOpacity>
+                        </View>
+
+                        {/* Gender Selection Modal */}
+                        <Modal
+                            transparent
+                            visible={genderModal}
+                            animationType="fade"
+                            onRequestClose={() => setGenderModal(false)}
+                        >
+                            <TouchableOpacity
+                                activeOpacity={1}
+                                onPressOut={() => setGenderModal(false)}
+                                className="flex-1 bg-black/30 justify-center items-center px-6"
+                            >
+                                <View className="bg-white rounded-2xl w-full max-w-md p-4">
+                                    {['Male', 'Female', 'Other'].map((option) => (
+                                        <TouchableOpacity
+                                            key={option}
+                                            onPress={() => {
+                                                updateField('gender', option);
+                                                setGenderModal(false);
+                                            }}
+                                            className={`p-4 rounded-xl mb-2 ${formData.gender === option ? 'bg-[#FF7622]' : 'bg-gray-100'}`}
+                                        >
+                                            <Text className={`text-lg font-semibold ${formData.gender === option ? 'text-white' : 'text-gray-800'}`}>
+                                                {option}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
+                            </TouchableOpacity>
+                        </Modal>
+
+
+
                         {renderField('phone', 'Phone Number', 'Enter your phone number', 'phone-pad')}
                         {renderField('address', 'Address', 'Enter your address', 'default', true)}
                         <View className='flex'>
@@ -254,7 +316,7 @@ const ProfileEdit = () => {
                         onPress={handleSave}
                         disabled={loading}
                         activeOpacity={0.8}
-                        className='bg-[#FF7622] rounded-2xl p-4 mb-6 shadow-sm'
+                        className='bg-[#FF7622] rounded-2xl h-14 flex items-center justify-center mb-6 shadow-sm'
                     >
                         <View className='flex-row items-center justify-center'>
                             {loading ? (
@@ -275,7 +337,7 @@ const ProfileEdit = () => {
                     <TouchableOpacity
                         onPress={() => navigation.goBack()}
                         activeOpacity={0.8}
-                        className='bg-gray-100 rounded-2xl p-4 mb-44'
+                        className='bg-gray-100 rounded-2xl h-14 flex items-center justify-center mb-44'
                     >
                         <Text className='text-gray-700 text-lg font-semibold text-center'>Cancel</Text>
                     </TouchableOpacity>
@@ -287,3 +349,16 @@ const ProfileEdit = () => {
 }
 
 export default ProfileEdit
+const styles = StyleSheet.create({
+    absolute: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 9999,
+    },
+});
