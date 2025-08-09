@@ -1,16 +1,13 @@
 import { View, Text, TouchableOpacity, ScrollView, Switch, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
-import Icon from '../../../MainLogo/icon/Icon'
-import { LinearGradient } from 'react-native-linear-gradient'
-import PageNavigation from '../../../layout/navigation/PageNavigation'
+import Icon from '../../../../MainLogo/icon/Icon'
+import PageNavigation from '../../../../layout/navigation/PageNavigation'
 
 const PrivacySettingsScreen = () => {
     const navigation = useNavigation()
 
     const [privacySettings, setPrivacySettings] = useState({
-        profileVisibility: 'public',
-        showPhoneNumber: false,
         showEmail: false,
         showLocation: true,
         allowNotifications: true,
@@ -85,14 +82,6 @@ const PrivacySettingsScreen = () => {
                                     trackColor={{ false: '#E5E7EB', true: '#FF7622' }}
                                     thumbColor={item.value ? '#FFFFFF' : '#FFFFFF'}
                                 />
-                            ) : item.type === 'select' ? (
-                                <TouchableOpacity
-                                    onPress={item.onPress}
-                                    className='flex-row items-center'
-                                >
-                                    <Text className='text-[#FF7622] text-sm font-medium mr-1'>{item.value}</Text>
-                                    <Icon name='chevron-right' size={14} color='#FF7622' type={"solid"} />
-                                </TouchableOpacity>
                             ) : null}
                         </View>
                     ))}
@@ -101,40 +90,7 @@ const PrivacySettingsScreen = () => {
         )
     }
 
-    const profileVisibilityOptions = [
-        { label: 'Public', value: 'public' },
-        { label: 'Friends Only', value: 'friends' },
-        { label: 'Private', value: 'private' }
-    ]
-
     const privacyItems = [
-        {
-            title: "Profile Visibility",
-            description: "Who can see your profile information",
-            icon: 'user',
-            color: '#FF6B6B',
-            type: 'select',
-            value: privacySettings.profileVisibility,
-            onPress: () => {
-                Alert.alert(
-                    "Profile Visibility",
-                    "Choose who can see your profile",
-                    profileVisibilityOptions.map(option => ({
-                        text: option.label,
-                        onPress: () => updatePrivacySetting('profileVisibility', option.value)
-                    }))
-                )
-            }
-        },
-        {
-            title: "Show Phone Number",
-            description: "Display your phone number to other users",
-            icon: 'phone',
-            color: '#4ECDC4',
-            type: 'switch',
-            value: privacySettings.showPhoneNumber,
-            onValueChange: (value) => updatePrivacySetting('showPhoneNumber', value)
-        },
         {
             title: "Show Email Address",
             description: "Display your email to other users",
@@ -207,7 +163,7 @@ const PrivacySettingsScreen = () => {
     ]
 
     return (
-        <View className='flex-1 bg-[#F8F9FA]'>
+        <View className='flex-1 bg-white'>
             <View className='px-4'>
                 <PageNavigation back={true} route={"Privacy Settings"} />
             </View>
@@ -240,7 +196,7 @@ const PrivacySettingsScreen = () => {
                     <View className='bg-white rounded-2xl p-4 shadow-sm border border-gray-100'>
                         <TouchableOpacity
                             onPress={() => navigation.navigate('ExportData')}
-                            className='flex-row items-center justify-between py-3 border-b border-gray-100'
+                            className='flex-row items-center justify-between py-3'
                         >
                             <View className='flex-row items-center flex-1'>
                                 <View className='w-10 h-10 rounded-lg bg-blue-100 items-center justify-center mr-3'>
@@ -253,36 +209,11 @@ const PrivacySettingsScreen = () => {
                             </View>
                             <Icon name='chevron-right' size={16} color='#9CA3AF' type={"solid"} />
                         </TouchableOpacity>
-
-                        <TouchableOpacity
-                            onPress={() => {
-                                Alert.alert(
-                                    "Clear Data",
-                                    "This will permanently delete all your data. This action cannot be undone.",
-                                    [
-                                        { text: "Cancel", style: "cancel" },
-                                        { text: "Clear", style: "destructive" }
-                                    ]
-                                )
-                            }}
-                            className='flex-row items-center justify-between py-3'
-                        >
-                            <View className='flex-row items-center flex-1'>
-                                <View className='w-10 h-10 rounded-lg bg-red-100 items-center justify-center mr-3'>
-                                    <Icon name='trash' size={18} color='#EF4444' type={"solid"} />
-                                </View>
-                                <View className='flex-1'>
-                                    <Text className='text-gray-900 text-base font-medium'>Clear All Data</Text>
-                                    <Text className='text-gray-600 text-xs mt-1'>Permanently delete your data</Text>
-                                </View>
-                            </View>
-                            <Icon name='chevron-right' size={16} color='#9CA3AF' type={"solid"} />
-                        </TouchableOpacity>
                     </View>
                 </View>
 
                 {/* Account Deletion */}
-                <View className='mb-6'>
+                <View className='mb-20'>
                     <Text className='text-gray-700 text-lg font-bold mb-3 px-1'>Danger Zone</Text>
                     <View className='bg-red-50 rounded-2xl p-4 border border-red-200'>
                         <View className='flex-row items-start gap-3 mb-3'>
@@ -297,7 +228,7 @@ const PrivacySettingsScreen = () => {
                         <TouchableOpacity
                             onPress={handleDeleteAccount}
                             activeOpacity={0.8}
-                            className='bg-red-500 rounded-xl p-3'
+                            className='bg-red-500 rounded-xl p-3 '
                         >
                             <Text className='text-white text-center font-semibold'>Delete Account</Text>
                         </TouchableOpacity>
@@ -308,4 +239,4 @@ const PrivacySettingsScreen = () => {
     )
 }
 
-export default PrivacySettingsScreen 
+export default PrivacySettingsScreen

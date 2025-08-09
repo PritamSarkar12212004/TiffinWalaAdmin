@@ -8,9 +8,9 @@ import TermsCondition from '../../screens/main/page/TermsCondition';
 import PersonalInfo from '../../screens/main/page/PersonalInfo';
 import ProfileEdit from '../../screens/main/page/ProfileEdit';
 import SettingsScreen from '../../screens/main/page/SettingsScreen';
-import PrivacySettingsScreen from '../../screens/main/page/PrivacySettingsScreen';
 import HelpCenterScreen from '../../screens/main/page/HelpCenterScreen';
 import ContactSupportScreen from '../../screens/main/page/ContactSupportScreen';
+import PrivacySettingsScreen from '../../screens/main/page/subpage/PrivacySettingsScreen';
 
 const Stack = createStackNavigator();
 const MainStacknavigation = () => {

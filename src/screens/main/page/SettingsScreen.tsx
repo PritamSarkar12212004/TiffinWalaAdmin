@@ -4,25 +4,42 @@ import { CommonActions, useNavigation } from '@react-navigation/native'
 import Icon from '../../../MainLogo/icon/Icon'
 import PageNavigation from '../../../layout/navigation/PageNavigation'
 import LogutFunc from '../../../functions/helper/LogutFunc'
+import { userContext } from '../../../util/context/ContextProvider'
+import useOptionUpdate from '../../../hooks/api/options/useOptionUpdate'
+import getStorage from '../../../functions/token/getStorage'
+import Token from '../../../constant/tokens/Token'
 
 const SettingsScreen = () => {
-    const navigation = useNavigation()
+    const navigation = useNavigation();
+    const { updateOption } = useOptionUpdate();
+    const { adminDatabase } = userContext();
+    const [loading, setloading] = useState(true)
+    const [notifications, setNotifications] = useState<null | boolean>(null);
+    const [locationServices, setLocationServices] = useState<null | boolean>(null);
+    Promise.all([
+        getStorage(Token.PrivacyToken.Notification.AllowPsuhNotifications),
+        getStorage(Token.PrivacyToken.Profile.ShowLocation)
+    ]).then(async (res) => {
+        setNotifications(res[0])
+        setLocationServices(res[1])
+        setloading(false)
+    })
 
-    const [notifications, setNotifications] = useState(true)
-    // const [darkMode, setDarkMode] = useState(false)
-    const [locationServices, setLocationServices] = useState(true)
-    // const [autoSync, setAutoSync] = useState(true)
+    const updateFieldFunc = async (path: string, value: any) => {
+        const payload = {
+            id: adminDatabase.adminMainData._id,
+            path: path,
+            value: value,
+        }
+        await updateOption({
+            payload: payload,
+        });
+    };
 
     const settingsSections = [
         {
             title: "Account Settings",
             items: [
-                // {
-                //     title: "Two-Factor Authentication",
-                //     icon: 'shield-halved',
-                //     color: '#4ECDC4',
-                //     action: () => navigation.navigate('TwoFactorAuth')
-                // },
                 {
                     title: "Privacy Settings",
                     icon: 'eye',
@@ -40,32 +57,25 @@ const SettingsScreen = () => {
                     color: '#FFA726',
                     type: 'switch',
                     value: notifications,
-                    onValueChange: setNotifications
+                    onValueChange: setNotifications,
+                    action: () => {
+                        setNotifications(!notifications);
+                        updateFieldFunc('Notification.AllowPushNotifications', !notifications);
+                    }
                 },
-                // {
-                //     title: "Dark Mode",
-                //     icon: 'moon',
-                //     color: '#9C27B0',
-                //     type: 'switch',
-                //     value: darkMode,
-                //     onValueChange: setDarkMode
-                // },
                 {
                     title: "Location Services",
                     icon: 'location-dot',
                     color: '#66BB6A',
                     type: 'switch',
                     value: locationServices,
-                    onValueChange: setLocationServices
+                    onValueChange: setLocationServices,
+                    action: () => {
+                        setLocationServices(!locationServices);
+                        updateFieldFunc('Profile.ShowLocation', !locationServices);
+                    }
+
                 },
-                // {
-                //     title: "Auto Sync",
-                //     icon: 'sync',
-                //     color: '#26A69A',
-                //     type: 'switch',
-                //     value: autoSync,
-                //     onValueChange: setAutoSync
-                // }
             ]
         },
         {
@@ -114,7 +124,7 @@ const SettingsScreen = () => {
                 {item.type === 'switch' ? (
                     <Switch
                         value={item.value}
-                        onValueChange={item.onValueChange}
+                        onValueChange={item.action}
                         trackColor={{ false: '#E5E7EB', true: '#FF7622' }}
                         thumbColor={item.value ? '#FFFFFF' : '#FFFFFF'}
                     />
@@ -126,7 +136,7 @@ const SettingsScreen = () => {
     }
 
     return (
-        <View className='flex-1 bg-[#F8F9FA]'>
+        <View className='flex-1 bg-white'>
             <View className='px-4'>
                 <PageNavigation route={"Settings"} />
             </View>
