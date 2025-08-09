@@ -11,6 +11,7 @@ import SettingsScreen from '../../screens/main/page/SettingsScreen';
 import HelpCenterScreen from '../../screens/main/page/HelpCenterScreen';
 import ContactSupportScreen from '../../screens/main/page/ContactSupportScreen';
 import PrivacySettingsScreen from '../../screens/main/page/subpage/PrivacySettingsScreen';
+import HelpArtical from '../../screens/main/page/subpage/HelpArtical';
 
 const Stack = createStackNavigator();
 const MainStacknavigation = () => {
@@ -54,7 +55,7 @@ const MainStacknavigation = () => {
                         animation: 'slide_from_right'
                     }
                 } />
-               
+
                 <Stack.Screen name="PrivacySettings" component={PrivacySettingsScreen} options={
                     {
                         animation: 'slide_from_right'
@@ -66,6 +67,11 @@ const MainStacknavigation = () => {
                     }
                 } />
                 <Stack.Screen name="ContactSupport" component={ContactSupportScreen} options={
+                    {
+                        animation: 'slide_from_right'
+                    }
+                } />
+                <Stack.Screen name="HelpArtical" component={HelpArtical} options={
                     {
                         animation: 'slide_from_right'
                     }

@@ -160,7 +160,6 @@ const PrivacySettingsScreen = () => {
             color: '#45B7D1',
             type: 'switch',
             value: privacySettings.showEmail,
-            onValueChange: value => updatePrivacySetting('showEmail', value),
             action: () => {
                 setPrivacySettings(prev => ({ ...prev, showEmail: !prev.showEmail }));
                 handleAction(adminDatabase.adminMainData._id, 'Profile.ShowEmail', !privacySettings.showEmail, Token.PrivacyToken.Profile.ShowEmail)
@@ -173,7 +172,6 @@ const PrivacySettingsScreen = () => {
             color: '#66BB6A',
             type: 'switch',
             value: privacySettings.showLocation,
-            onValueChange: value => updatePrivacySetting('showLocation', value),
             action: () => {
                 setPrivacySettings(prev => ({ ...prev, showLocation: !prev.showLocation }));
                 handleAction(adminDatabase.adminMainData._id, 'Profile.ShowLocation', !privacySettings.showLocation, Token.PrivacyToken.Profile.ShowLocation)
@@ -189,7 +187,6 @@ const PrivacySettingsScreen = () => {
             color: '#FFA726',
             type: 'switch',
             value: privacySettings.AllowPsuhNotifications,
-            onValueChange: value => updatePrivacySetting('AllowPsuhNotifications', value),
             action: () => {
                 setPrivacySettings(prev => ({ ...prev, AllowPsuhNotifications: !prev.AllowPsuhNotifications }));
                 handleAction(adminDatabase.adminMainData._id, 'Notification.AllowPsuhNotifications', !privacySettings.AllowPsuhNotifications, Token.PrivacyToken.Notification.AllowPsuhNotifications)
@@ -198,11 +195,10 @@ const PrivacySettingsScreen = () => {
         {
             title: "Marketing Communications",
             description: "Receive promotional emails and offers",
-            icon: 'megaphone',
+            icon: 'chart-simple',
             color: '#AB47BC',
             type: 'switch',
             value: privacySettings.allowMarketing,
-            onValueChange: value => updatePrivacySetting('allowMarketing', value),
             action: () => {
                 setPrivacySettings(prev => ({ ...prev, allowMarketing: !prev.allowMarketing }));
                 handleAction(adminDatabase.adminMainData._id, 'Notification.allowMarketing', !privacySettings.allowMarketing, Token.PrivacyToken.Notification.AllowMarketing)
@@ -218,7 +214,6 @@ const PrivacySettingsScreen = () => {
             color: '#26A69A',
             type: 'switch',
             value: privacySettings.AnalaticData,
-            onValueChange: value => updatePrivacySetting('AnalaticData', value),
             action: () => {
                 setPrivacySettings(prev => ({ ...prev, AnalaticData: !prev.AnalaticData }));
                 handleAction(adminDatabase.adminMainData._id, 'Data.AnalaticData', !privacySettings.AnalaticData, Token.PrivacyToken.DataAnalays.AnalaticData)
@@ -228,11 +223,10 @@ const PrivacySettingsScreen = () => {
         {
             title: "Data Sharing",
             description: "Allow sharing data with trusted partners",
-            icon: 'share-alt',
+            icon: 'database',
             color: '#7E57C2',
             type: 'switch',
             value: privacySettings.allowDataSharing,
-            onValueChange: value => updatePrivacySetting('allowDataSharing', value),
             action: () => {
                 setPrivacySettings(prev => ({ ...prev, allowDataSharing: !prev.allowDataSharing }));
                 handleAction(adminDatabase.adminMainData._id, 'Data.allowDataSharing', !privacySettings.allowDataSharing, Token.PrivacyToken.DataAnalays.AllowDataSharing)
@@ -241,11 +235,10 @@ const PrivacySettingsScreen = () => {
         {
             title: "Keep History",
             description: "Store your order and activity history",
-            icon: 'history',
+            icon: 'clock-rotate-left',
             color: '#FF7043',
             type: 'switch',
             value: dataRetention.keepHistory,
-            onValueChange: value => updateDataRetention('keepHistory', value),
             action: () => {
                 setDataRetention(prev => ({ ...prev, keepHistory: !prev.keepHistory }));
                 handleAction(adminDatabase.adminMainData._id, 'Data.keepHistory', !dataRetention.keepHistory, Token.PrivacyToken.DataAnalays.KeepHistory)

@@ -5,10 +5,10 @@ import PageNavigation from '../../../layout/navigation/PageNavigation';
 
 const TermsCondition = () => {
   return (
-    <View className='bg-[#F3F3F3] flex-1 px-3 pt-2"'>
+    <View className='bg-white flex-1 px-3 pt-2"'>
       <PageNavigation route={"Terms & Condition"} />
-      <ScrollView className="flex-1 bg-[#F3F3F3] ">
-        <View className="bg-[#F3F3F3]  rounded-2xl shadow-md ">
+      <ScrollView className="flex-1 bg-white ">
+        <View className="bg-white  rounded-2xl shadow-md ">
 
           <Text className="text-base font-semibold text-[#111E45] mt-4 mb-2">1. Introduction</Text>
           <Text className="text-sm text-[#4B5563] leading-relaxed">

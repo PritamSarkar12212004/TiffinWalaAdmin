@@ -1,5 +1,5 @@
-import { View, Text, TouchableOpacity, ScrollView, Switch, ActivityIndicator } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, TouchableOpacity, ScrollView, Switch } from 'react-native'
+import React from 'react'
 import { CommonActions, useNavigation } from '@react-navigation/native'
 import Icon from '../../../MainLogo/icon/Icon'
 import PageNavigation from '../../../layout/navigation/PageNavigation'
@@ -17,33 +17,15 @@ const SettingsScreen = () => {
                     icon: 'eye',
                     color: '#45B7D1',
                     action: () => navigation.navigate('PrivacySettings' as never)
-                }
-            ]
-        },
-        {
-            title: "Support & Help",
-            items: [
+                },
                 {
                     title: "Help Center",
-                    icon: 'question-circle',
+                    icon: 'info',
                     color: '#42A5F5',
                     action: () => navigation.navigate('HelpCenter' as never)
                 },
-                {
-                    title: "Contact Support",
-                    icon: 'headset',
-                    color: '#AB47BC',
-                    action: () => navigation.navigate('ContactSupport' as never)
-                },
-                {
-                    title: "Report a Bug",
-                    icon: 'bug',
-                    color: '#EF5350',
-                    action: () => navigation.navigate('ReportBug' as never)
-                }
             ]
         },
-
     ]
     const renderSettingItem = (item: any, index: any) => {
         return (

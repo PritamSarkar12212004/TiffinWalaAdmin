@@ -5,7 +5,7 @@ import PageNavigation from '../../../layout/navigation/PageNavigation';
 import ImageConstant from '../../../constant/image/ImageConstant';
 const About = () => {
     return (
-        <View className="flex-1 bg-[#F3F3F3] px-4">
+        <View className="flex-1 bg-white px-4">
             <PageNavigation route={"About"} />
             <ScrollView showsVerticalScrollIndicator={false}>
                 {/* Header */}
@@ -62,14 +62,6 @@ const About = () => {
                 <Text className="text-sm text-[#4B5563] leading-relaxed mb-4">
                     A future where no one misses a meal because of inconvenience — where every tiffin service is just a tap away.
                 </Text>
-
-                {/* Footer / Contact Info */}
-                <View className="mt-6 mb-10 p-4 bg-[#E0E7FF] rounded-xl shadow-sm">
-                    <Text className="text-base font-bold text-[#1E3A8A] mb-2">Contact Us</Text>
-                    <Text className="text-sm text-[#1E40AF]">📧 support@tiffinwala.app</Text>
-                    <Text className="text-sm text-[#1E40AF]">📞 +91 77964 19792</Text>
-                    <Text className="text-xs text-[#6B7280] mt-2 text-center">Made with ❤️ in India</Text>
-                </View>
             </ScrollView>
         </View>
     );
