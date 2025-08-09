@@ -1,5 +1,5 @@
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions, Image } from 'react-native';
-import React, { useEffect } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions, Image, RefreshControl } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
 import Icon from '../../MainLogo/icon/Icon';
 import { BarChart } from 'react-native-gifted-charts';
 import DashboardSkeleton from '../../layout/skelaton/DashBoardSkeleton';
@@ -91,22 +91,29 @@ const DashBoard = () => {
   const { riciveData } = useMainDataRicive();
   const { adminLocalData, adminDatabase, setAdminDatabase, adminProductCount, setAdminLocalData, setAdminProductCount, loading, setloading } = userContext();
 
+  const fetchData = async () => {
+    if (adminLocalData?.User_Phone_Number) {
+      await riciveData(adminLocalData.User_Phone_Number, setAdminDatabase, setAdminProductCount);
+      setloading(false);
+    } else {
+      const userInfo = await getStorage(Token.DataToken.UserInformation);
+      await setAdminLocalData(userInfo);
+      await riciveData(userInfo.User_Phone_Number, setAdminDatabase, setAdminProductCount);
+      setloading(false);
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      if (adminLocalData?.User_Phone_Number) {
-        await riciveData(adminLocalData.User_Phone_Number, setAdminDatabase, setAdminProductCount);
-        setloading(false);
-      } else {
-        const userInfo = await getStorage(Token.DataToken.UserInformation);
-        await setAdminLocalData(userInfo);
-        await riciveData(userInfo.User_Phone_Number, setAdminDatabase, setAdminProductCount);
-        setloading(false);
-      }
-    };
     fetchData();
   }, [loading]);
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(() => {
+    setloading(true)
+    fetchData();
+  }, []);
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false} refreshControl={
+      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+    } >
       {loading ? (
         <DashboardSkeleton />
       ) : (

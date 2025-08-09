@@ -7,7 +7,7 @@ const NoNotificaProduct = () => {
   const navigation = useNavigation();
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1 bg-white">
       <View className="flex-1 items-center justify-center px-6">
         {/* Icon Container */}
         <View className="w-[140px] h-[140px] rounded-full bg-orange-500/5 justify-center items-center mb-6">
