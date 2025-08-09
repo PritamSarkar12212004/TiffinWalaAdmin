@@ -26,7 +26,21 @@ const useCreateProfileApi = () => {
             gender: data.gender,
           })
           .then(async res => {
+            console.log(res.data.data.UserPrivacyOptions.DataAnalytics);
+
             await Promise.all([
+              setStorage(
+                Token.PrivacyToken.DataAnalays.KeepHistory,
+                res.data.data.UserPrivacyOptions.DataAnalytics.KeepHistory,
+              ),
+              setStorage(
+                Token.PrivacyToken.DataAnalays.AllowDataSharing,
+                res.data.data.UserPrivacyOptions.DataAnalytics.AllowDataSharing,
+              ),
+              setStorage(
+                Token.PrivacyToken.DataAnalays.AnalaticData,
+                res.data.data.UserPrivacyOptions.DataAnalytics.AnalyticData,
+              ),
               productCount(res.data.data.User_Post_Count),
               setStorage(Token.DataToken.UserInformation, res.data.data),
               setStorage(
@@ -50,18 +64,6 @@ const useCreateProfileApi = () => {
               setStorage(
                 Token.PrivacyToken.Notification.AllowMarketing,
                 res.data.data.UserPrivacyOptions.Notification.AllowMarketing,
-              ),
-              setStorage(
-                Token.PrivacyToken.DataAnalays.KeepHistory,
-                res.data.data.UserPrivacyOptions.DataAnalays.AllowDataSharing,
-              ),
-              setStorage(
-                Token.PrivacyToken.DataAnalays.AllowDataSharing,
-                res.data.data.UserPrivacyOptions.DataAnalays.KeepHistory,
-              ),
-              setStorage(
-                Token.PrivacyToken.DataAnalays.AnalaticData,
-                res.data.data.UserPrivacyOptions.DataAnalays.AnalaticData,
               ),
             ])
               .then(() => {

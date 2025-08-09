@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ScrollView, Switch } from 'react-native'
+import { View, Text, TouchableOpacity, ScrollView, Switch, ActivityIndicator } from 'react-native'
 import React, { useState } from 'react'
 import { CommonActions, useNavigation } from '@react-navigation/native'
 import Icon from '../../../MainLogo/icon/Icon'
@@ -134,12 +134,20 @@ const SettingsScreen = () => {
             </TouchableOpacity>
         )
     }
-
+    if (loading) {
+        return (
+            <View className="flex-1 justify-center items-center bg-white">
+                <ActivityIndicator size="large" color="#FF7622" />
+                <Text className="mt-2 text-gray-500">Loading Privacy Settings...</Text>
+            </View>
+        );
+    }
     return (
         <View className='flex-1 bg-white'>
             <View className='px-4'>
                 <PageNavigation route={"Settings"} />
             </View>
+
             <ScrollView className='flex-1 px-4 pt-6' showsVerticalScrollIndicator={false}>
                 {settingsSections.map((section, sectionIndex) => (
                     <View key={sectionIndex} className='mb-6'>
@@ -183,6 +191,8 @@ const SettingsScreen = () => {
                     </View>
                 </TouchableOpacity>
             </ScrollView>
+
+
         </View>
     )
 }

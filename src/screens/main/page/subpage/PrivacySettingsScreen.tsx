@@ -1,40 +1,78 @@
-import { View, Text, TouchableOpacity, ScrollView, Switch, Alert } from 'react-native'
-import React, { useState } from 'react'
-import { useNavigation } from '@react-navigation/native'
-import Icon from '../../../../MainLogo/icon/Icon'
-import PageNavigation from '../../../../layout/navigation/PageNavigation'
+import { View, Text, TouchableOpacity, ScrollView, Switch, Alert, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import Icon from '../../../../MainLogo/icon/Icon';
+import PageNavigation from '../../../../layout/navigation/PageNavigation';
+import getStorage from '../../../../functions/token/getStorage';
+import Token from '../../../../constant/tokens/Token';
 
 const PrivacySettingsScreen = () => {
-    const navigation = useNavigation()
+    const navigation = useNavigation();
+    const [loading, setLoading] = useState(true);
 
     const [privacySettings, setPrivacySettings] = useState({
         showEmail: false,
         showLocation: true,
-        allowNotifications: true,
-        allowAnalytics: true,
+        AllowPsuhNotifications: true,
+        AnalaticData: true,
         allowMarketing: false,
-        allowDataSharing: false
-    })
+        allowDataSharing: false,
+    });
 
     const [dataRetention, setDataRetention] = useState({
         keepHistory: true,
         autoDelete: false,
-        deleteAfterDays: 30
-    })
+        deleteAfterDays: 30,
+    });
+
+    // ✅ Only run once when the component mounts
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const res = await Promise.all([
+                    getStorage(Token.PrivacyToken.Profile.ShowEmail),
+                    getStorage(Token.PrivacyToken.Profile.ShowLocation),
+                    getStorage(Token.PrivacyToken.Notification.AllowPsuhNotifications),
+                    getStorage(Token.PrivacyToken.Notification.AllowMarketing),
+                    getStorage(Token.PrivacyToken.DataAnalays.KeepHistory),
+                    getStorage(Token.PrivacyToken.DataAnalays.AllowDataSharing),
+                    getStorage(Token.PrivacyToken.DataAnalays.AnalaticData),
+                ]);
+
+                console.log("Privacy settings from storage:", res);
+
+                setPrivacySettings(prev => ({
+                    ...prev,
+                    showEmail: !!res[0],
+                    showLocation: !!res[1],
+                    AllowPsuhNotifications: !!res[2],
+                    allowMarketing: !!res[3],
+                    allowDataSharing: !!res[5],
+                    AnalaticData: !!res[6],
+                }));
+
+                setDataRetention(prev => ({
+                    ...prev,
+                    keepHistory: !!res[4],
+                }));
+
+            } catch (error) {
+                console.error("Error loading privacy settings:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchSettings();
+    }, []);
 
     const updatePrivacySetting = (key, value) => {
-        setPrivacySettings(prev => ({
-            ...prev,
-            [key]: value
-        }))
-    }
+        setPrivacySettings(prev => ({ ...prev, [key]: value }));
+    };
 
     const updateDataRetention = (key, value) => {
-        setDataRetention(prev => ({
-            ...prev,
-            [key]: value
-        }))
-    }
+        setDataRetention(prev => ({ ...prev, [key]: value }));
+    };
 
     const handleDeleteAccount = () => {
         Alert.alert(
@@ -46,49 +84,51 @@ const PrivacySettingsScreen = () => {
                     text: "Delete",
                     style: "destructive",
                     onPress: () => {
-                        Alert.alert("Account Deleted", "Your account has been permanently deleted.")
-                    }
-                }
+                        Alert.alert("Account Deleted", "Your account has been permanently deleted.");
+                    },
+                },
             ]
-        )
-    }
+        );
+    };
 
-    const renderPrivacySection = (title, items) => {
-        return (
-            <View className='mb-6'>
-                <Text className='text-gray-700 text-lg font-bold mb-3 px-1'>{title}</Text>
-                <View className='bg-white rounded-2xl p-4 shadow-sm border border-gray-100'>
-                    {items.map((item, index) => (
-                        <View key={index} className='flex-row items-center justify-between py-3 border-b border-gray-100 last:border-b-0'>
-                            <View className='flex-row items-center flex-1'>
-                                <View
-                                    className='w-10 h-10 rounded-lg items-center justify-center mr-3'
-                                    style={{ backgroundColor: `${item.color}15` }}
-                                >
-                                    <Icon name={item.icon} size={18} color={item.color} type={"solid"} />
-                                </View>
-                                <View className='flex-1'>
-                                    <Text className='text-gray-900 text-base font-medium'>{item.title}</Text>
-                                    {item.description && (
-                                        <Text className='text-gray-600 text-xs mt-1'>{item.description}</Text>
-                                    )}
-                                </View>
+    const renderPrivacySection = (title, items) => (
+        <View className="mb-6">
+            <Text className="text-gray-700 text-lg font-bold mb-3 px-1">{title}</Text>
+            <View className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+                {items.map((item, index) => (
+                    <View
+                        key={index}
+                        className="flex-row items-center justify-between py-3 border-b border-gray-100"
+                        style={index === items.length - 1 ? { borderBottomWidth: 0 } : {}}
+                    >
+                        <View className="flex-row items-center flex-1">
+                            <View
+                                className="w-10 h-10 rounded-lg items-center justify-center mr-3"
+                                style={{ backgroundColor: `${item.color}15` }}
+                            >
+                                <Icon name={item.icon} size={18} color={item.color} type={"solid"} />
                             </View>
-
-                            {item.type === 'switch' ? (
-                                <Switch
-                                    value={item.value}
-                                    onValueChange={item.onValueChange}
-                                    trackColor={{ false: '#E5E7EB', true: '#FF7622' }}
-                                    thumbColor={item.value ? '#FFFFFF' : '#FFFFFF'}
-                                />
-                            ) : null}
+                            <View className="flex-1">
+                                <Text className="text-gray-900 text-base font-medium">{item.title}</Text>
+                                {item.description && (
+                                    <Text className="text-gray-600 text-xs mt-1">{item.description}</Text>
+                                )}
+                            </View>
                         </View>
-                    ))}
-                </View>
+
+                        {item.type === 'switch' && (
+                            <Switch
+                                value={item.value}
+                                onValueChange={item.onValueChange}
+                                trackColor={{ false: '#E5E7EB', true: '#FF7622' }}
+                                thumbColor="#FFFFFF"
+                            />
+                        )}
+                    </View>
+                ))}
             </View>
-        )
-    }
+        </View>
+    );
 
     const privacyItems = [
         {
@@ -98,7 +138,7 @@ const PrivacySettingsScreen = () => {
             color: '#45B7D1',
             type: 'switch',
             value: privacySettings.showEmail,
-            onValueChange: (value) => updatePrivacySetting('showEmail', value)
+            onValueChange: value => updatePrivacySetting('showEmail', value),
         },
         {
             title: "Show Location",
@@ -107,9 +147,9 @@ const PrivacySettingsScreen = () => {
             color: '#66BB6A',
             type: 'switch',
             value: privacySettings.showLocation,
-            onValueChange: (value) => updatePrivacySetting('showLocation', value)
-        }
-    ]
+            onValueChange: value => updatePrivacySetting('showLocation', value),
+        },
+    ];
 
     const notificationItems = [
         {
@@ -118,8 +158,8 @@ const PrivacySettingsScreen = () => {
             icon: 'bell',
             color: '#FFA726',
             type: 'switch',
-            value: privacySettings.allowNotifications,
-            onValueChange: (value) => updatePrivacySetting('allowNotifications', value)
+            value: privacySettings.AllowPsuhNotifications,
+            onValueChange: value => updatePrivacySetting('AllowPsuhNotifications', value),
         },
         {
             title: "Marketing Communications",
@@ -128,9 +168,9 @@ const PrivacySettingsScreen = () => {
             color: '#AB47BC',
             type: 'switch',
             value: privacySettings.allowMarketing,
-            onValueChange: (value) => updatePrivacySetting('allowMarketing', value)
-        }
-    ]
+            onValueChange: value => updatePrivacySetting('allowMarketing', value),
+        },
+    ];
 
     const dataItems = [
         {
@@ -139,8 +179,8 @@ const PrivacySettingsScreen = () => {
             icon: 'chart-line',
             color: '#26A69A',
             type: 'switch',
-            value: privacySettings.allowAnalytics,
-            onValueChange: (value) => updatePrivacySetting('allowAnalytics', value)
+            value: privacySettings.AnalaticData,
+            onValueChange: value => updatePrivacySetting('AnalaticData', value),
         },
         {
             title: "Data Sharing",
@@ -149,7 +189,7 @@ const PrivacySettingsScreen = () => {
             color: '#7E57C2',
             type: 'switch',
             value: privacySettings.allowDataSharing,
-            onValueChange: (value) => updatePrivacySetting('allowDataSharing', value)
+            onValueChange: value => updatePrivacySetting('allowDataSharing', value),
         },
         {
             title: "Keep History",
@@ -158,69 +198,73 @@ const PrivacySettingsScreen = () => {
             color: '#FF7043',
             type: 'switch',
             value: dataRetention.keepHistory,
-            onValueChange: (value) => updateDataRetention('keepHistory', value)
-        }
-    ]
+            onValueChange: value => updateDataRetention('keepHistory', value),
+        },
+    ];
+
+    if (loading) {
+        return (
+            <View className="flex-1 justify-center items-center bg-white">
+                <ActivityIndicator size="large" color="#FF7622" />
+                <Text className="mt-2 text-gray-500">Loading Privacy Settings...</Text>
+            </View>
+        );
+    }
 
     return (
-        <View className='flex-1 bg-white'>
-            <View className='px-4'>
+        <View className="flex-1 bg-white">
+            <View className="px-4">
                 <PageNavigation back={true} route={"Privacy Settings"} />
             </View>
-            <ScrollView className='flex-1 px-4 pt-6' showsVerticalScrollIndicator={false}>
+            <ScrollView className="flex-1 px-4 pt-6" showsVerticalScrollIndicator={false}>
                 {/* Privacy Info */}
-                <View className='bg-blue-50 rounded-2xl p-4 mb-6 border border-blue-200'>
-                    <View className='flex-row items-start gap-3'>
-                        <Icon name='shield-halved' size={20} color='#3B82F6' type={"solid"} />
-                        <View className='flex-1'>
-                            <Text className='text-blue-900 text-sm font-semibold mb-1'>Your Privacy Matters</Text>
-                            <Text className='text-blue-700 text-xs'>
+                <View className="bg-blue-50 rounded-2xl p-4 mb-6 border border-blue-200">
+                    <View className="flex-row items-start gap-3">
+                        <Icon name="shield-halved" size={20} color="#3B82F6" type={"solid"} />
+                        <View className="flex-1">
+                            <Text className="text-blue-900 text-sm font-semibold mb-1">Your Privacy Matters</Text>
+                            <Text className="text-blue-700 text-xs">
                                 Control how your information is shared and used. You can change these settings at any time.
                             </Text>
                         </View>
                     </View>
                 </View>
 
-                {/* Profile Privacy */}
                 {renderPrivacySection("Profile Privacy", privacyItems)}
-
-                {/* Notifications */}
                 {renderPrivacySection("Notifications", notificationItems)}
-
-                {/* Data & Analytics */}
                 {renderPrivacySection("Data & Analytics", dataItems)}
 
                 {/* Data Management */}
-                <View className='mb-6'>
-                    <Text className='text-gray-700 text-lg font-bold mb-3 px-1'>Data Management</Text>
-                    <View className='bg-white rounded-2xl p-4 shadow-sm border border-gray-100'>
+                <View className="mb-6">
+                    <Text className="text-gray-700 text-lg font-bold mb-3 px-1">Data Management</Text>
+                    <View className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
                         <TouchableOpacity
                             onPress={() => navigation.navigate('ExportData')}
-                            className='flex-row items-center justify-between py-3'
+                            className="flex-row items-center justify-between py-3"
                         >
-                            <View className='flex-row items-center flex-1'>
-                                <View className='w-10 h-10 rounded-lg bg-blue-100 items-center justify-center mr-3'>
-                                    <Icon name='download' size={18} color='#3B82F6' type={"solid"} />
+                            <View className="flex-row items-center flex-1">
+                                <View className="w-10 h-10 rounded-lg bg-blue-100 items-center justify-center mr-3">
+                                    <Icon name="download" size={18} color="#3B82F6" type={"solid"} />
                                 </View>
-                                <View className='flex-1'>
-                                    <Text className='text-gray-900 text-base font-medium'>Export My Data</Text>
-                                    <Text className='text-gray-600 text-xs mt-1'>Download a copy of your data</Text>
+                                <View className="flex-1">
+                                    <Text className="text-gray-900 text-base font-medium">Export My Data</Text>
+                                    <Text className="text-gray-600 text-xs mt-1">Download a copy of your data</Text>
                                 </View>
                             </View>
-                            <Icon name='chevron-right' size={16} color='#9CA3AF' type={"solid"} />
+                            <Icon name="chevron-right" size={16} color="#9CA3AF" type={"solid"} />
                         </TouchableOpacity>
                     </View>
                 </View>
 
                 {/* Account Deletion */}
-                <View className='mb-20'>
-                    <Text className='text-gray-700 text-lg font-bold mb-3 px-1'>Danger Zone</Text>
-                    <View className='bg-red-50 rounded-2xl p-4 border border-red-200'>
-                        <View className='flex-row items-start gap-3 mb-3'>
-                            <Icon name='exclamation-triangle' size={20} color='#EF4444' type={"solid"} />
-                            <View className='flex-1'>
-                                <Text className='text-red-900 text-sm font-semibold mb-1'>Delete Account</Text>
-                                <Text className='text-red-700 text-xs'>
+                <View className="mb-20">
+                    <Text className="text-gray-700 text-lg font-bold mb-3 px-1">Danger Zone</Text>
+                    <View className="bg-red-50 rounded-2xl p-4 border border-red-200">
+                        <View className="flex-row items-start gap-3 mb-3">
+                            <Icon name="exclamation-triangle" size={20} color="#EF4444" type={"solid"} />
+                            <View className="flex-1">
+                                <Text className="text-red-900 text-sm font-semibold mb-1">Delete Account</Text>
+                                <Text className="text-red-700 text-xs">
                                     Once you delete your account, there is no going back. Please be certain.
                                 </Text>
                             </View>
@@ -228,15 +272,15 @@ const PrivacySettingsScreen = () => {
                         <TouchableOpacity
                             onPress={handleDeleteAccount}
                             activeOpacity={0.8}
-                            className='bg-red-500 rounded-xl p-3 '
+                            className="bg-red-500 rounded-xl p-3"
                         >
-                            <Text className='text-white text-center font-semibold'>Delete Account</Text>
+                            <Text className="text-white text-center font-semibold">Delete Account</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
             </ScrollView>
         </View>
-    )
-}
+    );
+};
 
-export default PrivacySettingsScreen
+export default PrivacySettingsScreen;
