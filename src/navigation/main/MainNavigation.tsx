@@ -47,6 +47,7 @@ const MainNavigation = () => {
                     ),
                     tabBarActiveTintColor: '#FF7622',
                     tabBarInactiveTintColor: '#000',
+
                 }} />
                 <Tab.Screen name="UploadProduct" component={UploadProduct} options={{
                     tabBarIcon: ({ focused }) => (

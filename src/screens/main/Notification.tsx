@@ -42,7 +42,7 @@ const Notification = () => {
 
   const renderItem = (data: any) => (
     <TouchableOpacity
-      activeOpacity={0.85}
+      activeOpacity={0.9}
       style={{
         backgroundColor: '#F9F5F6',
         borderRadius: 22,
@@ -99,7 +99,7 @@ const Notification = () => {
         paddingRight: 20,
       }}
     >
-      <TouchableOpacity onPress={() => {
+      <TouchableOpacity activeOpacity={0.9} onPress={() => {
         deleteNoti(data.item._id)
         deleteRow(data.item._id)
       }} className='h-full flex items-center justify-center'>
@@ -110,7 +110,6 @@ const Notification = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }} className='px-2 pt-2'>
-
       {adminProductCount > 0 ? !loading ? data.length > 0 ? (
         <ScrollView className='flex-1' refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
