@@ -23,6 +23,7 @@ const useMainDataRicive = () => {
           AdminTotoalViwers: res.data.productData.ProductTotalViews,
           adminMainData: res.data.data,
           ProductData: res.data.productData.productData,
+          followerList: res.data.productData.followerList,
         });
         return true;
       })

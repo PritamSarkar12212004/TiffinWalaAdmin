@@ -57,8 +57,12 @@ const App = () => {
           <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={handleRoute}>
             <Fragment>
               <Stack.Screen name="Auth" component={AuthNavigation} />
-              <Stack.Screen name="Home" component={MainNavigation} />
-              <Stack.Screen name="page" component={MainStacknavigation} />
+              <Stack.Screen name="Home" options={{
+                animation: 'slide_from_right',
+              }} component={MainNavigation} />
+              <Stack.Screen name="page" options={{
+                animation: 'slide_from_right',
+              }} component={MainStacknavigation} />
             </Fragment>
           </Stack.Navigator>
         ) : (

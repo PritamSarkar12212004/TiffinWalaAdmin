@@ -15,39 +15,6 @@ import Token from '../../constant/tokens/Token';
 
 const { width } = Dimensions.get('window');
 const DashBoard = () => {
-  const dummyTiffins = [
-    {
-      id: 1,
-      postCoverImage: ['https://source.unsplash.com/800x600/?tiffin,food'],
-      postTitle: 'Healthy Veg Tiffin',
-      postDescription: 'A delicious veg tiffin including roti, sabzi, rice, dal & salad.',
-      postPrice: 120,
-      postLocation: 'Nagpur, Maharashtra',
-      productLikes: [1, 2, 3],
-      postTotalViews: [1, 2, 3, 4, 5],
-    },
-    {
-      id: 2,
-      postCoverImage: ['https://source.unsplash.com/800x600/?lunchbox'],
-      postTitle: 'Spicy Non-Veg Tiffin',
-      postDescription: 'Includes spicy chicken curry, rice, salad, and roti.',
-      postPrice: 150,
-      postLocation: 'Pune, Maharashtra',
-      productLikes: [1],
-      postTotalViews: [1, 2, 3],
-    },
-    {
-      id: 3,
-      postCoverImage: ['https://source.unsplash.com/800x600/?veg-thali'],
-      postTitle: 'Simple Veg Tiffin',
-      postDescription: 'Home-cooked thali with roti, dal, rice, and a sweet.',
-      postPrice: 100,
-      postLocation: 'Mumbai, Maharashtra',
-      productLikes: [],
-      postTotalViews: [1],
-    },
-  ];
-
   const navigation = useNavigation()
   const MetricCard: React.FC<MetricCardProps> = ({ title, value, icon, color, gradient = false, subtitle }) => (
     <TouchableOpacity activeOpacity={0.9} style={styles.metricCard}>
@@ -90,7 +57,6 @@ const DashBoard = () => {
 
   const { riciveData } = useMainDataRicive();
   const { adminLocalData, adminDatabase, setAdminDatabase, adminProductCount, setAdminLocalData, setAdminProductCount, loading, setloading } = userContext();
-
   const fetchData = async () => {
     if (adminLocalData?.User_Phone_Number) {
       await riciveData(adminLocalData.User_Phone_Number, setAdminDatabase, setAdminProductCount);
@@ -138,7 +104,7 @@ const DashBoard = () => {
 
               {/* Second Metrics Row */}
               <View style={styles.metricsRow}>
-                <MetricCard title="Followers" value={adminDatabase.AdminFollowers} icon="users" color="#3B82F6" />
+                <MetricCard title="Followers" value={adminDatabase.followerList.length} icon="users" color="#3B82F6" />
                 <MetricCard title="Products" value={adminDatabase.AdminProducts} icon="box" color="#8B5CF6" />
               </View>
 
@@ -178,14 +144,32 @@ const DashBoard = () => {
                 <View style={{ marginTop: 30 }}>
                   <View className='w-full flex flex-row items-center justify-between'>
                     <Text style={{ fontSize: 22, fontWeight: '800', color: '#1E293B', marginBottom: 16 }}>Your Tiffins</Text>
-                    <View className='flex flex-row items-center justify-center gap-2'><Text style={styles.seeAllText} >View All</Text><Icon name="chevron-right" size={14} type="solid" color="#6366F1" />
-                    </View>
+                    <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate({
+                      name: 'page',
+                      params: {
+                        screen: 'ViewProductDetiles',
+                        params: {
+                          data: adminDatabase.ProductData
+                        }
+                      },
+                    } as never)} className='flex flex-row items-center justify-center gap-2'><Text style={styles.seeAllText} >View All</Text><Icon name="chevron-right" size={14} type="solid" color="#6366F1" />
+                    </TouchableOpacity>
                   </View>
 
-                  {adminDatabase.ProductData && adminDatabase.ProductData.map((item: any, index: any) => (
+                  {adminDatabase.ProductData && adminDatabase.ProductData.slice(0, 2).map((item: any, index: any) => (
                     index < 2 && <TouchableOpacity key={item?._id}
-                      // onPress={() => navigation.navigate('ProductDetails', { item })}
                       activeOpacity={0.9}
+                      onPress={() => {
+                        navigation.navigate({
+                          name: 'page',
+                          params: {
+                            screen: 'ViewProductAnalazeDetiles',
+                            params: {
+                              data: item
+                            }
+                          },
+                        } as never)
+                      }}
                       style={{
                         marginBottom: 20,
                         backgroundColor: 'white',
@@ -235,7 +219,7 @@ const DashBoard = () => {
                       </View>
 
                       {/* Location */}
-                      <Text style={{ fontSize: 12, color: '#94A3B8', marginTop: 4 }}>📍 {item?.postLocation}</Text>
+                      <Text style={{ fontSize: 12, color: '#94A3B8', marginTop: 4 }}>📍{item?.postLocation}</Text>
                     </TouchableOpacity>
                   ))}
                 </View>

@@ -12,6 +12,8 @@ import HelpCenterScreen from '../../screens/main/page/HelpCenterScreen';
 import ContactSupportScreen from '../../screens/main/page/ContactSupportScreen';
 import PrivacySettingsScreen from '../../screens/main/page/subpage/PrivacySettingsScreen';
 import HelpArtical from '../../screens/main/page/subpage/HelpArtical';
+import ViewProductDetiles from '../../screens/main/page/ViewProductDetiles';
+import ViewProductAnalazeDetiles from '../../screens/main/page/ViewProductAnalazeDetiles';
 
 const Stack = createStackNavigator();
 const MainStacknavigation = () => {
@@ -72,6 +74,16 @@ const MainStacknavigation = () => {
                     }
                 } />
                 <Stack.Screen name="HelpArtical" component={HelpArtical} options={
+                    {
+                        animation: 'slide_from_right'
+                    }
+                } />
+                <Stack.Screen name="ViewProductDetiles" component={ViewProductDetiles} options={
+                    {
+                        animation: 'slide_from_right'
+                    }
+                } />
+                <Stack.Screen name="ViewProductAnalazeDetiles" component={ViewProductAnalazeDetiles} options={
                     {
                         animation: 'slide_from_right'
                     }
