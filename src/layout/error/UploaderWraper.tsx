@@ -14,7 +14,7 @@ const UploaderWraper = ({
 
 }: Props) => {
     return (
-        <View className="flex-1 bg-[#F3F3F3] relative">
+        <View className="flex-1 bg-[white] relative">
             {children}
         </View>
     );
