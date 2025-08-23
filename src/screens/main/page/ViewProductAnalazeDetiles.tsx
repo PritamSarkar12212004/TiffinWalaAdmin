@@ -1,45 +1,28 @@
-import { View, Dimensions, TouchableOpacity, Text, ScrollView, FlatList, Image, StyleSheet } from 'react-native';
-import React, { useMemo, useRef, useState } from 'react';
+import { View, Dimensions, TouchableOpacity, Text, ScrollView, FlatList, Image, StyleSheet, ActivityIndicator } from 'react-native';
+import React, { useRef, useState } from 'react';
 import { useRoute } from '@react-navigation/native';
 import PageNavigation from '../../../layout/navigation/PageNavigation';
 import Icon from '../../../MainLogo/icon/Icon';
+import useDeleteProduct from '../../../hooks/api/product/useDeleteProduct';
 const { width } = Dimensions.get("window");
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
-import { BarChart } from 'react-native-gifted-charts';
-import { ChartCardProps, MetricCardProps } from '../../../interface/dashboard/MetricCardProps';
-import { barData } from '../../../demo/data/DasboardData';
+
 const ModernViewProductDetails = () => {
+    const [deleteloading, setDeleteloading] = useState<boolean>(false)
+
     const flatListRef = useRef(null);
     const route = useRoute();
     const { data }: any = route.params;
-    console.log(data);
     const [imgCover, setimgCover] = useState(data.postCoverImage);
     const [imgPost, setimgPost] = useState(data.postMenu)
     const MianImg = [
         ...imgCover,
         ...imgPost
     ]
-    const sheetRef = useRef<BottomSheet>(null);
-    const snapPoints = useMemo(() => ["25%", "50%", "90%"], []);
-    const MetricCard: React.FC<MetricCardProps> = ({ title, value, icon, color, gradient = false, subtitle }) => (
-        <TouchableOpacity activeOpacity={0.9} style={styles.metricCard}>
-            <View style={[styles.metricGradient, { backgroundColor: gradient ? color : '#FFFFFF' }]}>
-                <View style={styles.metricContent}>
-                    <View style={[styles.iconContainer, { backgroundColor: gradient ? 'rgba(255,255,255,0.2)' : color + '15' }]}>
-                        <Icon name={icon} size={20} type="solid" color={gradient ? 'white' : color} />
-                    </View>
-                    <Text style={[styles.metricValue, { color: gradient ? 'white' : color }]}>{value}</Text>
-                    <Text style={[styles.metricTitle, { color: gradient ? 'rgba(255,255,255,0.9)' : '#64748B' }]}>{title}</Text>
-                    {subtitle && (
-                        <Text style={[styles.metricSubtitle, { color: gradient ? 'rgba(255,255,255,0.7)' : '#94A3B8' }]}>{subtitle}</Text>
-                    )}
-                </View>
-            </View>
-        </TouchableOpacity>
-    );
-
-
+    const { deleteProduct } = useDeleteProduct()
+    const deleteProductFunc = (payload: any) => {
+        setDeleteloading(true)
+        deleteProduct({ id: payload, loading: setDeleteloading })
+    }
 
     const renderItem = ({ item }: any) => (
 
@@ -47,23 +30,10 @@ const ModernViewProductDetails = () => {
             <Image source={{ uri: item }} style={styles.image} />
         </View>
     );
-    const ChartCard: React.FC<ChartCardProps> = ({ title, children, icon, iconColor = '#6366F1' }) => (
-        <View style={styles.chartCard}>
-            <View style={styles.chartHeader}>
-                <View style={styles.chartTitleContainer}>
-                    <View style={[styles.chartIconContainer, { backgroundColor: iconColor + '15' }]}>
-                        <Icon name={icon} size={18} type="solid" color={iconColor} />
-                    </View>
-                    <Text style={styles.chartTitle}>{title}</Text>
-                </View>
-            </View>
-            {children}
-        </View>
-    );
 
 
     return (
-        <GestureHandlerRootView style={styles.container}>
+        <View style={styles.container}>
             <View style={styles.container}>
                 <PageNavigation route={'Product Details'} />
                 <FlatList
@@ -79,7 +49,7 @@ const ModernViewProductDetails = () => {
                                 showsHorizontalScrollIndicator={false}
                                 style={{ marginBottom: 15, }}
                             />
-                            <ScrollView showsVerticalScrollIndicator={false}>
+                            <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
                                 <View style={styles.headerSection}>
                                     <Text style={styles.title}>{data.postTitle}</Text>
                                     <View style={styles.locationRow}>
@@ -90,7 +60,7 @@ const ModernViewProductDetails = () => {
                                 <Text style={styles.sectionTitle}>Description</Text>
                                 <Text style={styles.description}>{data.postDescription}</Text>
                                 <Text style={styles.sectionTitle}>Food Type</Text>
-                                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
+                                <ScrollView showsVerticalScrollIndicator={false} horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
                                     {data.postFoodType.map((item, index) => (
                                         <TouchableOpacity key={index} style={styles.foodTypeChip}>
                                             <Icon type={'solid'} name={'leaf'} size={16} color={item === 'Vegan' || item === 'Veg' ? 'green' : 'red'} />
@@ -106,71 +76,24 @@ const ModernViewProductDetails = () => {
                                             <Text style={styles.dayText}>{item}</Text>
                                         </View>
                                     ))}
-                                    <TouchableOpacity activeOpacity={0.8} onPress={() => {
-                                        sheetRef.current?.snapToIndex(2)
-                                    }} className='w-full h-14 bg-orange-500 mt-5 mb-3 rounded-3xl flex items-center justify-center'>
-                                        <Text className='text-center text-white text-lg font-bold'>More Details</Text>
-                                    </TouchableOpacity>
+
                                 </View>
                             </ScrollView>
+                            <View className='w-full flex items-center justify-center'>
+                                {
+                                    deleteloading ? <ActivityIndicator size={'large'} color={'white'} /> : <TouchableOpacity onPress={() => deleteProductFunc(data._id)} className='w-full h-14 bg-red-500 rounded-3xl mb-10 mt-5 flex items-center justify-center ' activeOpacity={0.8}>
+                                        <Text className='text-white text-lg font-semibold tracking-widest'>Delete Product</Text>
+                                    </TouchableOpacity>
+                                }
+
+                            </View>
                         </View>
                     )}
                 />
             </View>
-            <BottomSheet
 
-                ref={sheetRef}
-                index={-1}
-                snapPoints={snapPoints}
-                enableDynamicSizing={false}
-                enablePanDownToClose
-            >
-                <BottomSheetScrollView contentContainerStyle={styles.contentContainer}>
-                    <View className='flex-1  px-3 gap-5'>
-                        <View className='w-full flex px-2 flex-row items-center justify-between'>
-                            <View style={styles.metricsRow}>
-                                <MetricCard title="Total Views" value={data.postTotalViews} icon="street-view" color="#6366F1" gradient />
-                                <MetricCard title="Total Like" value={data.productLikes.length} icon="heart" color="#10B981" gradient />
+        </View>
 
-                            </View>
-
-                        </View>
-                        <View className='w-full gap-5 flex'>
-                            <ChartCard title="Weekly Traffic" icon="chart-bar" iconColor="#6366F1">
-                                <BarChart
-                                    barWidth={18}
-                                    noOfSections={4}
-                                    barBorderRadius={6}
-                                    frontColor="#6366F1"
-                                    data={barData}
-                                    yAxisThickness={0}
-                                    xAxisThickness={0}
-                                    yAxisTextStyle={{ color: '#64748B', fontSize: 10 }}
-                                    yAxisColor="transparent"
-                                    xAxisColor="transparent"
-                                    height={160}
-                                />
-                            </ChartCard>
-                            <ChartCard title="Weekly Traffic" icon="chart-bar" iconColor="#6366F1">
-                                <BarChart
-                                    barWidth={18}
-                                    noOfSections={4}
-                                    barBorderRadius={6}
-                                    frontColor="#6366F1"
-                                    data={barData}
-                                    yAxisThickness={0}
-                                    xAxisThickness={0}
-                                    yAxisTextStyle={{ color: '#64748B', fontSize: 10 }}
-                                    yAxisColor="transparent"
-                                    xAxisColor="transparent"
-                                    height={160}
-                                />
-                            </ChartCard>
-                        </View>
-                    </View>
-                </BottomSheetScrollView>
-            </BottomSheet>
-        </GestureHandlerRootView>
 
     );
 };

@@ -1,43 +1,156 @@
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions, Image, RefreshControl } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  Dimensions,
+  Image,
+  RefreshControl,
+} from 'react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import Icon from '../../MainLogo/icon/Icon';
 import { BarChart } from 'react-native-gifted-charts';
 import DashboardSkeleton from '../../layout/skelaton/DashBoardSkeleton';
-import { ChartCardProps, MetricCardProps } from '../../interface/dashboard/MetricCardProps';
+import {
+  ChartCardProps,
+  MetricCardProps,
+} from '../../interface/dashboard/MetricCardProps';
 import useMainDataRicive from '../../hooks/api/main/DataRiciver/useMainDataRicive';
 import { userContext } from '../../util/context/ContextProvider';
 import DashBoardNoProduct from '../../components/noProduct/DashBoardNoProduct';
 import { useNavigation } from '@react-navigation/native';
-import { barData, monthlyOrdersData } from '../../demo/data/DasboardData';
+import {
+  barData,
+  monthlyOrdersData,
+} from '../../demo/data/DasboardData';
 import getStorage from '../../functions/token/getStorage';
 import Token from '../../constant/tokens/Token';
 
-
 const { width } = Dimensions.get('window');
 const DashBoard = () => {
-  const navigation = useNavigation()
-  const MetricCard: React.FC<MetricCardProps> = ({ title, value, icon, color, gradient = false, subtitle }) => (
+  const navigation = useNavigation();
+  const { riciveData } = useMainDataRicive();
+  const {
+    adminLocalData,
+    adminDatabase,
+    setAdminDatabase,
+    adminProductCount,
+    setAdminLocalData,
+    setAdminProductCount,
+    loading,
+    setloading,
+  } = userContext();
+
+  const [productData, setProductData] = useState<any[]>(
+    adminDatabase?.ProductData ?? []
+  );
+  const removeProductAfterDelete = (id: any) => {
+    const updatedProductData = productData.filter(product => product.id !== id);
+    setProductData(updatedProductData);
+  };
+
+  const fetchData = async () => {
+    setloading(true);
+    try {
+      let userInfo = adminLocalData;
+
+      if (!userInfo?.User_Phone_Number) {
+        userInfo = await getStorage(Token.DataToken.UserInformation);
+        setAdminLocalData(userInfo);
+      }
+
+      await riciveData(
+        userInfo.User_Phone_Number,
+        setAdminDatabase,
+        setAdminProductCount
+      );
+
+      setProductData(adminDatabase?.ProductData ?? []);
+    } catch (err) {
+      console.error('Fetch error:', err);
+    } finally {
+      setloading(false);
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchData();
+  }, []);
+
+  const MetricCard: React.FC<MetricCardProps> = ({
+    title,
+    value,
+    icon,
+    color,
+    gradient = false,
+    subtitle,
+  }) => (
     <TouchableOpacity activeOpacity={0.9} style={styles.metricCard}>
-      <View style={[styles.metricGradient, { backgroundColor: gradient ? color : '#FFFFFF' }]}>
+      <View
+        style={[
+          styles.metricGradient,
+          { backgroundColor: gradient ? color : '#FFFFFF' },
+        ]}>
         <View style={styles.metricContent}>
-          <View style={[styles.iconContainer, { backgroundColor: gradient ? 'rgba(255,255,255,0.2)' : color + '15' }]}>
-            <Icon name={icon} size={20} type="solid" color={gradient ? 'white' : color} />
+          <View
+            style={[
+              styles.iconContainer,
+              { backgroundColor: gradient ? 'rgba(255,255,255,0.2)' : color + '15' },
+            ]}>
+            <Icon
+              name={icon}
+              size={20}
+              type="solid"
+              color={gradient ? 'white' : color}
+            />
           </View>
-          <Text style={[styles.metricValue, { color: gradient ? 'white' : color }]}>{value}</Text>
-          <Text style={[styles.metricTitle, { color: gradient ? 'rgba(255,255,255,0.9)' : '#64748B' }]}>{title}</Text>
+          <Text
+            style={[
+              styles.metricValue,
+              { color: gradient ? 'white' : color },
+            ]}>
+            {value ?? '0'}
+          </Text>
+          <Text
+            style={[
+              styles.metricTitle,
+              { color: gradient ? 'rgba(255,255,255,0.9)' : '#64748B' },
+            ]}>
+            {title}
+          </Text>
           {subtitle && (
-            <Text style={[styles.metricSubtitle, { color: gradient ? 'rgba(255,255,255,0.7)' : '#94A3B8' }]}>{subtitle}</Text>
+            <Text
+              style={[
+                styles.metricSubtitle,
+                { color: gradient ? 'rgba(255,255,255,0.7)' : '#94A3B8' },
+              ]}>
+              {subtitle}
+            </Text>
           )}
         </View>
       </View>
     </TouchableOpacity>
   );
 
-  const ChartCard: React.FC<ChartCardProps> = ({ title, children, icon, iconColor = '#6366F1' }) => (
+  const ChartCard: React.FC<ChartCardProps> = ({
+    title,
+    children,
+    icon,
+    iconColor = '#6366F1',
+  }) => (
     <View style={styles.chartCard}>
       <View style={styles.chartHeader}>
         <View style={styles.chartTitleContainer}>
-          <View style={[styles.chartIconContainer, { backgroundColor: iconColor + '15' }]}>
+          <View
+            style={[styles.chartIconContainer, { backgroundColor: iconColor + '15' }]}>
             <Icon name={icon} size={18} type="solid" color={iconColor} />
           </View>
           <Text style={styles.chartTitle}>{title}</Text>
@@ -51,35 +164,13 @@ const DashBoard = () => {
     </View>
   );
 
-
-
-
-
-  const { riciveData } = useMainDataRicive();
-  const { adminLocalData, adminDatabase, setAdminDatabase, adminProductCount, setAdminLocalData, setAdminProductCount, loading, setloading } = userContext();
-  const fetchData = async () => {
-    if (adminLocalData?.User_Phone_Number) {
-      await riciveData(adminLocalData.User_Phone_Number, setAdminDatabase, setAdminProductCount);
-      setloading(false);
-    } else {
-      const userInfo = await getStorage(Token.DataToken.UserInformation);
-      await setAdminLocalData(userInfo);
-      await riciveData(userInfo.User_Phone_Number, setAdminDatabase, setAdminProductCount);
-      setloading(false);
-    }
-  };
-  useEffect(() => {
-    fetchData();
-  }, [loading]);
-  const [refreshing, setRefreshing] = useState(false);
-  const onRefresh = useCallback(() => {
-    setloading(true)
-    fetchData();
-  }, []);
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false} refreshControl={
-      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-    } >
+    <ScrollView
+      style={styles.container}
+      showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }>
       {loading ? (
         <DashboardSkeleton />
       ) : (
@@ -88,27 +179,51 @@ const DashBoard = () => {
           <View style={styles.header}>
             <View style={styles.headerContent}>
               <Text style={styles.headerTitle}>Dashboard</Text>
-              <Text style={styles.headerSubtitle}>Welcome back! Here's your business overview</Text>
+              <Text style={styles.headerSubtitle}>
+                Welcome back! Here's your business overview
+              </Text>
             </View>
             <View style={styles.headerIcon}>
               <Icon name="chart-line" size={24} type="solid" color="#6366F1" />
             </View>
           </View>
-          {
-            adminProductCount ? <>
-              {/* Top Metrics Row */}
+
+          {adminProductCount ? (
+            <>
+              {/* Metrics */}
               <View style={styles.metricsRow}>
-                <MetricCard title="Total Views" value={adminDatabase.AdminTotoalViwers} icon="street-view" color="#6366F1" gradient />
-                <MetricCard title="Total Like" value={adminDatabase.AdminTotoalLikes} icon="heart" color="#10B981" gradient />
+                <MetricCard
+                  title="Total Views"
+                  value={adminDatabase?.AdminTotoalViwers}
+                  icon="street-view"
+                  color="#6366F1"
+                  gradient
+                />
+                <MetricCard
+                  title="Total Like"
+                  value={adminDatabase?.AdminTotoalLikes}
+                  icon="heart"
+                  color="#10B981"
+                  gradient
+                />
               </View>
 
-              {/* Second Metrics Row */}
               <View style={styles.metricsRow}>
-                <MetricCard title="Followers" value={adminDatabase.followerList.length} icon="users" color="#3B82F6" />
-                <MetricCard title="Products" value={adminDatabase.AdminProducts} icon="box" color="#8B5CF6" />
+                <MetricCard
+                  title="Followers"
+                  value={adminDatabase?.followerList?.length ?? 0}
+                  icon="users"
+                  color="#3B82F6"
+                />
+                <MetricCard
+                  title="Products"
+                  value={adminDatabase?.AdminProducts ?? 0}
+                  icon="box"
+                  color="#8B5CF6"
+                />
               </View>
 
-              {/* Charts Section */}
+              {/* Charts */}
               <View style={styles.chartsSection}>
                 <ChartCard title="Weekly Traffic" icon="chart-bar" iconColor="#6366F1">
                   <BarChart
@@ -141,35 +256,49 @@ const DashBoard = () => {
                     height={160}
                   />
                 </ChartCard>
+
+                {/* Product Section */}
                 <View style={{ marginTop: 30 }}>
-                  <View className='w-full flex flex-row items-center justify-between'>
-                    <Text style={{ fontSize: 22, fontWeight: '800', color: '#1E293B', marginBottom: 16 }}>Your Tiffins</Text>
-                    <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate({
-                      name: 'page',
-                      params: {
-                        screen: 'ViewProductDetiles',
-                        params: {
-                          data: adminDatabase.ProductData
-                        }
-                      },
-                    } as never)} className='flex flex-row items-center justify-center gap-2'><Text style={styles.seeAllText} >View All</Text><Icon name="chevron-right" size={14} type="solid" color="#6366F1" />
+                  <View className="w-full flex flex-row items-center justify-between">
+                    <Text
+                      style={{
+                        fontSize: 22,
+                        fontWeight: '800',
+                        color: '#1E293B',
+                        marginBottom: 16,
+                      }}>
+                      Your Tiffins
+                    </Text>
+                    <TouchableOpacity
+                      activeOpacity={0.8}
+                      onPress={() =>
+                        navigation.navigate({
+                          name: 'page',
+                          params: {
+                            screen: 'ViewProductDetiles',
+                            params: { data: productData || [] },
+                          },
+                        } as never)
+                      }
+                      className="flex flex-row items-center justify-center gap-2">
+                      <Text style={styles.seeAllText}>View All</Text>
+                      <Icon name="chevron-right" size={14} type="solid" color="#6366F1" />
                     </TouchableOpacity>
                   </View>
 
-                  {adminDatabase.ProductData && adminDatabase.ProductData.slice(0, 2).map((item: any, index: any) => (
-                    index < 2 && <TouchableOpacity key={item?._id}
+                  {adminDatabase?.ProductData?.slice(0, 2).map((item: any) => (
+                    <TouchableOpacity
+                      key={item?._id}
                       activeOpacity={0.9}
-                      onPress={() => {
+                      onPress={() =>
                         navigation.navigate({
                           name: 'page',
                           params: {
                             screen: 'ViewProductAnalazeDetiles',
-                            params: {
-                              data: item
-                            }
+                            params: { data: item },
                           },
                         } as never)
-                      }}
+                      }
                       style={{
                         marginBottom: 20,
                         backgroundColor: 'white',
@@ -180,58 +309,80 @@ const DashBoard = () => {
                         shadowOpacity: 0.08,
                         shadowRadius: 12,
                         elevation: 6,
-                      }}
-                    >
+                      }}>
+                      {/* Image */}
                       <View
                         style={{
                           borderRadius: 16,
                           overflow: 'hidden',
                           marginBottom: 12,
-                        }}
-                      >
+                        }}>
                         <Image
-                          source={{ uri: item?.postCoverImage[0] }}
-                          style={{ width: '100%', }}
-                          className='h-72'
+                          source={{ uri: item?.postCoverImage?.[0] }}
+                          style={{ width: '100%' }}
+                          className="h-72"
                           resizeMode="cover"
                         />
                       </View>
 
-                      {/* Title and Description */}
-                      <Text style={{ fontSize: 18, fontWeight: '700', color: '#1E293B' }}>{item?.postTitle}</Text>
-                      <Text style={{ fontSize: 14, color: '#64748B', marginVertical: 6 }}>
-                        {item?.postDescription.slice(0, 80)}...
+                      <Text
+                        style={{ fontSize: 18, fontWeight: '700', color: '#1E293B' }}>
+                        {item?.postTitle}
+                      </Text>
+                      <Text
+                        style={{ fontSize: 14, color: '#64748B', marginVertical: 6 }}>
+                        {item?.postDescription?.slice(0, 80)}...
                       </Text>
 
-                      {/* Info Row */}
-                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
-                        <Text style={{ color: '#10B981', fontWeight: '700' }}>₹{item?.postPrice}</Text>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          marginTop: 8,
+                        }}>
+                        <Text style={{ color: '#10B981', fontWeight: '700' }}>
+                          ₹{item?.postPrice}
+                        </Text>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Icon name="heart" size={14} type="solid" color="#EF4444" />
-                            <Text style={{ marginLeft: 4, fontSize: 12 }}>{item?.productLikes.length}</Text>
+                            <Text style={{ marginLeft: 4, fontSize: 12 }}>
+                              {item?.productLikes?.length ?? 0}
+                            </Text>
                           </View>
                           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Icon name="eye" size={14} type="solid" color="#6366F1" />
-                            <Text style={{ marginLeft: 4, fontSize: 12 }}>{item?.postTotalViews.length}</Text>
+                            <Text style={{ marginLeft: 4, fontSize: 12 }}>
+                              {item?.postTotalViews?.length ?? 0}
+                            </Text>
                           </View>
                         </View>
                       </View>
 
-                      {/* Location */}
-                      <Text style={{ fontSize: 12, color: '#94A3B8', marginTop: 4 }}>📍{item?.postLocation}</Text>
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          color: '#94A3B8',
+                          marginTop: 4,
+                        }}>
+                        📍{item?.postLocation}
+                      </Text>
                     </TouchableOpacity>
                   ))}
                 </View>
               </View>
-            </> : <View className='flex-1 flex items-center justify-center'><DashBoardNoProduct navigation={navigation} /></View>
-          }
+            </>
+          ) : (
+            <View className="flex-1 flex items-center justify-center">
+              <DashBoardNoProduct navigation={navigation} />
+            </View>
+          )}
         </View>
-      )
-      }
-    </ScrollView >
+      )}
+    </ScrollView>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {

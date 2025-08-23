@@ -3,7 +3,7 @@ import './gesture-handler';
 import React, { Fragment, useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import MainNavigation from './src/navigation/main/MainNavigation';
 import MainStacknavigation from './src/navigation/main/MainStacknavigation';
@@ -15,6 +15,7 @@ import AnimationComp from './src/components/elements/AnimationComp';
 import Animation from './src/constant/animation/Animation';
 
 import { ContextProvider, userContext } from './src/util/context/ContextProvider';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const Stack = createNativeStackNavigator();
 
@@ -50,29 +51,36 @@ const App = () => {
   const [handleRoute, setHandleRoute] = useState<any | null>(null);
 
   return (
-    <ContextProvider>
-      <RouteHandler setHandleRoute={setHandleRoute} />
-      <NavigationContainer>
-        {handleRoute ? (
-          <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={handleRoute}>
-            <Fragment>
-              <Stack.Screen name="Auth" component={AuthNavigation} />
-              <Stack.Screen name="Home" options={{
-                animation: 'slide_from_right',
-              }} component={MainNavigation} />
-              <Stack.Screen name="page" options={{
-                animation: 'slide_from_right',
-              }} component={MainStacknavigation} />
-            </Fragment>
-          </Stack.Navigator>
-        ) : (
-          <View className="flex-1 justify-center items-center" style={{ backgroundColor: 'white' }}>
-            <AnimationComp path={Animation.LoadingAnimation} width={300} height={300} />
-          </View>
-        )}
-      </NavigationContainer>
-    </ContextProvider>
+    <GestureHandlerRootView style={styles.container}>
+
+      <ContextProvider>
+        <RouteHandler setHandleRoute={setHandleRoute} />
+        <NavigationContainer>
+          {handleRoute ? (
+            <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={handleRoute}>
+              <Fragment>
+                <Stack.Screen name="Auth" component={AuthNavigation} />
+                <Stack.Screen name="Home" options={{
+                  animation: 'slide_from_right',
+                }} component={MainNavigation} />
+                <Stack.Screen name="page" options={{
+                  animation: 'slide_from_right',
+                }} component={MainStacknavigation} />
+              </Fragment>
+            </Stack.Navigator>
+          ) : (
+            <View className="flex-1 justify-center items-center" style={{ backgroundColor: 'white' }}>
+              <AnimationComp path={Animation.LoadingAnimation} width={300} height={300} />
+            </View>
+          )}
+        </NavigationContainer>
+      </ContextProvider>
+    </GestureHandlerRootView>
   );
 };
+const styles = StyleSheet.create({
+    container: { flex: 1, backgroundColor: 'white', paddingHorizontal: 4 },
+
+})
 
 export default App;
