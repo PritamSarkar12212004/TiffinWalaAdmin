@@ -205,7 +205,7 @@ const UploadProduct = () => {
       </Modal>
 
       <ScrollView showsHorizontalScrollIndicator={false} className='flex-1 bg-[white]'>
-        <View className='flex-1 px-4 mt-10 gap-4 mb-40 bg-[white]'>
+        <View className='flex-1 px-4 mt-10 gap-4  bg-[white]'>
           {/* Item Name */}
           <SectionCard title='Item Name'>
             <TextInput
@@ -300,7 +300,7 @@ const UploadProduct = () => {
           </SectionCard>
 
           {/* Upload Button */}
-          <View className='flex w-full gap-1 mt-4 mb-8'>
+          <View className='flex w-full gap-1 mt-4 '>
             <GradientButton
               onPress={CreateProfileFunc}
               title={loading ? 'Uploading...' : 'Upload Mess Services'}

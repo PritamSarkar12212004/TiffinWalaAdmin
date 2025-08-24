@@ -9,6 +9,9 @@ interface ContextinterFace {
   setAdminProductCount: any;
   loading: any;
   setloading: any;
+  productData: any;
+  setProductData: any;
+  removeProductAfterDelete: any;
 }
 
 export {ContextinterFace};

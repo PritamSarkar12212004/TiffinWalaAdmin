@@ -1,8 +1,10 @@
 import Token from '../../../../constant/tokens/Token';
 import getStorage from '../../../../functions/token/getStorage';
 import api from '../../../../util/api/Axios';
+import {userContext} from '../../../../util/context/ContextProvider';
 
 const useMainDataRicive = () => {
+  const {setProductData} = userContext();
   const riciveData = async (
     phone: any,
     setAdminDatabase: any,
@@ -25,6 +27,7 @@ const useMainDataRicive = () => {
           ProductData: res.data.productData.productData,
           followerList: res.data.productData.followerList,
         });
+        setProductData(res.data.productData.productData);
         return true;
       })
       .catch(err => {

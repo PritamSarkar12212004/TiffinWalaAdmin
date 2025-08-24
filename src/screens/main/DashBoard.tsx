@@ -40,15 +40,9 @@ const DashBoard = () => {
     setAdminProductCount,
     loading,
     setloading,
+    productData,
+    setProductData
   } = userContext();
-
-  const [productData, setProductData] = useState<any[]>(
-    adminDatabase?.ProductData ?? []
-  );
-  const removeProductAfterDelete = (id: any) => {
-    const updatedProductData = productData.filter(product => product.id !== id);
-    setProductData(updatedProductData);
-  };
 
   const fetchData = async () => {
     setloading(true);
@@ -66,7 +60,6 @@ const DashBoard = () => {
         setAdminProductCount
       );
 
-      setProductData(adminDatabase?.ProductData ?? []);
     } catch (err) {
       console.error('Fetch error:', err);
     } finally {
@@ -77,6 +70,11 @@ const DashBoard = () => {
 
   useEffect(() => {
     fetchData();
+    return () => {
+      setProductData(null);
+      setAdminDatabase(null);
+      setAdminProductCount(null);
+    };
   }, []);
 
   const [refreshing, setRefreshing] = useState(false);
@@ -93,7 +91,7 @@ const DashBoard = () => {
     gradient = false,
     subtitle,
   }) => (
-    <TouchableOpacity activeOpacity={0.9} style={styles.metricCard}>
+    <View style={styles.metricCard}>
       <View
         style={[
           styles.metricGradient,
@@ -137,7 +135,7 @@ const DashBoard = () => {
           )}
         </View>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 
   const ChartCard: React.FC<ChartCardProps> = ({
@@ -208,19 +206,35 @@ const DashBoard = () => {
                 />
               </View>
 
-              <View style={styles.metricsRow}>
-                <MetricCard
-                  title="Followers"
-                  value={adminDatabase?.followerList?.length ?? 0}
-                  icon="users"
-                  color="#3B82F6"
-                />
-                <MetricCard
-                  title="Products"
-                  value={adminDatabase?.AdminProducts ?? 0}
-                  icon="box"
-                  color="#8B5CF6"
-                />
+              <View className='w-full flex  flex-row items-center justify-between mb-5'>
+                <TouchableOpacity className='w-[48%]' activeOpacity={1} onPress={() => navigation.navigate({
+                  name: 'page',
+                  params: {
+                    screen: 'FollowerPage',
+                  },
+                } as never)}>
+                  <MetricCard
+                    title="Followers"
+                    value={adminDatabase?.followerList?.length ?? 0}
+                    icon="users"
+                    color="#3B82F6"
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity className='w-[48%]' activeOpacity={1} onPress={() => navigation.navigate({
+                  name: 'page',
+                  params: {
+                    screen: 'ViewProductDetiles',
+                    params: { data: productData || [] },
+                  },
+                } as never)}>
+
+                  <MetricCard
+                    title="Products"
+                    value={adminDatabase?.AdminProducts ?? 0}
+                    icon="box"
+                    color="#8B5CF6"
+                  />
+                </TouchableOpacity>
               </View>
 
               {/* Charts */}
@@ -256,8 +270,7 @@ const DashBoard = () => {
                     height={160}
                   />
                 </ChartCard>
-
-                {/* Product Section */}
+                { }
                 <View style={{ marginTop: 30 }}>
                   <View className="w-full flex flex-row items-center justify-between">
                     <Text
@@ -286,7 +299,7 @@ const DashBoard = () => {
                     </TouchableOpacity>
                   </View>
 
-                  {adminDatabase?.ProductData?.slice(0, 2).map((item: any) => (
+                  {productData && productData.slice(0, 2).map((item: any) => (
                     <TouchableOpacity
                       key={item?._id}
                       activeOpacity={0.9}
@@ -390,7 +403,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   content: {
-    padding: 20,
+    padding: 10,
     paddingBottom: 100,
   },
   header: {

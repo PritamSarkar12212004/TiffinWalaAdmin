@@ -17,6 +17,9 @@ export const ContextProvider = ({ children }: { children: React.ReactNode }) => 
     // reloader Start
     const [loading, setloading] = useState(true);
 
+    // store produtc data 
+    const [productData, setProductData] = useState<any | null>(null)
+
 
     // error wrapper
     const [Uploader, setUploader] = useState<{
@@ -27,6 +30,19 @@ export const ContextProvider = ({ children }: { children: React.ReactNode }) => 
         message: '',
 
     });
+
+    // function
+    // product functions
+    const removeProductAfterDelete = (id: any) => {
+        if (!productData) return;
+
+        const updatedProductData = productData.filter(
+            (product: any) => product._id !== id
+        );
+
+        setProductData(updatedProductData);
+    };
+
 
     return (
         <Context.Provider
@@ -40,7 +56,10 @@ export const ContextProvider = ({ children }: { children: React.ReactNode }) => 
                 adminProductCount,
                 setAdminProductCount,
                 loading,
-                setloading
+                setloading,
+                productData,
+                setProductData,
+                removeProductAfterDelete
             }}
         >
             {children}

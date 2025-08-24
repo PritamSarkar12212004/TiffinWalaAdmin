@@ -14,6 +14,8 @@ import PrivacySettingsScreen from '../../screens/main/page/subpage/PrivacySettin
 import HelpArtical from '../../screens/main/page/subpage/HelpArtical';
 import ViewProductDetiles from '../../screens/main/page/ViewProductDetiles';
 import ViewProductAnalazeDetiles from '../../screens/main/page/ViewProductAnalazeDetiles';
+import FollowerPage from '../../screens/main/page/FollowerPage';
+import UploadProduct from '../../screens/main/UploadProduct';
 
 const Stack = createStackNavigator();
 const MainStacknavigation = () => {
@@ -25,6 +27,11 @@ const MainStacknavigation = () => {
                 <Stack.Screen name="comment" component={CommentScreen} options={
                     {
                         animation: 'slide_from_right'
+                    }
+                } />
+                <Stack.Screen name="UploadProduct" component={UploadProduct} options={
+                    {
+                        animation: 'slide_from_bottom'
                     }
                 } />
                 <Stack.Screen name="ItemList" component={ItemList} options={
@@ -84,6 +91,11 @@ const MainStacknavigation = () => {
                     }
                 } />
                 <Stack.Screen name="ViewProductAnalazeDetiles" component={ViewProductAnalazeDetiles} options={
+                    {
+                        animation: 'slide_from_right'
+                    }
+                } />
+                <Stack.Screen name="FollowerPage" component={FollowerPage} options={
                     {
                         animation: 'slide_from_right'
                     }

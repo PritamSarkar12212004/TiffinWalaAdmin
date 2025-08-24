@@ -1,14 +1,15 @@
 import { View, Dimensions, TouchableOpacity, Text, ScrollView, FlatList, Image, StyleSheet, ActivityIndicator } from 'react-native';
 import React, { useRef, useState } from 'react';
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import PageNavigation from '../../../layout/navigation/PageNavigation';
 import Icon from '../../../MainLogo/icon/Icon';
 import useDeleteProduct from '../../../hooks/api/product/useDeleteProduct';
+import { userContext } from '../../../util/context/ContextProvider';
 const { width } = Dimensions.get("window");
 
 const ModernViewProductDetails = () => {
     const [deleteloading, setDeleteloading] = useState<boolean>(false)
-
+    const navigation = useNavigation()
     const flatListRef = useRef(null);
     const route = useRoute();
     const { data }: any = route.params;
@@ -18,12 +19,12 @@ const ModernViewProductDetails = () => {
         ...imgCover,
         ...imgPost
     ]
+
     const { deleteProduct } = useDeleteProduct()
     const deleteProductFunc = (payload: any) => {
         setDeleteloading(true)
-        deleteProduct({ id: payload, loading: setDeleteloading })
+        deleteProduct({ id: payload, loading: setDeleteloading, navigation: navigation })
     }
-
     const renderItem = ({ item }: any) => (
 
         <View style={{ width, height: 280 }}>
@@ -81,9 +82,12 @@ const ModernViewProductDetails = () => {
                             </ScrollView>
                             <View className='w-full flex items-center justify-center'>
                                 {
-                                    deleteloading ? <ActivityIndicator size={'large'} color={'white'} /> : <TouchableOpacity onPress={() => deleteProductFunc(data._id)} className='w-full h-14 bg-red-500 rounded-3xl mb-10 mt-5 flex items-center justify-center ' activeOpacity={0.8}>
-                                        <Text className='text-white text-lg font-semibold tracking-widest'>Delete Product</Text>
-                                    </TouchableOpacity>
+                                    deleteloading ?
+                                        <TouchableOpacity activeOpacity={0.9} className='w-full h-14 bg-red-500 rounded-3xl mb-10 mt-5 flex items-center justify-center'>
+                                            <ActivityIndicator size={'small'} color={'white'} />
+                                        </TouchableOpacity> : <TouchableOpacity onPress={() => deleteProductFunc(data._id)} className='w-full h-14 bg-red-500 rounded-3xl mb-10 mt-5 flex items-center justify-center ' activeOpacity={0.8}>
+                                            <Text className='text-white text-lg font-semibold tracking-widest'>Delete Product</Text>
+                                        </TouchableOpacity>
                                 }
 
                             </View>

@@ -1,16 +1,22 @@
 import api from "../../../util/api/Axios"
+import { userContext } from "../../../util/context/ContextProvider"
 
 const useDeleteProduct = () => {
-    const deleteProduct = ({ id, loading }: any) => {
+    const { removeProductAfterDelete } = userContext()
+    const deleteProduct = ({ id, loading, navigation }: any) => {
         api.post("/product/delete", {
             payload: {
                 id: id
             }
-        }).then(() => {
+        }).then(async () => {
             loading(false)
-        }).catch((err) => {
-            console.log(err)
+            await removeProductAfterDelete(id)
+            await navigation.goBack()
+        }).catch(async (err) => {
             loading(false)
+            await removeProductAfterDelete(id)
+            await navigation.goBack()
+
         })
     }
     return {

@@ -31,6 +31,7 @@
     "react-native-compressor": "^1.11.0",
     "react-native-gesture-handler": "^2.26.0",
     "react-native-gifted-charts": "^1.4.61",
+    "react-native-heroicons": "^4.0.0",
     "react-native-image-picker": "^8.2.1",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-maps": "^1.24.9",
