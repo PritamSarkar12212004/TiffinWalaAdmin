@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "709377544845",
+    "project_id": "tiffin-wala-fd5b0",
+    "storage_bucket": "tiffin-wala-fd5b0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:709377544845:android:007aad57d3c129307808c4",
+        "android_client_info": {
+          "package_name": "com.tiffinwalaadmin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbUZSwzQUf-cwPzHMqy3xvmc7P7TQPVFE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:709377544845:android:9738d27ea15d73d27808c4",
+        "android_client_info": {
+          "package_name": "com.tiffinwalacli"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbUZSwzQUf-cwPzHMqy3xvmc7P7TQPVFE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
