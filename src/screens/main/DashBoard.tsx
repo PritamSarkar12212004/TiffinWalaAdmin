@@ -12,6 +12,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import Icon from '../../MainLogo/icon/Icon';
 import { BarChart } from 'react-native-gifted-charts';
 import DashboardSkeleton from '../../layout/skelaton/DashBoardSkeleton';
+import messaging from '@react-native-firebase/messaging'
 import {
   ChartCardProps,
   MetricCardProps,
@@ -26,6 +27,11 @@ import {
 } from '../../demo/data/DasboardData';
 import getStorage from '../../functions/token/getStorage';
 import Token from '../../constant/tokens/Token';
+import onScreenNotiFyFunc from '../../functions/notification/manager/onScreenNotiFyFunc';
+import eventNotify from '../../functions/notification/manager/eventNotify';
+import remaindernotiFy from '../../functions/notification/manager/remaindernotiFy';
+import useTokenGet from '../../hooks/api/notification/Noti/useGetToken';
+import requestForNotification from '../../functions/notification/request/requestForNotification';
 
 const { width } = Dimensions.get('window');
 const DashBoard = () => {
@@ -68,14 +74,37 @@ const DashBoard = () => {
     }
   };
 
+
+
+  // notification
+  const { tokenSet } = useTokenGet()
+  const [updateToken, setUpdateToken] = useState<any>(null)
+  const [token, settoken] = useState<any>(null)
   useEffect(() => {
-    fetchData();
+    const tokenRefresh = messaging().onTokenRefresh((newToken) => {
+      setUpdateToken(newToken)
+    })
     return () => {
-      setProductData(null);
-      setAdminDatabase(null);
-      setAdminProductCount(null);
-    };
-  }, []);
+      tokenRefresh()
+    }
+  }, [])
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      const { type } = remoteMessage.data || {}
+      if (type === 'open') onScreenNotiFyFunc(remoteMessage)
+      else if (type === 'event') eventNotify(remoteMessage)
+      else if (type === 'remainder') remaindernotiFy(remoteMessage)
+    })
+    return unsubscribe
+  }, [])
+
+
+  useEffect(() => {
+    if (adminDatabase && token) {
+      tokenSet(updateToken ?? token, adminDatabase._id)
+    }
+  }, [adminDatabase, token])
+
 
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = useCallback(() => {
@@ -83,6 +112,15 @@ const DashBoard = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    requestForNotification(settoken)
+    fetchData();
+    return () => {
+      setProductData(null);
+      setAdminDatabase(null);
+      setAdminProductCount(null);
+    };
+  }, []);
   const MetricCard: React.FC<MetricCardProps> = ({
     title,
     value,
