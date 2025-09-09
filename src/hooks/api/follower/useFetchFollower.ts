@@ -9,7 +9,6 @@ const useFetchFollower = () => {
         },
       })
       .then(res => {
-        console.log(res.data);
         setData(res.data.data);
         setLoading(false);
       })

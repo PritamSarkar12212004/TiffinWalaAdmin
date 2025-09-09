@@ -49,17 +49,14 @@ const DashBoard = () => {
     productData,
     setProductData
   } = userContext();
-
   const fetchData = async () => {
     setloading(true);
     try {
       let userInfo = adminLocalData;
-
       if (!userInfo?.User_Phone_Number) {
         userInfo = await getStorage(Token.DataToken.UserInformation);
         setAdminLocalData(userInfo);
       }
-
       await riciveData(
         userInfo.User_Phone_Number,
         setAdminDatabase,
@@ -101,7 +98,7 @@ const DashBoard = () => {
 
   useEffect(() => {
     if (adminDatabase && token) {
-      tokenSet(updateToken ?? token, adminDatabase._id)
+      tokenSet(updateToken ?? token, adminDatabase.adminMainData._id)
     }
   }, [adminDatabase, token])
 
@@ -211,7 +208,6 @@ const DashBoard = () => {
         <DashboardSkeleton />
       ) : (
         <View style={styles.content}>
-          {/* Header */}
           <View style={styles.header}>
             <View style={styles.headerContent}>
               <Text style={styles.headerTitle}>Dashboard</Text>
@@ -226,7 +222,6 @@ const DashBoard = () => {
 
           {adminProductCount ? (
             <>
-              {/* Metrics */}
               <View style={styles.metricsRow}>
                 <MetricCard
                   title="Total Views"
@@ -268,7 +263,7 @@ const DashBoard = () => {
 
                   <MetricCard
                     title="Products"
-                    value={adminDatabase?.AdminProducts ?? 0}
+                    value={productData.length ?? 0}
                     icon="box"
                     color="#8B5CF6"
                   />
@@ -404,7 +399,7 @@ const DashBoard = () => {
                           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Icon name="eye" size={14} type="solid" color="#6366F1" />
                             <Text style={{ marginLeft: 4, fontSize: 12 }}>
-                              {item?.postTotalViews?.length ?? 0}
+                              {item?.postTotalViews}
                             </Text>
                           </View>
                         </View>

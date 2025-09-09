@@ -69,7 +69,7 @@ const ViewProductDetiles = () => {
                                             </View>
                                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                                 <Icon name="eye" size={14} type="solid" color="#6366F1" />
-                                                <Text style={{ marginLeft: 4, fontSize: 12 }}>{item?.postTotalViews.length}</Text>
+                                                <Text style={{ marginLeft: 4, fontSize: 12 }}>{item?.postTotalViews}</Text>
                                             </View>
                                         </View>
                                     </View>
