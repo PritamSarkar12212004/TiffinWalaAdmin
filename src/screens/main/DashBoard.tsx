@@ -28,8 +28,6 @@ import {
 import getStorage from '../../functions/token/getStorage';
 import Token from '../../constant/tokens/Token';
 import onScreenNotiFyFunc from '../../functions/notification/manager/onScreenNotiFyFunc';
-import eventNotify from '../../functions/notification/manager/eventNotify';
-import remaindernotiFy from '../../functions/notification/manager/remaindernotiFy';
 import useTokenGet from '../../hooks/api/notification/Noti/useGetToken';
 import requestForNotification from '../../functions/notification/request/requestForNotification';
 
@@ -77,6 +75,8 @@ const DashBoard = () => {
   const { tokenSet } = useTokenGet()
   const [updateToken, setUpdateToken] = useState<any>(null)
   const [token, settoken] = useState<any>(null)
+
+  // get token and update token
   useEffect(() => {
     const tokenRefresh = messaging().onTokenRefresh((newToken) => {
       setUpdateToken(newToken)
@@ -86,15 +86,13 @@ const DashBoard = () => {
     }
   }, []);
 
+
+  // notification listner
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
       const { type } = remoteMessage.data || {};
       if (type === 'open') {
         onScreenNotiFyFunc(remoteMessage);
-      } else if (type === 'event') {
-        eventNotify(remoteMessage);
-      } else if (type === 'remainder') {
-        remaindernotiFy(remoteMessage);
       }
     });
 
@@ -104,7 +102,7 @@ const DashBoard = () => {
   }, []);
 
 
-
+  // update token in database
   useEffect(() => {
     if (adminDatabase && token) {
       tokenSet(updateToken ?? token, adminDatabase.adminMainData._id)
