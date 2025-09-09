@@ -84,23 +84,32 @@ const DashBoard = () => {
     return () => {
       tokenRefresh()
     }
-  }, [])
+  }, []);
+
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
-      const { type } = remoteMessage.data || {}
-      if (type === 'open') onScreenNotiFyFunc(remoteMessage)
-      else if (type === 'event') eventNotify(remoteMessage)
-      else if (type === 'remainder') remaindernotiFy(remoteMessage)
-    })
-    return unsubscribe
-  }, [])
+      const { type } = remoteMessage.data || {};
+      if (type === 'open') {
+        onScreenNotiFyFunc(remoteMessage);
+      } else if (type === 'event') {
+        eventNotify(remoteMessage);
+      } else if (type === 'remainder') {
+        remaindernotiFy(remoteMessage);
+      }
+    });
+
+    return () => {
+      unsubscribe(); // cleanup on unmount
+    };
+  }, []);
+
 
 
   useEffect(() => {
     if (adminDatabase && token) {
       tokenSet(updateToken ?? token, adminDatabase.adminMainData._id)
     }
-  }, [adminDatabase, token])
+  }, [adminDatabase, token, updateToken])
 
 
   const [refreshing, setRefreshing] = useState(false);

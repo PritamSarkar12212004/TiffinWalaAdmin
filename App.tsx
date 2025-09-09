@@ -52,7 +52,6 @@ const App = () => {
 
   return (
     <GestureHandlerRootView style={styles.container}>
-
       <ContextProvider>
         <RouteHandler setHandleRoute={setHandleRoute} />
         <NavigationContainer>
