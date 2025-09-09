@@ -9,6 +9,8 @@ import {
   RefreshControl,
 } from 'react-native';
 import React, { useCallback, useEffect, useState } from 'react';
+import notifee, { EventType } from '@notifee/react-native';
+
 import Icon from '../../MainLogo/icon/Icon';
 import { BarChart } from 'react-native-gifted-charts';
 import DashboardSkeleton from '../../layout/skelaton/DashBoardSkeleton';
@@ -32,6 +34,7 @@ import useTokenGet from '../../hooks/api/notification/Noti/useGetToken';
 import requestForNotification from '../../functions/notification/request/requestForNotification';
 
 const { width } = Dimensions.get('window');
+
 const DashBoard = () => {
   const navigation = useNavigation();
   const { riciveData } = useMainDataRicive();
@@ -45,7 +48,7 @@ const DashBoard = () => {
     loading,
     setloading,
     productData,
-    setProductData
+    setProductData,
   } = userContext();
   const fetchData = async () => {
     setloading(true);
@@ -86,8 +89,7 @@ const DashBoard = () => {
     }
   }, []);
 
-
-  // notification listner
+  // foreground state message
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
       const { type } = remoteMessage.data || {};
@@ -95,12 +97,18 @@ const DashBoard = () => {
         onScreenNotiFyFunc(remoteMessage);
       }
     });
-
-    return () => {
-      unsubscribe(); // cleanup on unmount
-    };
+    return unsubscribe;
   }, []);
 
+  useEffect(() => {
+    const unsubscribe = notifee.onForegroundEvent(({ type, detail }) => {
+      if (type === EventType.PRESS) {
+        const screen = detail.notification?.data?.navigate || 'Notification';
+        navigation.navigate(screen as never);
+      }
+    });
+    return unsubscribe;
+  }, [navigation])
 
   // update token in database
   useEffect(() => {

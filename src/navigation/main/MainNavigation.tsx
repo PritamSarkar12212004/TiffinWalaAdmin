@@ -4,7 +4,6 @@ import DashBoardWraper from '../../layout/wraper/DashBoardWraper';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Notification from '../../screens/main/Notification';
 import Profile from '../../screens/main/Profile';
-import UploadProduct from '../../screens/main/UploadProduct';
 import { TouchableOpacity, View, Animated, StyleSheet } from 'react-native';
 import Risehand from '../../screens/main/Risehand';
 import {

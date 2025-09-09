@@ -44,7 +44,6 @@ const useProductCreate = () => {
       const uploadedMenuImages = await Promise.all(
         menuImages.map(image => CloudanerysingleImgIpload(image, 'image')),
       );
-
       await api.post('/product/create', {
         title,
         description,
@@ -58,9 +57,7 @@ const useProductCreate = () => {
         latitude: adminDatabase.adminMainData.User_Address.latitude,
         longitude: adminDatabase.adminMainData.User_Address.longitude,
       });
-
       setUploadStatus('success');
-
       if (fildReseter) {
         fildReseter();
       }

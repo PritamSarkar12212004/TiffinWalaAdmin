@@ -26,23 +26,6 @@ const UploadTermPage = () => {
         ]).start();
     }, [fadeAnim, slideUpAnim]);
 
-    const handleAgree = () => {
-        // Button press animation
-        Animated.sequence([
-            Animated.timing(buttonScale, {
-                toValue: 0.95,
-                duration: 100,
-                useNativeDriver: true,
-            }),
-            Animated.timing(buttonScale, {
-                toValue: 1,
-                duration: 100,
-                useNativeDriver: true,
-            })
-        ]).start(() => {
-            navigation.navigate('UploadProduct');
-        });
-    };
 
     return (
         <View className='flex-1 bg-white'>
@@ -240,7 +223,7 @@ const UploadTermPage = () => {
                             By proceeding, you acknowledge that you have read, understood, and agree to comply with all the terms and conditions outlined above. Violation of these guidelines may result in removal of your listing from our platform.
                         </Text>
                     </View>
-                    <View className="  mb-20 bg-white pt-4 pb-6 px-6 border-t border-gray-100 shadow-lg">
+                    <View className="  mb-20 bg-white pt-4 pb-6  border-t border-gray-100 shadow-lg">
                         <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
                             <TouchableOpacity
                                 onPress={() => {

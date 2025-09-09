@@ -4,16 +4,13 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StyleSheet, View } from 'react-native';
-
 import MainNavigation from './src/navigation/main/MainNavigation';
 import MainStacknavigation from './src/navigation/main/MainStacknavigation';
 import AuthNavigation from './src/navigation/auth/AuthNavigation';
-
 import getStorage from './src/functions/token/getStorage';
 import Token from './src/constant/tokens/Token';
 import AnimationComp from './src/components/elements/AnimationComp';
 import Animation from './src/constant/animation/Animation';
-
 import { ContextProvider, userContext } from './src/util/context/ContextProvider';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
@@ -49,7 +46,6 @@ const RouteHandler = ({ setHandleRoute }: any) => {
 
 const App = () => {
   const [handleRoute, setHandleRoute] = useState<any | null>(null);
-
   return (
     <GestureHandlerRootView style={styles.container}>
       <ContextProvider>
@@ -78,7 +74,7 @@ const App = () => {
   );
 };
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: 'white', paddingHorizontal: 4 },
+  container: { flex: 1, backgroundColor: 'white', paddingHorizontal: 4 },
 
 })
 

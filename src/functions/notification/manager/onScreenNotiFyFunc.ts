@@ -2,7 +2,7 @@ import notifee, {AndroidStyle, AndroidImportance} from '@notifee/react-native';
 
 const onScreenNotiFyFunc = async (remoteMessage: any) => {
   const {title, body} = remoteMessage.notification;
-  console.log(remoteMessage.notification);
+  console.log(remoteMessage);
 
   const channelId = await notifee.createChannel({
     id: 'default',
