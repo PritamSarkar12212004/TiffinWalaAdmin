@@ -1,6 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
-import { SwipeListView } from 'react-native-swipe-list-view';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  RefreshControl,
+  StyleSheet,
+  Animated
+} from 'react-native';
 import { userContext } from '../../util/context/ContextProvider';
 import NoNotificaProduct from '../../components/noProduct/NoNotificaProduct';
 import useNotiFetch from '../../hooks/api/notification/useNotiFetch';
@@ -13,7 +21,7 @@ const Notification = () => {
   const [data, setData] = useState<any[]>([]);
   const { fetchNoti } = useNotiFetch();
   const [refreshing, setRefreshing] = useState(false);
-  const { deleteNoti } = useDeleteNoti()
+  const { deleteNoti } = useDeleteNoti();
 
   const dataFetch = () => {
     fetchNoti({
@@ -23,53 +31,42 @@ const Notification = () => {
       },
       setLoading,
     });
-  }
+  };
+
   const onRefresh = useCallback(() => {
-    setLoading(true)
+    setRefreshing(true);
     dataFetch();
+    setTimeout(() => setRefreshing(false), 1000);
   }, []);
+
   useEffect(() => {
     setLoading(true);
     if (adminDatabase) {
-      dataFetch()
+      dataFetch();
     }
   }, []);
 
   // Delete notification handler
-  const deleteRow = (rowKey: string) => {
-    setData(prevData => prevData.filter(item => item._id !== rowKey));
+  const handleDelete = (id: string) => {
+    deleteNoti(id);
+    setData(prevData => prevData.filter(item => item._id !== id));
   };
 
-  const renderItem = (data: any) => (
-    <TouchableOpacity
-      activeOpacity={0.9}
-      style={{
-        backgroundColor: '#F9F5F6',
-        borderRadius: 22,
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 16,
-        shadowColor: '#FF7622',
-        shadowOpacity: 0.08,
-        shadowRadius: 8,
-        shadowOffset: { width: 0, height: 4 },
-        elevation: 2,
-        marginVertical: 8,
-        marginHorizontal: 16,
-      }}
-    >
+  const NotificationCard = ({ item }) => (
+    <View style={styles.notificationCard}>
       <Image
-        source={{ uri: data.item.senderImg }}
-        style={{ width: 56, height: 56, borderRadius: 28, marginRight: 14, backgroundColor: '#eee' }}
+        source={{ uri: item.senderImg }}
+        style={styles.senderImage}
       />
-      {/* Text Content */}
-      <View style={{ flex: 1 }}>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 4 }}>
-          <Text style={{ fontSize: 13, fontWeight: 'bold', color: '#222' }}>{data.item.title}</Text>
-          <Text style={{ fontSize: 12, color: '#666' }}> {data.item.description}</Text>
+
+      <View style={styles.contentContainer}>
+        <View style={styles.textContainer}>
+          <Text style={styles.title} numberOfLines={1}>{item.title}</Text>
+          <Text style={styles.description} numberOfLines={2}>{item.description}</Text>
         </View>
-        <Text style={{ fontSize: 13, color: '#FF7622', marginTop: 2, fontWeight: '600' }}>
-          {new Date(data.item.date).toLocaleString('en-IN', {
+
+        <Text style={styles.timestamp}>
+          {new Date(item.date).toLocaleString('en-IN', {
             year: 'numeric',
             month: 'short',
             day: 'numeric',
@@ -79,60 +76,150 @@ const Notification = () => {
           })}
         </Text>
       </View>
-      <Image
-        source={{ uri: data.item.contentImg }}
-        style={{ width: 56, height: 56, borderRadius: 16, marginLeft: 14, backgroundColor: '#eee' }}
-      />
-    </TouchableOpacity>
-  );
 
-  const renderHiddenItem = (data: any) => (
-    <View
-      style={{
-        alignItems: 'flex-end',
-        backgroundColor: 'gray',
-        flex: 1,
-        borderRadius: 22,
-        marginVertical: 8,
-        marginRight: 16,
-        justifyContent: 'center',
-        paddingRight: 20,
-      }}
-    >
-      <TouchableOpacity activeOpacity={0.9} onPress={() => {
-        deleteNoti(data.item._id)
-        deleteRow(data.item._id)
-      }} className='h-full flex items-center justify-center'>
-        <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Delete</Text>
+      {item.contentImg && (
+        <Image
+          source={{ uri: item.contentImg }}
+          style={styles.contentImage}
+        />
+      )}
+
+      <TouchableOpacity
+        style={styles.deleteButton}
+        onPress={() => handleDelete(item._id)}
+      >
+        <Text style={styles.deleteText}>✕</Text>
       </TouchableOpacity>
     </View>
   );
 
   return (
-    <View style={{ flex: 1, backgroundColor: 'white' }} className='px-2 pt-2'>
-      {adminProductCount > 0 ? !loading ? data.length > 0 ? (
-        <ScrollView className='flex-1' refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        } >
-          <SwipeListView
-            data={data}
-            keyExtractor={item => item._id}
-            renderItem={renderItem}
-            renderHiddenItem={renderHiddenItem}
-            rightOpenValue={-80}
-            disableRightSwipe
-            contentContainerStyle={{ paddingBottom: 120 }}
-          />
-        </ScrollView>
-      ) : (
-        <Text style={{ textAlign: 'center', marginTop: 20 }}>No data</Text>
-      ) : (
-        <NotificationSkeleton />
-      ) : (
-        <NoNotificaProduct />
-      )}
+    <View style={styles.container}>
+      {adminProductCount > 0 ?
+        !loading ?
+          data.length > 0 ? (
+            <ScrollView
+              style={styles.scrollView}
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                  colors={['#FF7622']}
+                  tintColor={'#FF7622'}
+                />
+              }
+              showsVerticalScrollIndicator={false}
+            >
+              <View style={styles.listContainer}>
+                {data.map((item) => (
+                  <NotificationCard key={item._id} item={item} />
+                ))}
+              </View>
+            </ScrollView>
+          ) : (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyText}>No notifications yet</Text>
+            </View>
+          )
+          : (
+            <NotificationSkeleton />
+          )
+        : (
+          <NoNotificaProduct />
+        )}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  listContainer: {
+    padding: 12,
+    paddingBottom: 20,
+  },
+  notificationCard: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+    marginBottom: 12,
+    position: 'relative',
+  },
+  senderImage: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    marginRight: 12,
+    backgroundColor: '#f0f0f0',
+  },
+  contentContainer: {
+    flex: 1,
+    marginRight: 8,
+  },
+  textContainer: {
+    marginBottom: 6,
+  },
+  title: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#1a1a1a',
+    marginBottom: 4,
+  },
+  description: {
+    fontSize: 14,
+    color: '#666',
+    lineHeight: 20,
+  },
+  timestamp: {
+    fontSize: 12,
+    color: '#FF7622',
+    fontWeight: '500',
+  },
+  contentImage: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    backgroundColor: '#f0f0f0',
+    marginLeft: 8,
+  },
+  deleteButton: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#ff3b30',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  deleteText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  emptyState: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 100,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#999',
+  },
+});
 
 export default Notification;
