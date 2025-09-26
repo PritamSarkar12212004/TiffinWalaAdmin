@@ -19,7 +19,7 @@ interface ProductData {
 }
 
 const useProductCreate = () => {
-  const navivation = useNavigation();
+  const navigation = useNavigation();
   const createProduct = async ({
     title,
     description,
@@ -62,14 +62,15 @@ const useProductCreate = () => {
         latitude: adminDatabase.adminMainData.User_Address.latitude,
         longitude: adminDatabase.adminMainData.User_Address.longitude,
       };
-
-      // Send API request
       await api
         .post(ApiCon.Product.CreateProduct, payload)
         .then(res => {
           setUploadStatus('success');
           fildReseter?.();
-          navivation.navigate('Home');
+          navigation.reset({
+            index: 0,
+            routes: [{name: 'Home'}],
+          });
           setLoading(false);
         })
         .catch(err => {

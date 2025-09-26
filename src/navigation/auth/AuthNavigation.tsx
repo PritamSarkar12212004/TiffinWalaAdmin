@@ -35,10 +35,10 @@ const AuthNavigation = () => {
                         animation: 'fade'
                     }} />
                     <Stack.Screen name='DonePage' component={DonePage} options={{
-                        animation: 'reveal_from_bottom'
+                        animation: 'fade'
                     }} />
                     <Stack.Screen name='ErrorPage' component={ErrorPage} options={{
-                        animation: 'reveal_from_bottom'
+                        animation: 'fade'
                     }} />
                 </Stack.Navigator>
             </SafeAreaView>

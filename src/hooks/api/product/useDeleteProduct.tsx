@@ -12,7 +12,10 @@ const useDeleteProduct = () => {
         }).then(async () => {
             loading(false)
             await removeProductAfterDelete(id)
-            await navigation.navigate("Home")
+            navigation.reset({
+                index: 0,
+                routes: [{ name: "Home" }],
+            });
         }).catch(async (err) => {
             loading(false)
             await removeProductAfterDelete(id)
