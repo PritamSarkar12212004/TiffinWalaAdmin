@@ -356,7 +356,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 40,
-    backgroundColor: '#f8fafc',
+    backgroundColor: 'white',
   },
   emptyIllustration: {
     position: 'relative',

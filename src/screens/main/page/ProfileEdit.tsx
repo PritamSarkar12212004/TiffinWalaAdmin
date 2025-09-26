@@ -8,7 +8,6 @@ import { userContext } from '../../../util/context/ContextProvider'
 import MapView, { Marker } from 'react-native-maps'
 import GetCurrentLocation from '../../../functions/location/GetCurrentLocation'
 import useUpdateProfile from '../../../hooks/api/main/Profile/useUpdateProfile'
-import { Picker } from '@react-native-picker/picker';
 import UploadingModel from '../../../components/modal/Upload/UploadingModel'
 import AnimationComp from '../../../components/elements/AnimationComp'
 import Animation from '../../../constant/animation/Animation'
@@ -337,7 +336,7 @@ const ProfileEdit = () => {
                     <TouchableOpacity
                         onPress={() => navigation.goBack()}
                         activeOpacity={0.8}
-                        className='bg-gray-100 rounded-2xl h-14 flex items-center justify-center mb-44'
+                        className='bg-gray-100 rounded-2xl h-14 flex items-center justify-center mb-14'
                     >
                         <Text className='text-gray-700 text-lg font-semibold text-center'>Cancel</Text>
                     </TouchableOpacity>

@@ -6,12 +6,14 @@ import { RouteProp, useRoute, CommonActions } from '@react-navigation/native';
 import { OtpInput } from "react-native-otp-entry";
 import useResendOtpApi from '../../hooks/api/Auth/useResendOtpApi';
 import useVarifyOtpData from '../../hooks/api/Auth/useVarifyOtpData';
+import { useNotify } from '../../components/wraper/Wraper';
 interface OtpVerifyScreenProps {
   navigation: StackNavigationProp<any, any>;
   route: RouteProp<any, any>;
 }
 
 const OtpVerifyScreen: React.FC<OtpVerifyScreenProps> = ({ navigation, route }) => {
+  const { caller } = useNotify()
   const RouteParams = useRoute();
   const { ResendApi } = useResendOtpApi()
   const [otp, setOtp] = useState<string>('');
@@ -33,7 +35,12 @@ const OtpVerifyScreen: React.FC<OtpVerifyScreenProps> = ({ navigation, route }) 
       const status = true
       varifyOtpData(status, RouteParams.params.phone, navigation, CommonActions)
     } else {
-      console.log("login Error");
+      caller({
+        message: 'Invalid OTP',
+        description: 'The OTP you entered is incorrect. Please try again.',
+        type: 'danger',
+      });
+
     }
   };
 
@@ -137,13 +144,7 @@ const OtpVerifyScreen: React.FC<OtpVerifyScreenProps> = ({ navigation, route }) 
               }}
             />
           </View>
-          <View style={styles.timerRow}>
-            <Icon name="clock" size={16} type="solid" color="#6366F1" />
-            <Text style={styles.timerText}>Resend OTP in <Text style={styles.timerValue}>{timer}s</Text></Text>
-          </View>
-          <TouchableOpacity onPress={handleResend} disabled={timer > 0} style={[styles.resendBtn, timer > 0 && { opacity: 0.5 }]}>
-            <Text style={styles.resendBtnText}>Resend OTP</Text>
-          </TouchableOpacity>
+        
           <TouchableOpacity onPress={() => handleOpt(otp)} activeOpacity={0.9} style={styles.submitBtn} className='w-full'>
             <Text style={styles.submitText}>Verify</Text>
           </TouchableOpacity>

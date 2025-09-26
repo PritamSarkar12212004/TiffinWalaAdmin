@@ -178,7 +178,6 @@ const Risehand = () => {
               </BottomSheet>
             </View>
           ) : (
-            // Modern No Data UI
             <View style={styles.noDataContainer}>
               <View style={styles.noDataContent}>
                 <View style={styles.noDataIcon}>
@@ -252,7 +251,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f8fafc',
+    backgroundColor: 'white',
     paddingHorizontal: 24,
   },
   noDataContent: {

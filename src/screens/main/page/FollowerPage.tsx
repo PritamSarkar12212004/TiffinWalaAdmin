@@ -1,5 +1,14 @@
-import { View, Text, FlatList, ActivityIndicator, TouchableOpacity, Image, Modal } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import {
+    View,
+    Text,
+    FlatList,
+    ActivityIndicator,
+    TouchableOpacity,
+    Image,
+    Modal,
+    StyleSheet
+} from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
 import PageNavigation from '../../../layout/navigation/PageNavigation';
 import useFetchFollower from '../../../hooks/api/follower/useFetchFollower';
 import { userContext } from '../../../util/context/ContextProvider';
@@ -9,61 +18,103 @@ import useDeleteFollower from '../../../hooks/api/follower/useDeleteFollower';
 
 const FollowerPage = (): React.JSX.Element => {
     const { adminDatabase } = userContext();
+    const adminId = adminDatabase?.adminMainData?._id;
+
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState<any[]>([]);
     const [refreshing, setRefreshing] = useState(false);
 
     const [detchDetiles, setFetchDetiles] = useState<any>(null);
     const [loadingFetch, setLoadingFetch] = useState<{ status: boolean; id: string | null }>({ status: false, id: null });
-    const { top } = useSafeAreaInsets()
+
+    const { top } = useSafeAreaInsets();
 
     const { fetchFollower } = useFetchFollower();
     const { fetchDetiles } = useFetchDetiles();
-    const { deleteFollower } = useDeleteFollower()
+    const { deleteFollower } = useDeleteFollower();
 
-    const dataFetch = () => {
+    // Fetch followers
+    const dataFetch = useCallback(async () => {
+        if (!adminId) return;
         setLoading(true);
-        fetchFollower({
-            id: adminDatabase.adminMainData._id,
-            setLoading,
-            setData,
-        });
-    };
+        try {
+            await fetchFollower({
+                id: adminId,
+                setLoading: (val: boolean) => setLoading(val),
+                setData,
+            });
+        } catch (err) {
+            console.error(err);
+            setLoading(false);
+        }
+    }, [adminId]);
 
-    const onRefresh = () => {
+    // Pull to refresh
+    const onRefresh = useCallback(async () => {
+        if (!adminId) return;
         setRefreshing(true);
-        fetchFollower({
-            id: adminDatabase.adminMainData._id,
-            setLoading: () => setRefreshing(false),
-            setData,
-        });
-    };
+        try {
+            await fetchFollower({
+                id: adminId,
+                setLoading: () => setRefreshing(false),
+                setData,
+            });
+        } catch (err) {
+            console.error(err);
+            setRefreshing(false);
+        }
+    }, [adminId]);
 
-    const fetchuserDetiles = (payload: string) => {
+    // Fetch follower details
+    const fetchuserDetiles = async (payload: string) => {
         setLoadingFetch({ status: true, id: payload });
-        fetchDetiles({
-            payload,
-            setLoadingFetch: () => setLoadingFetch({ status: false, id: null }),
-            setFetchDetiles,
-        });
+        try {
+            await fetchDetiles({
+                payload,
+                setLoadingFetch: () => setLoadingFetch({ status: false, id: null }),
+                setFetchDetiles,
+            });
+        } catch (err) {
+            console.error(err);
+            setLoadingFetch({ status: false, id: null });
+        }
     };
 
-    const handleRemoveFollower = (followerId: string) => {
-        deleteFollower(followerId);
-        detchDetiles(prevData => prevData.filter(item => item.followingId !== followerId));
-        setFetchDetiles(null);
-        onRefresh();
+    // Remove follower
+    const handleRemoveFollower = async (followerId: string) => {
+        try {
+            await deleteFollower(followerId);
+            setFetchDetiles(null); // close modal
+            onRefresh();           // refresh list
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     useEffect(() => {
-        dataFetch();
-        return (() => {
-            setData(null)
-            setFetchDetiles(null)
-        })
-    }, []);
+        let isMounted = true;
 
-    const renderItem = ({ item }: any) => (
+        const fetchData = async () => {
+            if (!adminId) return;
+            setLoading(true);
+            try {
+                await fetchFollower({
+                    id: adminId,
+                    setLoading: (val: boolean) => { if (isMounted) setLoading(val); },
+                    setData: (val: any[]) => { if (isMounted) setData(val); }
+                });
+            } catch (err) {
+                console.error(err);
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+
+        return () => { isMounted = false; };
+    }, [adminId]);
+
+    const renderItem = useCallback(({ item }: any) => (
         <TouchableOpacity
             onPress={() => fetchuserDetiles(item.followingId)}
             activeOpacity={0.7}
@@ -100,12 +151,15 @@ const FollowerPage = (): React.JSX.Element => {
                 </View>
             </View>
         </TouchableOpacity>
-    );
+    ), [loadingFetch]);
+
     return (
         <View className="flex-1 bg-white px-3">
             <PageNavigation route={"Followers"} />
+
+            {/* Modal for follower details */}
             <Modal
-                visible={detchDetiles ? true : false}
+                visible={!!detchDetiles}
                 animationType='fade'
                 transparent
                 statusBarTranslucent
@@ -122,6 +176,7 @@ const FollowerPage = (): React.JSX.Element => {
                                 <Text className='text-xl text-white font-bold mt-4'>{detchDetiles?.User_Name}</Text>
                                 <Text className='text-indigo-100 mt-1'>@{detchDetiles?.User_Name?.replace(/\s+/g, '').toLowerCase()}</Text>
                             </View>
+
                             <View className='p-6'>
                                 <View className='mb-4'>
                                     <Text className='text-xs text-gray-500 font-medium mb-1'>BIO</Text>
@@ -172,6 +227,7 @@ const FollowerPage = (): React.JSX.Element => {
                 </View>
             </Modal>
 
+            {/* Followers List */}
             {loading ? (
                 <View className="flex-1 flex items-center justify-center">
                     <ActivityIndicator size="large" color="#F97316" />
@@ -181,14 +237,20 @@ const FollowerPage = (): React.JSX.Element => {
                 <FlatList
                     data={data}
                     ListEmptyComponent={
-                        <View className="flex items-center justify-center mt-20">
-                            <Text className="text-gray-400 text-lg font-medium">No followers yet</Text>
-                            <Text className="text-gray-400 mt-2 text-center">
-                                When someone follows you, they'll appear here.
-                            </Text>
+                        <View style={styles.noDataContainer}>
+                            <View style={styles.noDataContent}>
+                                <View style={styles.noDataIcon}>
+                                    <Text style={styles.noDataEmoji}>📍</Text>
+                                </View>
+                                <Text style={styles.noDataTitle}>No Followers Yet</Text>
+                                <Text style={styles.noDataDescription}>
+                                    You don't have any followers with location data at the moment.
+                                    When followers join with location sharing enabled, they'll appear here.
+                                </Text>
+                            </View>
                         </View>
                     }
-                    keyExtractor={(item) => item._id}
+                    keyExtractor={(item, index) => item._id || index.toString()}
                     renderItem={renderItem}
                     contentContainerStyle={{ paddingTop: 16, paddingBottom: 20 }}
                     showsVerticalScrollIndicator={false}
@@ -201,3 +263,43 @@ const FollowerPage = (): React.JSX.Element => {
 };
 
 export default FollowerPage;
+
+const styles = StyleSheet.create({
+    noDataContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'white',
+        paddingHorizontal: 24,
+    },
+    noDataContent: {
+        alignItems: 'center',
+        maxWidth: 300,
+    },
+    noDataIcon: {
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+        backgroundColor: '#e2e8f0',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    noDataEmoji: {
+        fontSize: 36,
+    },
+    noDataTitle: {
+        fontSize: 24,
+        fontWeight: '700',
+        color: '#1e293b',
+        marginBottom: 12,
+        textAlign: 'center',
+    },
+    noDataDescription: {
+        fontSize: 16,
+        color: '#64748b',
+        textAlign: 'center',
+        lineHeight: 22,
+        marginBottom: 24,
+    },
+});
