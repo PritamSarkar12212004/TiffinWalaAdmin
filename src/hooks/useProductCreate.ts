@@ -1,3 +1,4 @@
+import {useNavigation} from '@react-navigation/native';
 import ApiCon from '../constant/api/ApiCon';
 import CloudanerysingleImgIpload from '../functions/image/CloudanerysingleImgIpload';
 import api from '../util/api/Axios';
@@ -18,6 +19,7 @@ interface ProductData {
 }
 
 const useProductCreate = () => {
+  const navivation = useNavigation();
   const createProduct = async ({
     title,
     description,
@@ -32,20 +34,22 @@ const useProductCreate = () => {
     fildReseter,
     errorHandler,
   }: ProductData) => {
-    console.log(adminDatabase);
     try {
       setLoading(true);
-      console.log('🚀 Starting product creation...');
 
+      // Upload main image
       const uploadedMainImage = await CloudanerysingleImgIpload(
         mainImage,
         'image',
       );
 
+      // Upload menu images
       const uploadedMenuImages = await Promise.all(
         menuImages.map(image => CloudanerysingleImgIpload(image, 'image')),
       );
-      await api.post(ApiCon.Product.CreateProduct, {
+
+      // Prepare payload
+      const payload = {
         title,
         description,
         price,
@@ -57,17 +61,29 @@ const useProductCreate = () => {
         address: adminDatabase.adminMainData.User_Address.address,
         latitude: adminDatabase.adminMainData.User_Address.latitude,
         longitude: adminDatabase.adminMainData.User_Address.longitude,
-      });
-      setUploadStatus('success');
-      if (fildReseter) {
-        fildReseter();
-      }
+      };
+
+      // Send API request
+      await api
+        .post(ApiCon.Product.CreateProduct, payload)
+        .then(res => {
+          setUploadStatus('success');
+          fildReseter?.();
+          navivation.navigate('Home');
+          setLoading(false);
+        })
+        .catch(err => {
+          setUploadStatus('error');
+          fildReseter?.();
+          setLoading(false);
+        });
     } catch (err) {
       console.error('❌ Error creating product:', err);
       setUploadStatus('error');
-      if (errorHandler) {
-        errorHandler(err);
-      }
+      errorHandler?.(err);
+      setLoading(false);
+    } finally {
+      setLoading(false);
     }
   };
 

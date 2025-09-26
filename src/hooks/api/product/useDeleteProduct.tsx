@@ -3,19 +3,20 @@ import { userContext } from "../../../util/context/ContextProvider"
 
 const useDeleteProduct = () => {
     const { removeProductAfterDelete } = userContext()
-    const deleteProduct = ({ id, loading, navigation }: any) => {
+    const deleteProduct = ({ id, userId, loading, navigation }: any) => {
         api.post("/product/delete", {
             payload: {
-                id: id
+                id: id,
+                userId: userId
             }
         }).then(async () => {
             loading(false)
             await removeProductAfterDelete(id)
-            await navigation.goBack()
+            await navigation.navigate("Home")
         }).catch(async (err) => {
             loading(false)
             await removeProductAfterDelete(id)
-            await navigation.goBack()
+            await navigation.navigate("Home")
 
         })
     }

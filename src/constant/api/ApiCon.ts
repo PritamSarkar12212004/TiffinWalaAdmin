@@ -24,7 +24,7 @@ const ApiCon = {
     ControllOption: '/option/controll-options',
   },
   Product: {
-    CreateProduct: "'/product/create'",
+    CreateProduct: "/product/create",
   },
 };
 export default ApiCon;

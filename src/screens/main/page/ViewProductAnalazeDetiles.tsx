@@ -21,9 +21,10 @@ const ModernViewProductDetails = () => {
     ]
 
     const { deleteProduct } = useDeleteProduct()
+    const { adminDatabase } = userContext()
     const deleteProductFunc = (payload: any) => {
         setDeleteloading(true)
-        deleteProduct({ id: payload, loading: setDeleteloading, navigation: navigation })
+        deleteProduct({ id: payload, userId: adminDatabase.adminMainData._id, loading: setDeleteloading, navigation: navigation })
     }
     const renderItem = ({ item }: any) => (
 

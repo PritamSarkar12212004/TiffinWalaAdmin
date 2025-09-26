@@ -15,7 +15,7 @@ const Risehand = () => {
   const { deleteFollower } = useDeleteFollower();
   const sheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['25%', '50%', '90%'], []);
-  const handleSheetChange = useCallback((index) => {
+  const handleSheetChange = useCallback((index: any) => {
     console.log('handleSheetChange', index);
   }, []);
   const [data, setData] = useState<any>([]);
@@ -52,7 +52,7 @@ const Risehand = () => {
 
   const deleteRow = (rowKey: string) => {
     deleteFollower(rowKey);
-    setData((prevData) => prevData.filter((item: any) => item._id !== rowKey));
+    setData((prevData: any) => prevData.filter((item: any) => item._id !== rowKey));
   };
 
   if (loading) {
@@ -62,7 +62,7 @@ const Risehand = () => {
   return (
     <GestureHandlerRootView style={styles.container}>
       <View style={{ flex: 1, backgroundColor: 'white' }}>
-        {adminProductCount > 0 ? (
+        {adminProductCount?.length > 0 ? (
           data?.length > 0 ? (
             <View style={{ flex: 1 }}>
               {/* Map */}

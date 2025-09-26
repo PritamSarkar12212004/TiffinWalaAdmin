@@ -235,7 +235,7 @@ const DashBoard = () => {
             </View>
           </View>
 
-          {adminProductCount ? (
+          {adminProductCount?.length > 0 ? (
             <>
               <View style={styles.metricsRow}>
                 <MetricCard
@@ -278,7 +278,7 @@ const DashBoard = () => {
 
                   <MetricCard
                     title="Products"
-                    value={productData.length ?? 0}
+                    value={productData?.length ?? 0}
                     icon="box"
                     color="#8B5CF6"
                   />

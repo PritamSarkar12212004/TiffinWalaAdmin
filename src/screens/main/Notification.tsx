@@ -52,7 +52,7 @@ const Notification = () => {
     setData(prevData => prevData.filter(item => item._id !== id));
   };
 
-  const NotificationCard = ({ item }) => (
+  const NotificationCard = ({ item }: any) => (
     <View style={styles.notificationCard}>
       <Image
         source={{ uri: item.senderImg }}
@@ -95,7 +95,7 @@ const Notification = () => {
 
   return (
     <View style={styles.container}>
-      {adminProductCount > 0 ?
+      {adminProductCount?.length > 0 ?
         !loading ?
           data.length > 0 ? (
             <ScrollView
