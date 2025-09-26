@@ -13,6 +13,7 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
   const Routenavigation = useNavigation()
   const [mobile, setMobile] = useState('');
   const [loading, setloading] = useState(false)
+
   const inputValidation = (text: any) => {
     const cleaned = text.replace(/[^0-9]/g, '');
     if (cleaned.length <= 10) {
@@ -25,6 +26,7 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
       login(mobile, setloading, Routenavigation)
     }
   }
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}

@@ -42,8 +42,6 @@ export const ContextProvider = ({ children }: { children: React.ReactNode }) => 
 
         setProductData(updatedProductData);
     };
-
-
     return (
         <Context.Provider
             value={{
@@ -59,7 +57,7 @@ export const ContextProvider = ({ children }: { children: React.ReactNode }) => 
                 setloading,
                 productData,
                 setProductData,
-                removeProductAfterDelete
+                removeProductAfterDelete,
             }}
         >
             {children}

@@ -3,10 +3,12 @@ import CloudanerysingleImgIpload from '../../../../functions/image/Cloudanerysin
 import api from '../../../../util/api/Axios';
 import {userContext} from '../../../../util/context/ContextProvider';
 import ApiCon from '../../../../constant/api/ApiCon';
+import {useNotify} from '../../../../components/wraper/Wraper';
 
 const useUpdateProfile = () => {
   const {setAdminDatabase} = userContext();
   const navigation = useNavigation();
+  const {caller} = useNotify();
   const updateProfile = async ({
     payload,
     payloadHelper,
@@ -53,6 +55,11 @@ const useUpdateProfile = () => {
           adminMainData: res.data.data,
           ProductData: res.data.productData.productData,
         });
+        caller({
+          message: 'Profile Updated',
+          description: 'Your changes have been saved.',
+          type: 'success',
+        });
         navigation.dispatch(
           CommonActions.reset({
             index: 0,
@@ -61,7 +68,11 @@ const useUpdateProfile = () => {
         );
       })
       .catch(err => {
-        console.log(err);
+        caller({
+          message: 'Oops!',
+          description: 'Could not connect to the server.',
+          type: 'danger',
+        });
       });
   };
   return {updateProfile};

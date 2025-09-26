@@ -9,6 +9,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import MainProfileSetup from '../../screens/auth/MainProfileSetup';
 import DonePage from '../../screens/auth/DonePage';
 import ErrorPage from '../../screens/auth/ErrorPage';
+import Notify from '../../components/notify/Notify';
 const Stack = createStackNavigator();
 
 const AuthNavigation = () => {

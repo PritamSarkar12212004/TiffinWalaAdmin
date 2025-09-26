@@ -2,6 +2,7 @@ import {useNavigation} from '@react-navigation/native';
 import ApiCon from '../constant/api/ApiCon';
 import CloudanerysingleImgIpload from '../functions/image/CloudanerysingleImgIpload';
 import api from '../util/api/Axios';
+import {useNotify} from '../components/wraper/Wraper';
 
 interface ProductData {
   title: string;
@@ -19,6 +20,7 @@ interface ProductData {
 }
 
 const useProductCreate = () => {
+  const {caller} = useNotify();
   const navigation = useNavigation();
   const createProduct = async ({
     title,
@@ -67,6 +69,12 @@ const useProductCreate = () => {
         .then(res => {
           setUploadStatus('success');
           fildReseter?.();
+          caller({
+            message: 'Post Created',
+            description: 'Your mess post has been published.',
+            type: 'success',
+          });
+
           navigation.reset({
             index: 0,
             routes: [{name: 'Home'}],
@@ -77,12 +85,22 @@ const useProductCreate = () => {
           setUploadStatus('error');
           fildReseter?.();
           setLoading(false);
+          caller({
+            message: 'Creation Failed',
+            description: 'Could not publish your mess post. Try again.',
+            type: 'danger',
+          });
         });
     } catch (err) {
       console.error('❌ Error creating product:', err);
       setUploadStatus('error');
       errorHandler?.(err);
       setLoading(false);
+      caller({
+        message: 'Creation Failed',
+        description: 'Could not publish your mess post. Try again.',
+        type: 'danger',
+      });
     } finally {
       setLoading(false);
     }
