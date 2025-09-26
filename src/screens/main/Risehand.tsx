@@ -178,7 +178,25 @@ const Risehand = () => {
               </BottomSheet>
             </View>
           ) : (
-            <Text style={{ textAlign: 'center', marginTop: 20 }}>No data</Text>
+            // Modern No Data UI
+            <View style={styles.noDataContainer}>
+              <View style={styles.noDataContent}>
+                <View style={styles.noDataIcon}>
+                  <Text style={styles.noDataEmoji}>📍</Text>
+                </View>
+                <Text style={styles.noDataTitle}>No Followers Yet</Text>
+                <Text style={styles.noDataDescription}>
+                  You don't have any followers with location data at the moment.
+                  When followers join with location sharing enabled, they'll appear here.
+                </Text>
+                <TouchableOpacity
+                  style={styles.refreshButton}
+                  onPress={dataFetch}
+                >
+                  <Text style={styles.refreshButtonText}>Refresh</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           )
         ) : (
           <MapNoProduct navigation={navigation} />
@@ -228,6 +246,63 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     padding: 16,
+  },
+  // Modern No Data Styles
+  noDataContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f8fafc',
+    paddingHorizontal: 24,
+  },
+  noDataContent: {
+    alignItems: 'center',
+    maxWidth: 300,
+  },
+  noDataIcon: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#e2e8f0',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  noDataEmoji: {
+    fontSize: 36,
+  },
+  noDataTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#1e293b',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  noDataDescription: {
+    fontSize: 16,
+    color: '#64748b',
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: 24,
+  },
+  refreshButton: {
+    backgroundColor: '#FF7622',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 12,
+    shadowColor: '#FF7622',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  refreshButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
 
