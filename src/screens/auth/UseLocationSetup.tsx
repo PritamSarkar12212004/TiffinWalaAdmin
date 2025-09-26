@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ActivityIndicator,  } from 'react-native'
+import { View, Text, TouchableOpacity, ActivityIndicator, } from 'react-native'
 import React, { useState, useRef, useEffect } from 'react'
 import AuthHeader from '../../components/header/AuthHeader'
 import MapView, { Marker } from 'react-native-maps'
@@ -109,11 +109,11 @@ const UseLocationSetup = () => {
                             style={{ shadowColor: '#FF2374', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 6 }}
                         >
                             {loading ? (
-                                <ActivityIndicator size="large" color="#fff" />
+                                <ActivityIndicator size="small" color="#fff" />
                             ) : currentLocation ? (
-                                <Text className='text-white font-semibold text-lg'>Set Profile</Text>
+                                <Text className='text-white font-semibold '>Set Profile</Text>
                             ) : (
-                                <Text className='text-white font-semibold text-lg'>Get Current Location</Text>
+                                <Text className='text-white font-semibold '>Get Current Location</Text>
                             )}
                         </TouchableOpacity>
                     </View>
