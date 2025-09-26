@@ -1,3 +1,4 @@
+import ApiCon from '../../../constant/api/ApiCon';
 import api from '../../../util/api/Axios';
 const useFetchDetiles = () => {
   const fetchDetiles = ({
@@ -10,7 +11,7 @@ const useFetchDetiles = () => {
     setFetchDetiles: any;
   }) => {
     api
-      .post('/follower/fetch-detiles', {
+      .post(ApiCon.ProductControll.followerFetchDetiles, {
         payload: payload,
       })
       .then(res => {

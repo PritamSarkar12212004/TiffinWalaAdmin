@@ -1,3 +1,4 @@
+import ApiCon from '../../../constant/api/ApiCon';
 import api from '../../../util/api/Axios';
 
 const useNotiFetch = () => {
@@ -11,7 +12,7 @@ const useNotiFetch = () => {
     setLoading: any;
   }) => {
     api
-      .post('/notification/fetch-noti', {
+      .post(ApiCon.Notification.FetchNotification, {
         payload: {
           id: id,
         },

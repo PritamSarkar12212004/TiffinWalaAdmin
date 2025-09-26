@@ -1,3 +1,4 @@
+import ApiCon from '../../../constant/api/ApiCon';
 import Token from '../../../constant/tokens/Token';
 import setStorage from '../../../functions/token/setStorage';
 import api from '../../../util/api/Axios';
@@ -13,7 +14,7 @@ const useVarifyOtpData = () => {
 
   const varifyOtpData = async (status: any, phone: any, navigation: any) => {
     await api
-      .post('/auth/otp/provide-data', {
+      .post(ApiCon.AuthCall.otpVarify, {
         status: status,
         number: phone,
       })

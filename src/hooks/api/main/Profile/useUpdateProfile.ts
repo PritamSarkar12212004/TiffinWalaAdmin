@@ -2,6 +2,7 @@ import {CommonActions, useNavigation} from '@react-navigation/native';
 import CloudanerysingleImgIpload from '../../../../functions/image/CloudanerysingleImgIpload';
 import api from '../../../../util/api/Axios';
 import {userContext} from '../../../../util/context/ContextProvider';
+import ApiCon from '../../../../constant/api/ApiCon';
 
 const useUpdateProfile = () => {
   const {setAdminDatabase} = userContext();
@@ -28,7 +29,7 @@ const useUpdateProfile = () => {
     };
   }) => {
     await api
-      .post('/product/update', {
+      .post(ApiCon.Upload.productUpload, {
         id: payload.id,
         name: payload.name,
         email: payload.email,

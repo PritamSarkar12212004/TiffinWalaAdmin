@@ -1,3 +1,4 @@
+import ApiCon from '../../../../constant/api/ApiCon';
 import Token from '../../../../constant/tokens/Token';
 import getStorage from '../../../../functions/token/getStorage';
 import api from '../../../../util/api/Axios';
@@ -11,7 +12,7 @@ const useMainDataRicive = () => {
     setAdminProductCount: any,
   ) => {
     await api
-      .post('/data-provider/main-data', {
+      .post(ApiCon.Main.DataProvider, {
         phone: phone,
       })
       .then(async res => {

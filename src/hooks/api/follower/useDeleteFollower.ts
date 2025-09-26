@@ -1,9 +1,10 @@
+import ApiCon from '../../../constant/api/ApiCon';
 import api from '../../../util/api/Axios';
 
 const useDeleteFollower = () => {
   const deleteFollower = (id: any) => {
     api
-      .post('/follower/delete-data', {
+      .post(ApiCon.ProductControll.deleteFollower, {
         payload: {
           id: id,
         },

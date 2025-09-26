@@ -1,3 +1,4 @@
+import ApiCon from '../../../constant/api/ApiCon';
 import setStorage from '../../../functions/token/setStorage';
 import api from '../../../util/api/Axios';
 
@@ -13,7 +14,7 @@ const useOptionUpdate = () => {
     };
   }) => {
     api
-      .post('/option/controll-options', {
+      .post(ApiCon.Options.ControllOption, {
         id: payload.id,
         path: payload.path,
         value: payload.value,

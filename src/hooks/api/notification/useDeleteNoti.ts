@@ -1,9 +1,10 @@
+import ApiCon from '../../../constant/api/ApiCon';
 import api from '../../../util/api/Axios';
 
 const useDeleteNoti = () => {
   const deleteNoti = (id: any) => {
     api
-      .post('/notification/delete-noti', {
+      .post(ApiCon.Notification.DeleteNotification, {
         payload: {
           id: id,
         },

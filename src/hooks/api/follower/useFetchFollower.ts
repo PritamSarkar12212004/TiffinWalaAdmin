@@ -1,9 +1,10 @@
+import ApiCon from '../../../constant/api/ApiCon';
 import api from '../../../util/api/Axios';
 
 const useFetchFollower = () => {
   const fetchFollower = ({id, setLoading, setData}: any) => {
     api
-      .post('/follower/fetch-data', {
+      .post(ApiCon.ProductControll.followerFetch, {
         payload: {
           id: id,
         },

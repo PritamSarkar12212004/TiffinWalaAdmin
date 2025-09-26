@@ -1,3 +1,4 @@
+import ApiCon from '../../../constant/api/ApiCon';
 import Token from '../../../constant/tokens/Token';
 import CloudanerysingleImgIpload from '../../../functions/image/CloudanerysingleImgIpload';
 import setStorage from '../../../functions/token/setStorage';
@@ -16,7 +17,7 @@ const useCreateProfileApi = () => {
     await CloudanerysingleImgIpload(data.profileImage, 'image')
       .then(async result => {
         await api
-          .post('/auth/profile-create', {
+          .post(ApiCon.AuthCall.createProfile, {
             Description: data.Description,
             Name: data.Name,
             email: data.email,
@@ -26,8 +27,6 @@ const useCreateProfileApi = () => {
             gender: data.gender,
           })
           .then(async res => {
-            console.log(res.data.data.UserPrivacyOptions.DataAnalytics);
-
             await Promise.all([
               setStorage(
                 Token.PrivacyToken.DataAnalays.KeepHistory,

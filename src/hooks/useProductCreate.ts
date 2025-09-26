@@ -1,3 +1,4 @@
+import ApiCon from '../constant/api/ApiCon';
 import CloudanerysingleImgIpload from '../functions/image/CloudanerysingleImgIpload';
 import api from '../util/api/Axios';
 
@@ -44,7 +45,7 @@ const useProductCreate = () => {
       const uploadedMenuImages = await Promise.all(
         menuImages.map(image => CloudanerysingleImgIpload(image, 'image')),
       );
-      await api.post('/product/create', {
+      await api.post(ApiCon.Product.CreateProduct, {
         title,
         description,
         price,

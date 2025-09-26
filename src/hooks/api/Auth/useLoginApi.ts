@@ -1,8 +1,9 @@
+import ApiCon from '../../../constant/api/ApiCon';
 import api from '../../../util/api/Axios';
 const useLoginApi = () => {
   const login = async (phone: any, setloading: any, Routenavigation: any) => {
     await api
-      .post('/auth/otp', {
+      .post(ApiCon.AuthCall.loginOtp, {
         number: phone,
       })
       .then(res => {
