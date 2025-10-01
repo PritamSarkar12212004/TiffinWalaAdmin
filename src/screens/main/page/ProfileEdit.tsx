@@ -296,11 +296,11 @@ const ProfileEdit = () => {
                                             style={{ shadowColor: '#FF2374', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 6 }}
                                         >
                                             {mapLoading ? (
-                                                <ActivityIndicator size="large" color="#fff" />
+                                                <ActivityIndicator size="small" color="#fff" />
                                             ) : currentLocation ? (
-                                                <Text className='text-white font-semibold text-lg'>Update Location</Text>
+                                                <Text className='text-white'>Update Location</Text>
                                             ) : (
-                                                <Text className='text-white font-semibold text-lg'>Get Current Location</Text>
+                                                <Text className='text-white '>Get Current Location</Text>
                                             )}
                                         </TouchableOpacity>
                                     </View>
