@@ -116,7 +116,7 @@ const FollowerPage = (): React.JSX.Element => {
 
     const renderItem = useCallback(({ item }: any) => (
         <TouchableOpacity
-            onPress={() => fetchuserDetiles(item.followingId)}
+            onPress={() => handleRemoveFollower(item._id)}
             activeOpacity={0.7}
             className="w-full bg-white px-4 py-3 mb-3 rounded-xl flex gap-1 shadow-sm"
             style={{
@@ -156,8 +156,6 @@ const FollowerPage = (): React.JSX.Element => {
     return (
         <View className="flex-1 bg-white px-3">
             <PageNavigation route={"Followers"} />
-
-            {/* Modal for follower details */}
             <Modal
                 visible={!!detchDetiles}
                 animationType='fade'
