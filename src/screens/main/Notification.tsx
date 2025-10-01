@@ -68,20 +68,7 @@ const Notification = () => {
   };
 
   const NotificationCard = ({ item, index }: any) => (
-    <Animated.View
-      style={[
-        styles.notificationCard,
-        {
-          opacity: fadeAnim,
-          transform: [{
-            translateY: fadeAnim.interpolate({
-              inputRange: [0, 1],
-              outputRange: [50, 0]
-            })
-          }]
-        }
-      ]}
-    >
+   
       <View style={styles.cardContent}>
         <View style={styles.avatarContainer}>
           <Image
@@ -133,7 +120,6 @@ const Notification = () => {
           </TouchableOpacity>
         </View>
       </View>
-    </Animated.View>
   );
 
   const getTimeAgo = (dateString: string) => {
@@ -165,12 +151,7 @@ const Notification = () => {
               }
               showsVerticalScrollIndicator={false}
             >
-              <View style={styles.header}>
-                <Text style={styles.headerTitle}>Notifications</Text>
-                <Text style={styles.headerSubtitle}>
-                  {data.length} new message{data.length !== 1 ? 's' : ''}
-                </Text>
-              </View>
+       
 
               <View style={styles.listContainer}>
                 {data.map((item, index) => (
@@ -211,7 +192,7 @@ const Notification = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: 'white',
   },
   scrollView: {
     flex: 1,

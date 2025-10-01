@@ -23,10 +23,6 @@ import useMainDataRicive from '../../hooks/api/main/DataRiciver/useMainDataRiciv
 import { userContext } from '../../util/context/ContextProvider';
 import DashBoardNoProduct from '../../components/noProduct/DashBoardNoProduct';
 import { useNavigation } from '@react-navigation/native';
-import {
-  barData,
-  monthlyOrdersData,
-} from '../../demo/data/DasboardData';
 import getStorage from '../../functions/token/getStorage';
 import Token from '../../constant/tokens/Token';
 import onScreenNotiFyFunc from '../../functions/notification/manager/onScreenNotiFyFunc';
@@ -50,6 +46,7 @@ const DashBoard = () => {
     productData,
     setProductData,
   } = userContext();
+
   const fetchData = async () => {
     setloading(true);
     try {
@@ -63,7 +60,6 @@ const DashBoard = () => {
         setAdminDatabase,
         setAdminProductCount
       );
-
     } catch (err) {
       console.error('Fetch error:', err);
     } finally {
@@ -71,8 +67,6 @@ const DashBoard = () => {
       setRefreshing(false);
     }
   };
-
-
 
   // notification
   const { tokenSet } = useTokenGet()
@@ -117,7 +111,6 @@ const DashBoard = () => {
     }
   }, [adminDatabase, token, updateToken])
 
-
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -133,6 +126,99 @@ const DashBoard = () => {
       setAdminProductCount(null);
     };
   }, []);
+
+  // -------------------- CHART DATA --------------------
+  // -------------------- CHART DATA --------------------
+
+  // Fixed Weekly Data Function
+  const getWeeklyTrafficData = () => {
+    const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+    // Create array for current week (last 7 days)
+    const weeklyData = daysOfWeek.map((day, index) => {
+      // Get the date for each day of current week
+      const today = new Date();
+      const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+
+      // Calculate date for this day in current week
+      const diff = index - dayOfWeek;
+      const weekDate = new Date(today);
+      weekDate.setDate(today.getDate() + diff);
+
+      // Format date to match backend format (YYYY-MM-DD)
+      const dateString = weekDate.toISOString().split('T')[0];
+
+      // Find matching data from backend
+      const matched = adminDatabase?.wicklyTrafic?.find((item: any) => {
+        if (!item.weekStart) return false;
+
+        const itemDate = new Date(item.weekStart);
+        const itemDateString = itemDate.toISOString().split('T')[0];
+
+        return itemDateString === dateString;
+      });
+
+      return {
+        value: matched ? matched.count : 0,
+        label: day,
+        frontColor: matched ? '#6366F1' : '#E5E7EB',
+        spacing: 8,
+      };
+    });
+
+    return weeklyData;
+  };
+
+  const getMonthlyTrafficData = () => {
+    const monthsOfYear = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    // Create a map for all months with initial value 0
+    const monthlyDataMap = new Map();
+    monthsOfYear.forEach((month, index) => {
+      monthlyDataMap.set(index, { value: 0, label: month });
+    });
+
+    // Fill data from backend
+    if (adminDatabase?.monthlyTrafic) {
+      adminDatabase.monthlyTrafic.forEach((item: any) => {
+        if (item.monthStart && item.count !== undefined) {
+          try {
+            const date = new Date(item.monthStart);
+            if (!isNaN(date.getTime())) {
+              const monthIndex = date.getMonth(); // 0 = Jan, 1 = Feb, ..., 7 = Aug, 8 = Sep
+              const currentValue = monthlyDataMap.get(monthIndex)?.value || 0;
+              monthlyDataMap.set(monthIndex, {
+                value: currentValue + item.count,
+                label: monthsOfYear[monthIndex]
+              });
+            }
+          } catch (error) {
+            console.log('Error parsing date:', error);
+          }
+        }
+      });
+    }
+
+    // Convert map to array for chart
+    const monthlyData = monthsOfYear.map((month, index) => {
+      const data = monthlyDataMap.get(index);
+      return {
+        value: data?.value || 0,
+        label: month,
+        frontColor: data?.value > 0 ? '#8B5CF6' : '#E5E7EB',
+        spacing: 4,
+      };
+    });
+    return monthlyData;
+  };
+
+  // Calculate totals - SIMPLIFIED
+  const monthlyTrafficData = getMonthlyTrafficData();
+  const currentMonthTotal = monthlyTrafficData.reduce((sum, item) => sum + item.value, 0);
+
+  // ----------------------------------------------------
+
   const MetricCard: React.FC<MetricCardProps> = ({
     title,
     value,
@@ -203,10 +289,6 @@ const DashBoard = () => {
           </View>
           <Text style={styles.chartTitle}>{title}</Text>
         </View>
-        <TouchableOpacity activeOpacity={0.7} style={styles.seeAllButton}>
-          <Text style={styles.seeAllText}>View All</Text>
-          <Icon name="chevron-right" size={14} type="solid" color="#6366F1" />
-        </TouchableOpacity>
       </View>
       {children}
     </View>
@@ -287,38 +369,43 @@ const DashBoard = () => {
 
               {/* Charts */}
               <View style={styles.chartsSection}>
-                <ChartCard title="Weekly Traffic" icon="chart-bar" iconColor="#6366F1">
-                  <BarChart
-                    barWidth={18}
-                    noOfSections={4}
-                    barBorderRadius={6}
-                    frontColor="#6366F1"
-                    data={barData}
-                    yAxisThickness={0}
-                    xAxisThickness={0}
-                    yAxisTextStyle={{ color: '#64748B', fontSize: 10 }}
-                    yAxisColor="transparent"
-                    xAxisColor="transparent"
-                    height={160}
-                  />
+                <ChartCard title="Monthly Traffic" icon="calendar" iconColor="#8B5CF6">
+                  <View style={styles.chartContainer}>
+                    <BarChart
+                      barWidth={14}
+                      noOfSections={4}
+                      barBorderRadius={4}
+                      data={monthlyTrafficData}
+                      yAxisThickness={0}
+                      xAxisThickness={0}
+                      yAxisTextStyle={{ color: '#64748B', fontSize: 9 }}
+                      yAxisColor="transparent"
+                      xAxisColor="transparent"
+                      height={160}
+                      xAxisLabelTextStyle={{
+                        fontSize: 9,
+                        color: '#64748B',
+                        textAlign: 'center'
+                      }}
+                      // Show values on top of bars
+                      showValuesAsTopLabel
+                      topLabelTextStyle={{
+                        fontSize: 9,
+                        color: '#8B5CF6',
+                        fontWeight: '600'
+                      }}
+                      // Additional props for better visualization
+                      maxValue={Math.max(...monthlyTrafficData.map(item => item.value)) + 10 || 50}
+                    />
+                    <View style={styles.totalContainer}>
+                      <Text style={styles.totalText}>
+                        Total: {currentMonthTotal} views
+                      </Text>
+                    </View>
+                  </View>
                 </ChartCard>
 
-                <ChartCard title="Monthly Traffic" icon="calendar" iconColor="#8B5CF6">
-                  <BarChart
-                    barWidth={14}
-                    noOfSections={4}
-                    barBorderRadius={6}
-                    frontColor="#8B5CF6"
-                    data={monthlyOrdersData}
-                    yAxisThickness={0}
-                    xAxisThickness={0}
-                    yAxisTextStyle={{ color: '#64748B', fontSize: 10 }}
-                    yAxisColor="transparent"
-                    xAxisColor="transparent"
-                    height={160}
-                  />
-                </ChartCard>
-                { }
+                {/* Your Products Section */}
                 <View style={{ marginTop: 30 }}>
                   <View className="w-full flex flex-row items-center justify-between">
                     <Text
@@ -444,8 +531,23 @@ const DashBoard = () => {
   );
 };
 
-
 const styles = StyleSheet.create({
+  chartContainer: {
+    marginTop: 8,
+  },
+  totalContainer: {
+    marginTop: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    backgroundColor: '#F8FAFC',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  totalText: {
+    fontSize: 12,
+    color: '#475569',
+    fontWeight: '600',
+  },
   container: {
     flex: 1,
     backgroundColor: 'white',
@@ -578,147 +680,6 @@ const styles = StyleSheet.create({
     color: '#6366F1',
     fontWeight: '600',
   },
-  pieChartContainer: {
-    alignItems: 'center',
-  },
-  centerLabel: {
-    alignItems: 'center',
-  },
-  centerLabelText: {
-    fontSize: 12,
-    color: '#64748B',
-    fontWeight: '500',
-  },
-  centerLabelValue: {
-    fontSize: 18,
-    fontWeight: '800',
-    color: '#1E293B',
-  },
-  legendContainer: {
-    marginTop: 20,
-    width: '100%',
-  },
-  legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  legendDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    marginRight: 8,
-  },
-  legendText: {
-    fontSize: 13,
-    color: '#64748B',
-    fontWeight: '500',
-    flex: 1,
-  },
-  legendValue: {
-    fontSize: 13,
-    color: '#1E293B',
-    fontWeight: '600',
-  },
-  quickActionsCard: {
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 24,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 6,
-  },
-  cardHeader: {
-    marginBottom: 20,
-  },
-  cardTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#1E293B',
-    marginBottom: 4,
-  },
-  cardSubtitle: {
-    fontSize: 14,
-    color: '#64748B',
-  },
-  quickActionsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 16,
-  },
-  actionButton: {
-    width: (width - 88) / 2,
-    height: 90,
-    backgroundColor: '#F8FAFC',
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  actionIconContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  actionText: {
-    fontSize: 13,
-    color: '#374151',
-    fontWeight: '600',
-  },
-  recentActivityCard: {
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 6,
-  },
-  activityList: {
-    gap: 16,
-  },
-  activityItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-    paddingVertical: 4,
-  },
-  activityIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  activityContent: {
-    flex: 1,
-  },
-  activityText: {
-    fontSize: 14,
-    color: '#374151',
-    fontWeight: '600',
-    marginBottom: 2,
-  },
-  activityTime: {
-    fontSize: 12,
-    color: '#64748B',
-  },
-  activityIndicator: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#10B981',
-  },
-
 });
 
 export default DashBoard;

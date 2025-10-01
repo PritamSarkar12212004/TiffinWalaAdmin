@@ -154,11 +154,6 @@ const Risehand = () => {
                               <Text className="text-black text-base font-semibold">
                                 {item.follwerName}
                               </Text>
-                              <Text className="text-gray-500 text-xs">
-                                {/* Fix: Don't render object directly */}
-                                Lat: {item.followerLocation.coordinates[1]}, Lng:{' '}
-                                {item.followerLocation.coordinates[0]}
-                              </Text>
                             </View>
                           </View>
 

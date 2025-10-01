@@ -14,6 +14,7 @@ const useMainDataRicive = () => {
         phone: phone,
       })
       .then(async res => {
+        console.log(res.data.data);
         setAdminProductCount(res.data.data.User_Post_Count);
         setAdminDatabase({
           AdminFollowers: res.data.productData.AdminFollowers,
@@ -23,6 +24,8 @@ const useMainDataRicive = () => {
           adminMainData: res.data.data,
           ProductData: res.data.productData.productData,
           followerList: res.data.productData.followerList,
+          wicklyTrafic: res.data.data.WeeklyTraffic,
+          monthlyTrafic: res.data.data.MonthlyTraffic,
         });
         setProductData(res.data.productData.productData);
         return true;
