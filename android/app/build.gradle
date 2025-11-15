@@ -77,9 +77,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.tiffinwalaadmin"
+    namespace "com.tiffinwalaadmin.tiffinwala"
     defaultConfig {
-        applicationId "com.tiffinwalaadmin"
+        applicationId "com.tiffinwalaadmin.tiffinwala"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -101,9 +101,9 @@ android {
             keyPassword 'android'
         }
          release {
-            storeFile file('tiffinwala-release-key.keystore')
+            storeFile file('tiffinadmin-release-key.keystore')
             storePassword 'PritamSarkar@2004'
-            keyAlias 'tiffinwala-key-alias'
+            keyAlias 'tiffinadmin'
             keyPassword 'PritamSarkar@2004'
         }
     }

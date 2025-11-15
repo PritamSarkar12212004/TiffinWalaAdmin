@@ -7,12 +7,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:709377544845:android:007aad57d3c129307808c4",
+        "mobilesdk_app_id": "1:709377544845:android:ec7827df9cfcd28d7808c4",
         "android_client_info": {
-          "package_name": "com.tiffinwalaadmin"
+          "package_name": "com.tiffinwalaadmin.tiffinwala"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "709377544845-71t4e78ue8u4c5188jce98trgk6sppd3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCbUZSwzQUf-cwPzHMqy3xvmc7P7TQPVFE"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "709377544845-71t4e78ue8u4c5188jce98trgk6sppd3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     },
@@ -31,7 +41,12 @@
           "package_name": "com.tiffinwalacli"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "709377544845-71t4e78ue8u4c5188jce98trgk6sppd3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCbUZSwzQUf-cwPzHMqy3xvmc7P7TQPVFE"
@@ -39,7 +54,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "709377544845-71t4e78ue8u4c5188jce98trgk6sppd3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

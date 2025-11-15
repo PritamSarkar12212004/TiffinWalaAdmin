@@ -1,4 +1,4 @@
-package com.tiffinwalaadmin
+package com.tiffinwalaadmin.tiffinwala
 
 import android.app.Application
 import com.facebook.react.PackageList

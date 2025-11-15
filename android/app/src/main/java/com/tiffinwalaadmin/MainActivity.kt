@@ -1,4 +1,4 @@
-package com.tiffinwalaadmin
+package com.tiffinwalaadmin.tiffinwala
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
