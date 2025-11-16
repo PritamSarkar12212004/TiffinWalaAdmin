@@ -4,7 +4,6 @@ import Icon from '../../MainLogo/icon/Icon';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp, useRoute, CommonActions } from '@react-navigation/native';
 import { OtpInput } from "react-native-otp-entry";
-import useResendOtpApi from '../../hooks/api/Auth/useResendOtpApi';
 import useVarifyOtpData from '../../hooks/api/Auth/useVarifyOtpData';
 import { useNotify } from '../../components/wraper/Wraper';
 interface OtpVerifyScreenProps {
@@ -15,18 +14,10 @@ interface OtpVerifyScreenProps {
 const OtpVerifyScreen: React.FC<OtpVerifyScreenProps> = ({ navigation, route }) => {
   const { caller } = useNotify()
   const RouteParams = useRoute();
-  const { ResendApi } = useResendOtpApi()
   const [otp, setOtp] = useState<string>('');
   const [timer, setTimer] = useState(30);
   const [navbigateOtp, setNavigateOtp] = useState<any>(RouteParams.params.otp)
-
   const { varifyOtpData } = useVarifyOtpData()
-
-
-  const handleResend = () => {
-    ResendApi(RouteParams.params.phone, setNavigateOtp, setTimer)
-  };
-
   const handleChangeNumber = () => {
     navigation.goBack();
   };
@@ -67,7 +58,6 @@ const OtpVerifyScreen: React.FC<OtpVerifyScreenProps> = ({ navigation, route }) 
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <View style={styles.container}>
-        {/* Soft Background */}
         <View style={styles.bgCircle1} />
         <View style={styles.bgCircle2} />
         <View style={styles.content}>
@@ -75,11 +65,9 @@ const OtpVerifyScreen: React.FC<OtpVerifyScreenProps> = ({ navigation, route }) 
             <Icon name="lock" size={54} type="solid" color="#10B981" />
           </View>
           <Text style={styles.title}>Verify OTP</Text>
-          {/* <Text style={styles.subtitle}>Enter the 4-digit code sent to <Text style={styles.mobileText}>+91 {mobile}</Text></Text> */}
           <TouchableOpacity style={styles.changeNumberBtn} onPress={handleChangeNumber}>
             <Text style={styles.changeNumberText}>Change number</Text>
           </TouchableOpacity>
-          {/* OTP Input */}
           <View style={styles.otpRow}>
             <OtpInput
               numberOfDigits={4}
@@ -144,14 +132,10 @@ const OtpVerifyScreen: React.FC<OtpVerifyScreenProps> = ({ navigation, route }) 
               }}
             />
           </View>
-        
+      
           <TouchableOpacity onPress={() => handleOpt(otp)} activeOpacity={0.9} style={styles.submitBtn} className='w-full'>
             <Text style={styles.submitText}>Verify</Text>
           </TouchableOpacity>
-        </View>
-        {/* Footer */}
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>By verifying, you agree to our <Text style={styles.link}>Terms</Text> & <Text style={styles.link}>Privacy Policy</Text>.</Text>
         </View>
       </View>
     </KeyboardAvoidingView>

@@ -96,7 +96,6 @@ const ProfileEdit = () => {
             longitudeDelta: 0.0421,
         };
 
-    // Animate to marker when currentLocation is set
     useEffect(() => {
         if (currentLocation && mapRef.current) {
             mapRef.current.animateToRegion({
@@ -147,7 +146,6 @@ const ProfileEdit = () => {
             </View>
         )
     }
-
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
@@ -158,8 +156,7 @@ const ProfileEdit = () => {
                 <View className='px-4'>
                     <PageNavigation route={"Edit Profile"} />
                 </View>
-
-                <ScrollView className='flex-1 px-4 pt-6'>
+                <ScrollView className='flex-1  pt-6'>
                     <Modal statusBarTranslucent transparent visible={loading} style={{
                         height: "100%",
                         width: "100%",
@@ -169,7 +166,6 @@ const ProfileEdit = () => {
 
                         <UploadingModel AnimationComp={AnimationComp} Animation={Animation} />
                     </Modal>
-                    {/* Profile Image Section */}
                     <View className='items-center mb-8'>
                         <View className='relative'>
                             <TouchableOpacity
@@ -194,11 +190,8 @@ const ProfileEdit = () => {
                         <Text className='text-gray-600 text-sm mt-2'>Tap to change photo</Text>
                     </View>
 
-                    {/* Form Fields */}
                     <View className='bg-white rounded-2xl p-6 mb-6 shadow-sm border border-gray-100'>
                         {renderField('name', 'Full Name', 'Enter your full name')}
-                        {/* Gender Select */}
-                        {/* Gender Select */}
                         <View className='mb-6'>
                             <Text className='text-gray-700 text-sm font-semibold mb-2'>Gender</Text>
                             <TouchableOpacity
@@ -214,8 +207,6 @@ const ProfileEdit = () => {
                                 <Icon name="chevron-down" type="solid" size={16} color="#888" />
                             </TouchableOpacity>
                         </View>
-
-                        {/* Gender Selection Modal */}
                         <Modal
                             transparent
                             visible={genderModal}
@@ -245,9 +236,6 @@ const ProfileEdit = () => {
                                 </View>
                             </TouchableOpacity>
                         </Modal>
-
-
-
                         {renderField('phone', 'Phone Number', 'Enter your phone number', 'phone-pad')}
                         {renderField('address', 'Address', 'Enter your address', 'default', true)}
                         <View className='flex'>
@@ -282,27 +270,30 @@ const ProfileEdit = () => {
                                 <View className='w-full absolute bottom-0 py-5 h-20  rounded-t-[40px] flex items-center justify-between shadow-lg'>
                                     <View className='w-full px-10 h-full flex items-center justify-between gap-3'>
                                         {error && <Text style={{ color: '#ef4444', marginTop: 4, fontWeight: '500', fontSize: 15 }}>{error}</Text>}
-                                        <TouchableOpacity
-                                            activeOpacity={0.85}
-                                            onPress={() => {
-                                                if (currentLocation) {
-                                                    SetCurrentLocation()
+                                        {
+                                            currentLocation ? null : <TouchableOpacity
+                                                activeOpacity={0.85}
+                                                onPress={() => {
+                                                    if (currentLocation) {
+                                                        SetCurrentLocation()
 
-                                                } else {
-                                                    handleLocation();
-                                                }
-                                            }}
-                                            className={`w-full h-14 flex items-center justify-center rounded-full bottom-5 ${currentLocation ? 'bg-green-600' : 'bg-[#FF2374]'}`}
-                                            style={{ shadowColor: '#FF2374', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 6 }}
-                                        >
-                                            {mapLoading ? (
-                                                <ActivityIndicator size="small" color="#fff" />
-                                            ) : currentLocation ? (
-                                                <Text className='text-white'>Update Location</Text>
-                                            ) : (
-                                                <Text className='text-white '>Get Current Location</Text>
-                                            )}
-                                        </TouchableOpacity>
+                                                    } else {
+                                                        handleLocation();
+                                                    }
+                                                }}
+                                                className={`w-full h-14 flex items-center justify-center rounded-full bottom-5 ${currentLocation ? 'bg-green-600' : 'bg-[#FF2374]'}`}
+                                                style={{ shadowColor: '#FF2374', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 6 }}
+                                            >
+                                                {mapLoading ? (
+                                                    <ActivityIndicator size="small" color="#fff" />
+                                                ) : currentLocation ? (
+                                                    null
+                                                ) : (
+                                                    <Text className='text-white '>Get Current Location</Text>
+                                                )}
+                                            </TouchableOpacity>
+                                        }
+
                                     </View>
                                 </View>
                             </View>
@@ -310,36 +301,27 @@ const ProfileEdit = () => {
                         {renderField('bio', 'Bio', 'Tell us about yourself', 'default', true)}
                     </View>
 
-                    {/* Save Button */}
-                    <TouchableOpacity
-                        onPress={handleSave}
-                        disabled={loading}
-                        activeOpacity={0.8}
-                        className='bg-[#FF7622] rounded-2xl h-14 flex items-center justify-center mb-6 shadow-sm'
-                    >
-                        <View className='flex-row items-center justify-center'>
-                            {loading ? (
-                                <ActivityIndicator size="small" color="white" />
-                            ) : (
-                                <View className='flex flex-row items-center justify-center gap-3'>
-                                    <Text className='text-white text-lg font-bold ml-2'>
-                                        {loading ? 'Saving...' : 'Save Changes'}
-                                    </Text>
-                                    <Icon name='arrow-right' size={20} color='white' type={"solid"} />
-                                </View>
-                            )}
+                    <View className='px-3'>
+                        <TouchableOpacity
+                            onPress={handleSave}
+                            disabled={loading}
+                            activeOpacity={0.8}
+                            className='bg-[#FF7622] rounded-2xl h-14 flex items-center justify-center mb-20 shadow-sm'
+                        >
+                            <View className='flex-row items-center justify-center'>
+                                {loading ? (
+                                    <ActivityIndicator size="small" color="white" />
+                                ) : (
+                                    <View className='flex flex-row items-center justify-center gap-3'>
+                                        <Text className='text-white text-lg font-bold ml-2'>
+                                            {loading ? 'Saving...' : 'Save Changes'}
+                                        </Text>
+                                    </View>
+                                )}
 
-                        </View>
-                    </TouchableOpacity>
-
-                    {/* Cancel Button */}
-                    <TouchableOpacity
-                        onPress={() => navigation.goBack()}
-                        activeOpacity={0.8}
-                        className='bg-gray-100 rounded-2xl h-14 flex items-center justify-center mb-14'
-                    >
-                        <Text className='text-gray-700 text-lg font-semibold text-center'>Cancel</Text>
-                    </TouchableOpacity>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
                 </ScrollView>
             </View>
         </KeyboardAvoidingView>
@@ -348,16 +330,3 @@ const ProfileEdit = () => {
 }
 
 export default ProfileEdit
-const styles = StyleSheet.create({
-    absolute: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 9999,
-    },
-});

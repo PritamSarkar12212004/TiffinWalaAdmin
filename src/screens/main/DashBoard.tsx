@@ -67,13 +67,9 @@ const DashBoard = () => {
       setRefreshing(false);
     }
   };
-
-  // notification
   const { tokenSet } = useTokenGet()
   const [updateToken, setUpdateToken] = useState<any>(null)
   const [token, settoken] = useState<any>(null)
-
-  // get token and update token
   useEffect(() => {
     const tokenRefresh = messaging().onTokenRefresh((newToken) => {
       setUpdateToken(newToken)
@@ -82,8 +78,6 @@ const DashBoard = () => {
       tokenRefresh()
     }
   }, []);
-
-  // foreground state message
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
       const { type } = remoteMessage.data || {};
@@ -103,8 +97,6 @@ const DashBoard = () => {
     });
     return unsubscribe;
   }, [navigation])
-
-  // update token in database
   useEffect(() => {
     if (adminDatabase && token) {
       tokenSet(updateToken ?? token, adminDatabase.adminMainData._id)
@@ -127,59 +119,13 @@ const DashBoard = () => {
     };
   }, []);
 
-  // -------------------- CHART DATA --------------------
-  // -------------------- CHART DATA --------------------
-
-  // Fixed Weekly Data Function
-  const getWeeklyTrafficData = () => {
-    const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-    // Create array for current week (last 7 days)
-    const weeklyData = daysOfWeek.map((day, index) => {
-      // Get the date for each day of current week
-      const today = new Date();
-      const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
-
-      // Calculate date for this day in current week
-      const diff = index - dayOfWeek;
-      const weekDate = new Date(today);
-      weekDate.setDate(today.getDate() + diff);
-
-      // Format date to match backend format (YYYY-MM-DD)
-      const dateString = weekDate.toISOString().split('T')[0];
-
-      // Find matching data from backend
-      const matched = adminDatabase?.wicklyTrafic?.find((item: any) => {
-        if (!item.weekStart) return false;
-
-        const itemDate = new Date(item.weekStart);
-        const itemDateString = itemDate.toISOString().split('T')[0];
-
-        return itemDateString === dateString;
-      });
-
-      return {
-        value: matched ? matched.count : 0,
-        label: day,
-        frontColor: matched ? '#6366F1' : '#E5E7EB',
-        spacing: 8,
-      };
-    });
-
-    return weeklyData;
-  };
-
   const getMonthlyTrafficData = () => {
     const monthsOfYear = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-    // Create a map for all months with initial value 0
     const monthlyDataMap = new Map();
     monthsOfYear.forEach((month, index) => {
       monthlyDataMap.set(index, { value: 0, label: month });
     });
-
-    // Fill data from backend
     if (adminDatabase?.monthlyTrafic) {
       adminDatabase.monthlyTrafic.forEach((item: any) => {
         if (item.monthStart && item.count !== undefined) {
@@ -199,8 +145,6 @@ const DashBoard = () => {
         }
       });
     }
-
-    // Convert map to array for chart
     const monthlyData = monthsOfYear.map((month, index) => {
       const data = monthlyDataMap.get(index);
       return {
@@ -213,12 +157,8 @@ const DashBoard = () => {
     return monthlyData;
   };
 
-  // Calculate totals - SIMPLIFIED
   const monthlyTrafficData = getMonthlyTrafficData();
   const currentMonthTotal = monthlyTrafficData.reduce((sum, item) => sum + item.value, 0);
-
-  // ----------------------------------------------------
-
   const MetricCard: React.FC<MetricCardProps> = ({
     title,
     value,
@@ -366,8 +306,6 @@ const DashBoard = () => {
                   />
                 </TouchableOpacity>
               </View>
-
-              {/* Charts */}
               <View style={styles.chartsSection}>
                 <ChartCard title="Monthly Traffic" icon="calendar" iconColor="#8B5CF6">
                   <View style={styles.chartContainer}>
@@ -387,14 +325,12 @@ const DashBoard = () => {
                         color: '#64748B',
                         textAlign: 'center'
                       }}
-                      // Show values on top of bars
                       showValuesAsTopLabel
                       topLabelTextStyle={{
                         fontSize: 9,
                         color: '#8B5CF6',
                         fontWeight: '600'
                       }}
-                      // Additional props for better visualization
                       maxValue={Math.max(...monthlyTrafficData.map(item => item.value)) + 10 || 50}
                     />
                     <View style={styles.totalContainer}>
@@ -404,8 +340,6 @@ const DashBoard = () => {
                     </View>
                   </View>
                 </ChartCard>
-
-                {/* Your Products Section */}
                 <View style={{ marginTop: 30 }}>
                   <View className="w-full flex flex-row items-center justify-between">
                     <Text

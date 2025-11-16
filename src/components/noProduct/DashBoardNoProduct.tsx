@@ -3,19 +3,16 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import Icon from '../../MainLogo/icon/Icon';
 
 
-const DashBoardNoProduct = ({ onUploadPress, navigation }: any) => {
+const DashBoardNoProduct = ({ navigation }: any) => {
   return (
     <View className="flex-1 bg-white h-full w-full">
       <View className="flex-1 relative">
-        {/* Main Content */}
-        <View className="flex-1 items-center px-6 ">
-          {/* Icon Container */}
+        <View className="flex-1 items-center px- ">
           <View className="w-[140px] h-[140px] rounded-full bg-indigo-500/5 justify-center items-center mb-6">
             <View className="w-[100px] h-[100px] rounded-full bg-indigo-500/10 justify-center items-center">
               <Icon name="box-open" size={50} type="solid" color="#6366F1" />
             </View>
           </View>
-
           <Text className="text-2xl font-extrabold text-slate-800 mb-3 text-center">
             Start Your Journey
           </Text>
@@ -23,8 +20,6 @@ const DashBoardNoProduct = ({ onUploadPress, navigation }: any) => {
             Your store is ready to showcase amazing products to your customers.
             Add your first product and begin your success story!
           </Text>
-
-          {/* Stats Preview */}
           <View className="flex-row justify-around w-full mb-10">
             <View className="items-center bg-white p-4 rounded-2xl shadow-sm w-[25%]">
               <Icon name="chart-line" size={24} type="solid" color="#6366F1" />
@@ -46,7 +41,6 @@ const DashBoardNoProduct = ({ onUploadPress, navigation }: any) => {
             </View>
           </View>
 
-          {/* Action Button */}
           <TouchableOpacity
             activeOpacity={0.8}
             className="bg-indigo-500 px-8 py-4 rounded-2xl shadow-lg shadow-indigo-500/30"
@@ -55,19 +49,11 @@ const DashBoardNoProduct = ({ onUploadPress, navigation }: any) => {
             }}
           >
             <View className="flex-row items-center gap-2">
-              <Icon name="bowl-food" size={20} type="solid" color="white" />
               <Text className="text-white text-base font-semibold">
                 Add Your First Product
               </Text>
             </View>
           </TouchableOpacity>
-
-          <Text className="mt-6 text-sm text-slate-500">
-            Need help? Check our{' '}
-            <Text className="text-indigo-500 font-semibold">
-              product guidelines
-            </Text>
-          </Text>
         </View>
       </View>
     </View>

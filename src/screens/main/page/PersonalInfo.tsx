@@ -80,7 +80,6 @@ const PersonalInfo = () => {
 
     return (
         <View className='flex-1 bg-white'>
-            {/* Header */}
             <View className='px-4'>
                 <PageNavigation route={"Personal Information"} />
             </View>

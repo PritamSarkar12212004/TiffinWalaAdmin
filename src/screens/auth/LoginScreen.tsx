@@ -33,19 +33,14 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <View style={styles.container}>
-        {/* Background Illustration or Gradient */}
         <View style={styles.bgCircle1} />
         <View style={styles.bgCircle2} />
         <View style={styles.content}>
-          {/* Logo/Illustration */}
           <View style={styles.logoContainer}>
             <Image source={require('../../assets/logo/MainLogo.png')} className='h-32 w-32 rounded-full' />
           </View>
-          {/* Headline */}
           <Text style={styles.title}>Welcome to TiffinWala Admin</Text>
           <Text style={styles.subtitle}>Login with your mobile number to continue</Text>
-
-          {/* Mobile Input */}
           <View style={styles.inputWrapper}>
             <Icon name="phone" size={20} type="solid" color="#6366F1" />
             <TextInput
@@ -58,11 +53,7 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
               maxLength={10}
             />
           </View>
-
-          {/* Info Text */}
           <Text style={styles.infoText}>We will send you a One Time Password (OTP) to verify your number.</Text>
-
-          {/* Send OTP Button */}
           <TouchableOpacity
             activeOpacity={0.8}
             className='w-full'
@@ -73,10 +64,6 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
             {loading ? <ActivityIndicator size={'small'} color={"white"} /> : <Text style={styles.otpBtnText}>Send OTP</Text>
             }
           </TouchableOpacity>
-        </View>
-        {/* Footer */}
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>By continuing, you agree to our <Text style={styles.link}>Terms</Text> & <Text style={styles.link}>Privacy Policy</Text>.</Text>
         </View>
       </View>
     </KeyboardAvoidingView>
