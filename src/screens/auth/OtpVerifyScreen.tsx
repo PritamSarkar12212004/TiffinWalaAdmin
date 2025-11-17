@@ -1,301 +1,154 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import Icon from '../../MainLogo/icon/Icon';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp, useRoute, CommonActions } from '@react-navigation/native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import { OtpInput } from "react-native-otp-entry";
 import useVarifyOtpData from '../../hooks/api/Auth/useVarifyOtpData';
 import { useNotify } from '../../components/wraper/Wraper';
-interface OtpVerifyScreenProps {
-  navigation: StackNavigationProp<any, any>;
-  route: RouteProp<any, any>;
-}
 
-const OtpVerifyScreen: React.FC<OtpVerifyScreenProps> = ({ navigation, route }) => {
-  const { caller } = useNotify()
+
+const OtpVerifyScreen = () => {
+  const navigation = useNavigation();
   const RouteParams = useRoute();
+  const { caller } = useNotify();
+
   const [otp, setOtp] = useState<string>('');
-  const [timer, setTimer] = useState(30);
-  const [navbigateOtp, setNavigateOtp] = useState<any>(RouteParams.params.otp)
-  const { varifyOtpData } = useVarifyOtpData()
+  const [isLoading, setIsLoading] = useState(false);
+  const navbigateOtp = RouteParams.params.otp;
+  const { varifyOtpData } = useVarifyOtpData();
+
+
   const handleChangeNumber = () => {
     navigation.goBack();
   };
-  const handleOpt = (enteredOtp: string) => {
+
+  const handleOpt = async (enteredOtp: string) => {
+    setIsLoading(true);
     if (enteredOtp === navbigateOtp) {
       const status = true
-      varifyOtpData(status, RouteParams.params.phone, navigation, CommonActions)
+      await varifyOtpData(status, RouteParams.params.phone, navigation)
     } else {
       caller({
         message: 'Invalid OTP',
         description: 'The OTP you entered is incorrect. Please try again.',
         type: 'danger',
       });
-
     }
+    setIsLoading(false);
   };
-
-  useEffect(() => {
-    if (timer === 0) return;
-
-    const interval = setInterval(() => {
-      setTimer(prev => {
-        if (prev === 1) {
-          clearInterval(interval);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [timer]);
-
-
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
+      className="flex-1"
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <View style={styles.container}>
-        <View style={styles.bgCircle1} />
-        <View style={styles.bgCircle2} />
-        <View style={styles.content}>
-          <View style={styles.iconContainer}>
-            <Icon name="lock" size={54} type="solid" color="#10B981" />
+      <View className="flex-1 bg-white pt-10">
+        <View className="flex-1 px-6">
+          <View className="items-center mt-5">
+            <View className="mb-6">
+              <View className="w-20 h-20 rounded-2xl bg-green-50 justify-center items-center border-2 border-green-100">
+                <Icon type="solid" name="lock" size={36} color="#10B981" />
+              </View>
+            </View>
+            <Text className="text-3xl font-bold text-gray-800 mb-2 text-center">
+              OTP Verification
+            </Text>
+            <Text className="text-base text-gray-500 text-center font-medium mb-1">
+              Enter the 4-digit code sent to
+            </Text>
+            <Text className="text-lg font-semibold text-green-600 mb-4">
+              +91 {RouteParams.params.phone}
+            </Text>
+            <TouchableOpacity activeOpacity={0.8} onPress={() => isLoading ? null : handleChangeNumber()} className="mb-8">
+              <Text className="text-blue-600 font-semibold text-base">
+                Change Number
+              </Text>
+            </TouchableOpacity>
           </View>
-          <Text style={styles.title}>Verify OTP</Text>
-          <TouchableOpacity style={styles.changeNumberBtn} onPress={handleChangeNumber}>
-            <Text style={styles.changeNumberText}>Change number</Text>
-          </TouchableOpacity>
-          <View style={styles.otpRow}>
+          <View className="w-full max-w-md self-center mt-20 flex">
             <OtpInput
               numberOfDigits={4}
-              focusColor="#10B981"
-              autoFocus={false}
-              hideStick={true}
+              focusColor="#FF6B35"
+              autoFocus={true}
+              hideStick={false}
               placeholder={''}
-              blurOnFilled={true}
-              disabled={false}
+              blurOnFilled={false}
+              disabled={isLoading}
               type="numeric"
               secureTextEntry={false}
               focusStickBlinkingDuration={500}
-              onFilled={(text) => { setOtp(text); handleOpt(text); }}
-              textInputProps={{
-                accessibilityLabel: "One-Time Password",
-              }}
-              textProps={{
-                accessibilityRole: "text",
-                accessibilityLabel: "OTP digit",
-                allowFontScaling: false,
-              }}
+              onTextChange={setOtp}
+              onFilled={handleOpt}
               theme={{
                 containerStyle: {
                   flexDirection: 'row',
-                  justifyContent: 'center',
-                  gap: 16,
-                  marginBottom: 24,
-                  marginTop: 8,
+                  justifyContent: 'space-between',
+                  marginBottom: 32,
                 },
                 pinCodeContainerStyle: {
-                  width: 54,
-                  height: 62,
-                  borderRadius: 14,
-                  backgroundColor: '#F1F5F9',
+                  width: 70,
+                  height: 70,
+                  borderRadius: 16,
+                  backgroundColor: '#F8FAFC',
                   borderWidth: 2,
                   borderColor: '#E2E8F0',
-                  marginHorizontal: 2,
                   alignItems: 'center',
                   justifyContent: 'center',
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.02,
+                  shadowRadius: 8,
+                  elevation: 2,
                 },
                 focusedPinCodeContainerStyle: {
-                  borderColor: '#10B981',
-                  backgroundColor: '#D1FAE5',
+                  borderColor: '#FF6B35',
+                  backgroundColor: '#FFFFFF',
+                  shadowColor: '#FF6B35',
+                  shadowOpacity: 0.1,
+                  elevation: 4,
                 },
                 filledPinCodeContainerStyle: {
                   borderColor: '#10B981',
-                  backgroundColor: '#D1FAE5',
+                  backgroundColor: '#F0FDF4',
                 },
                 pinCodeTextStyle: {
-                  fontSize: 26,
+                  fontSize: 24,
                   fontWeight: '700',
                   color: '#1E293B',
                 },
                 placeholderTextStyle: {
                   color: '#CBD5E1',
-                  fontSize: 26,
+                  fontSize: 24,
                 },
                 disabledPinCodeContainerStyle: {
-                  backgroundColor: '#E5E7EB',
-                  borderColor: '#CBD5E1',
+                  backgroundColor: '#F1F5F9',
+                  borderColor: '#E2E8F0',
                 },
               }}
             />
+            <TouchableOpacity
+              onPress={() => handleOpt(otp)}
+              activeOpacity={0.9}
+              disabled={otp.length !== 4 || isLoading}
+              className={`
+                rounded-2xl h-14 justify-center items-center
+                ${otp.length !== 4 || isLoading ? 'bg-gray-300' : 'bg-orange-500 shadow-lg shadow-orange-500/25 elevation-8'}
+              `}
+            >
+              {isLoading ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <View className="flex-row items-center justify-center">
+                  <Text className="text-base font-bold text-white mr-2">
+                    Verify OTP
+                  </Text>
+                </View>
+              )}
+            </TouchableOpacity>
           </View>
-      
-          <TouchableOpacity onPress={() => handleOpt(otp)} activeOpacity={0.9} style={styles.submitBtn} className='w-full'>
-            <Text style={styles.submitText}>Verify</Text>
-          </TouchableOpacity>
         </View>
       </View>
     </KeyboardAvoidingView>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8FAFC',
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
-  },
-  bgCircle1: {
-    position: 'absolute',
-    top: -120,
-    left: -80,
-    width: 300,
-    height: 300,
-    borderRadius: 150,
-    backgroundColor: '#6366F110',
-    zIndex: 0,
-  },
-  bgCircle2: {
-    position: 'absolute',
-    bottom: -100,
-    right: -60,
-    width: 220,
-    height: 220,
-    borderRadius: 110,
-    backgroundColor: '#10B98110',
-    zIndex: 0,
-  },
-  content: {
-    width: '100%',
-    maxWidth: 380,
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingTop: 60,
-    paddingBottom: 40,
-    zIndex: 1,
-  },
-  iconContainer: {
-    backgroundColor: '#10B98115',
-    borderRadius: 32,
-    padding: 20,
-    marginBottom: 18,
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: '800',
-    color: '#1E293B',
-    marginBottom: 6,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 15,
-    color: '#64748B',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  mobileText: {
-    color: '#10B981',
-    fontWeight: '700',
-  },
-  changeNumberBtn: {
-    marginBottom: 18,
-    marginTop: 2,
-  },
-  changeNumberText: {
-    color: '#6366F1',
-    fontWeight: '700',
-    fontSize: 14,
-  },
-  otpRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 18,
-    marginBottom: 24,
-    marginTop: 8,
-  },
-  otpInput: {
-    width: 54,
-    height: 62,
-    borderRadius: 14,
-    backgroundColor: '#F1F5F9',
-    textAlign: 'center',
-    fontSize: 26,
-    fontWeight: '700',
-    color: '#1E293B',
-    borderWidth: 2,
-    borderColor: '#E2E8F0',
-    marginHorizontal: 2,
-  },
-  otpInputFilled: {
-    borderColor: '#10B981',
-    backgroundColor: '#D1FAE5',
-  },
-  timerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-    gap: 6,
-  },
-  timerText: {
-    color: '#64748B',
-    fontSize: 14,
-    marginLeft: 6,
-  },
-  timerValue: {
-    color: '#10B981',
-    fontWeight: '700',
-  },
-  resendBtn: {
-    marginBottom: 18,
-    marginTop: 2,
-    alignItems: 'center',
-  },
-  resendBtnText: {
-    color: '#6366F1',
-    fontWeight: '700',
-    fontSize: 15,
-  },
-  submitBtn: {
-    backgroundColor: '#10B981',
-    borderRadius: 14,
-    paddingVertical: 15,
-    paddingHorizontal: 60,
-    alignItems: 'center',
-    shadowColor: '#10B981',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  submitText: {
-    color: 'white',
-    fontWeight: '700',
-    fontSize: 17,
-    letterSpacing: 1,
-  },
-  footer: {
-    position: 'absolute',
-    bottom: 24,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-    zIndex: 2,
-    paddingHorizontal: 24,
-  },
-  footerText: {
-    color: '#94A3B8',
-    fontSize: 13,
-    textAlign: 'center',
-  },
-  link: {
-    color: '#6366F1',
-    fontWeight: '700',
-  },
-});
-
-export default OtpVerifyScreen; 
+export default OtpVerifyScreen;

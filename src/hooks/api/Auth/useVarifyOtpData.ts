@@ -63,7 +63,9 @@ const useVarifyOtpData = () => {
             ),
           ])
             .then(() => {
-              navigation.replace('DonePage');
+              navigation.replace('Auth', {
+                screen: 'DonePage',
+              });
             })
             .catch(err => {
               console.error('Error setting storage:', err);

@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import Icon from '../../MainLogo/icon/Icon';
-import { StackNavigationProp } from '@react-navigation/stack';
 import useLoginApi from '../../hooks/api/Auth/useLoginApi';
 import { useNavigation } from '@react-navigation/native';
 
-interface LoginScreenProps {
-  navigation: StackNavigationProp<any, any>;
-}
-const LoginScreen: React.FC<LoginScreenProps> = () => {
+
+const LoginScreen = () => {
   const { login } = useLoginApi()
   const Routenavigation = useNavigation()
   const [mobile, setMobile] = useState('');
   const [loading, setloading] = useState(false)
+  const [isFocused, setIsFocused] = useState(false)
 
   const inputValidation = (text: any) => {
     const cleaned = text.replace(/[^0-9]/g, '');
@@ -20,6 +18,7 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
       setMobile(cleaned);
     }
   }
+
   const handleChange = () => {
     if (mobile.length == 10) {
       setloading(true)
@@ -33,37 +32,75 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <View style={styles.container}>
-        <View style={styles.bgCircle1} />
-        <View style={styles.bgCircle2} />
         <View style={styles.content}>
-          <View style={styles.logoContainer}>
-            <Image source={require('../../assets/logo/MainLogo.png')} className='h-32 w-32 rounded-full' />
+          <View style={styles.header}>
+            <View style={styles.logoContainer}>
+              <View style={styles.logoBackground}>
+                <Image
+                  source={require('../../assets/logo/MainLogo.png')}
+                  style={styles.logoImage}
+                />
+              </View>
+            </View>
+            <Text style={styles.title}>Welcome Back</Text>
+            <Text style={styles.subtitle}>Admin Portal Access</Text>
           </View>
-          <Text style={styles.title}>Welcome to TiffinWala Admin</Text>
-          <Text style={styles.subtitle}>Login with your mobile number to continue</Text>
-          <View style={styles.inputWrapper}>
-            <Icon name="phone" size={20} type="solid" color="#6366F1" />
-            <TextInput
-              style={styles.input}
-              placeholder="Enter mobile number"
-              placeholderTextColor="#94A3B8"
-              value={mobile}
-              onChangeText={(text) => inputValidation(text)}
-              keyboardType="phone-pad"
-              maxLength={10}
-            />
+          <View style={styles.formContainer}>
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Mobile Number</Text>
+              <View style={[
+                styles.inputWrapper,
+                isFocused && styles.inputWrapperFocused,
+                mobile.length === 10 && styles.inputWrapperValid
+              ]}>
+                <View style={styles.inputIcon}>
+                  <Icon type={"solid"} name="phone" size={20} color="#FF6B35" />
+                </View>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter 10-digit mobile number"
+                  placeholderTextColor="#94A3B8"
+                  value={mobile}
+                  onChangeText={(text) => inputValidation(text)}
+                  keyboardType="phone-pad"
+                  maxLength={10}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setIsFocused(false)}
+                />
+                {mobile.length === 10 && (
+                  <View style={styles.validIcon}>
+                    <Icon type={"solid"} name="check" size={20} color="#10B981" />
+                  </View>
+                )}
+              </View>
+            </View>
+
+            <Text style={styles.infoText}>
+              We'll send a One Time Password (OTP) to verify your number
+            </Text>
+            <TouchableOpacity
+              style={[
+                styles.otpButton,
+                mobile.length !== 10 && styles.otpButtonDisabled
+              ]}
+              disabled={mobile.length !== 10 || loading}
+              onPress={handleChange}
+              activeOpacity={0.9}
+            >
+              {loading ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <View style={styles.buttonContent}>
+                  <Text style={styles.otpButtonText}>Send OTP</Text>
+                </View>
+              )}
+            </TouchableOpacity>
           </View>
-          <Text style={styles.infoText}>We will send you a One Time Password (OTP) to verify your number.</Text>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            className='w-full'
-            style={[styles.otpBtn, { opacity: mobile.length === 10 ? 1 : 0.5 }]}
-            disabled={mobile.length !== 10}
-            onPress={() => handleChange()}
-          >
-            {loading ? <ActivityIndicator size={'small'} color={"white"} /> : <Text style={styles.otpBtnText}>Send OTP</Text>
-            }
-          </TouchableOpacity>
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>
+              Secure Admin Access • TiffinWala
+            </Text>
+          </View>
         </View>
       </View>
     </KeyboardAvoidingView>
@@ -73,134 +110,190 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
+    backgroundColor: '#FFFFFF',
   },
-  bgCircle1: {
+  backgroundPattern: {
     position: 'absolute',
-    top: -120,
-    left: -80,
-    width: 300,
-    height: 300,
-    borderRadius: 150,
-    backgroundColor: '#6366F110',
-    zIndex: 0,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
-  bgCircle2: {
+  blueBlur: {
     position: 'absolute',
-    bottom: -100,
-    right: -60,
-    width: 220,
-    height: 220,
-    borderRadius: 110,
-    backgroundColor: '#10B98110',
-    zIndex: 0,
+    top: -100,
+    right: -50,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: '#1E40AF',
+    opacity: 0.05,
+  },
+  orangeBlur: {
+    position: 'absolute',
+    bottom: -80,
+    left: -40,
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+    backgroundColor: '#FF6B35',
+    opacity: 0.05,
   },
   content: {
-    width: '100%',
-    maxWidth: 380,
-    alignItems: 'center',
+    flex: 1,
     paddingHorizontal: 24,
     paddingTop: 60,
-    paddingBottom: 40,
-    zIndex: 1,
+    paddingBottom: 30,
+    justifyContent: 'space-between',
+  },
+  header: {
+    alignItems: 'center',
+    marginTop: 20,
   },
   logoContainer: {
-    alignItems: 'center',
     marginBottom: 24,
   },
-  logo: {
-    width: 90,
-    height: 90,
-    marginBottom: 8,
-    resizeMode: 'contain',
+  logoBackground: {
+    width: 100,
+    height: 100,
+    borderRadius: 25,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#1E40AF',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 8,
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
+  },
+  logoImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 20,
   },
   title: {
-    fontSize: 26,
-    fontWeight: '800',
+    fontSize: 32,
+    fontWeight: '700',
     color: '#1E293B',
-    marginBottom: 6,
+    marginBottom: 8,
     textAlign: 'center',
+    letterSpacing: -0.5,
   },
   subtitle: {
-    fontSize: 15,
+    fontSize: 16,
     color: '#64748B',
-    marginBottom: 28,
     textAlign: 'center',
+    fontWeight: '500',
+  },
+  formContainer: {
+    width: '100%',
+    maxWidth: 400,
+    alignSelf: 'center',
+  },
+  inputContainer: {
+    marginBottom: 20,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 8,
+    marginLeft: 4,
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F1F5F9',
-    borderRadius: 14,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     paddingHorizontal: 16,
-    marginBottom: 18,
-    height: 52,
-    width: '100%',
-    shadowColor: '#6366F1',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
+    height: 56,
+    borderWidth: 2,
+    borderColor: '#F1F5F9',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.02,
     shadowRadius: 8,
     elevation: 2,
   },
+  inputWrapperFocused: {
+    borderColor: '#1E40AF',
+    shadowColor: '#1E40AF',
+    shadowOpacity: 0.1,
+    elevation: 4,
+  },
+  inputWrapperValid: {
+    borderColor: '#10B981',
+  },
+  inputIcon: {
+    marginRight: 12,
+  },
+  validIcon: {
+    marginLeft: 8,
+  },
   input: {
     flex: 1,
-    fontSize: 17,
+    fontSize: 16,
     color: '#1E293B',
-    marginLeft: 12,
-    letterSpacing: 1,
+    fontWeight: '500',
+    letterSpacing: 0.5,
   },
   infoText: {
     color: '#64748B',
     fontSize: 13,
-    marginBottom: 18,
     textAlign: 'center',
+    marginBottom: 32,
+    lineHeight: 18,
   },
-  otpBtn: {
-    backgroundColor: '#6366F1', // Indigo-500
+  otpButton: {
+    backgroundColor: '#FF6B35',
     borderRadius: 16,
-    height: 50,
-    paddingHorizontal: 24,
+    height: 56,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 12,
-
-    // iOS shadow
-    shadowColor: '#6366F1',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-
-    // Android elevation
-    elevation: 4,
+    shadowColor: '#FF6B35',
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    elevation: 8,
   },
-
-  otpBtnText: {
-    color: 'white',
+  otpButtonDisabled: {
+    backgroundColor: '#CBD5E1',
+    shadowColor: '#64748B',
+    shadowOpacity: 0.1,
+    elevation: 2,
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  otpButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
     fontWeight: '700',
-    fontSize: 17,
-    letterSpacing: 1,
+    marginRight: 8,
+    letterSpacing: 0.5,
   },
   footer: {
-    position: 'absolute',
-    bottom: 24,
-    left: 0,
-    right: 0,
     alignItems: 'center',
-    zIndex: 2,
-    paddingHorizontal: 24,
   },
   footerText: {
     color: '#94A3B8',
-    fontSize: 13,
-    textAlign: 'center',
-  },
-  link: {
-    color: '#6366F1',
-    fontWeight: '700',
+    fontSize: 12,
+    fontWeight: '500',
+    letterSpacing: 0.3,
   },
 });
 
-export default LoginScreen; 
+export default LoginScreen;

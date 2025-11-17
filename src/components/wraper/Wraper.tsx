@@ -10,9 +10,6 @@ const NotifyContext = createContext<NotifyContextType | undefined>(undefined);
 
 export const useNotify = () => {
     const context = useContext(NotifyContext);
-    if (!context) {
-        throw new Error("useNotify must be used inside Wraper (NotifyProvider)");
-    }
     return context;
 };
 

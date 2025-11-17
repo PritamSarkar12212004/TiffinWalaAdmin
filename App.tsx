@@ -12,10 +12,13 @@ import Token from './src/constant/tokens/Token';
 import { ContextProvider, userContext } from './src/util/context/ContextProvider';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Wraper from './src/components/wraper/Wraper';
+
 const Stack = createNativeStackNavigator();
 
-const RouteHandler = ({ setHandleRoute }: any) => {
+const AppContent = () => {
+  const [handleRoute, setHandleRoute] = useState<any | null>(null);
   const { setAdminLocalData } = userContext();
+
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -39,47 +42,47 @@ const RouteHandler = ({ setHandleRoute }: any) => {
     checkAuth();
   }, []);
 
-  return null;
+  return (
+    <NavigationContainer>
+      {handleRoute ? (
+        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={handleRoute}>
+          <Stack.Screen name="Auth" component={AuthNavigation} />
+          <Stack.Screen
+            name="Home"
+            options={{ animation: 'slide_from_right' }}
+            component={MainNavigation}
+          />
+          <Stack.Screen
+            name="page"
+            options={{ animation: 'slide_from_right' }}
+            component={MainStacknavigation}
+          />
+        </Stack.Navigator>
+      ) : (
+        <View className="flex-1 flex justify-center items-center" style={{ backgroundColor: 'white' }}>
+          <ActivityIndicator color={"black"} size={"small"} />
+        </View>
+      )}
+    </NavigationContainer>
+  );
 };
 
 const App = () => {
-  const [handleRoute, setHandleRoute] = useState<any | null>(null);
   return (
     <Fragment>
       <GestureHandlerRootView style={styles.container}>
         <ContextProvider>
           <Wraper>
-            <RouteHandler setHandleRoute={setHandleRoute} />
-            <NavigationContainer>
-              {handleRoute ? (
-                <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={handleRoute}>
-                  <Fragment>
-                    <Stack.Screen name="Auth" component={AuthNavigation} />
-                    <Stack.Screen name="Home" options={{
-                      animation: 'slide_from_right',
-                    }} component={MainNavigation} />
-                    <Stack.Screen name="page" options={{
-                      animation: 'slide_from_right',
-                    }} component={MainStacknavigation} />
-                  </Fragment>
-                </Stack.Navigator>
-              ) : (
-                <View className="flex-1 flex justify-center items-center" style={{ backgroundColor: 'white' }}>
-                  <ActivityIndicator color={"black"} size={"small"} />
-                </View>
-              )}
-            </NavigationContainer>
+            <AppContent />
           </Wraper>
-
         </ContextProvider>
       </GestureHandlerRootView>
     </Fragment>
-
   );
 };
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: 'white', },
 
-})
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: 'white' },
+});
 
 export default App;
