@@ -1,6 +1,7 @@
 import React, { createContext, useContext } from "react";
 import { View } from "react-native";
 import FlashMessage, { MessageType, showMessage } from "react-native-flash-message";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface NotifyContextType {
     caller: (params: { message: string; description: string; type: MessageType }) => void;
@@ -29,13 +30,23 @@ const Wraper = ({ children }: any) => {
             type,
         });
     };
+
+    const insets = useSafeAreaInsets();
     return (
-        <NotifyContext.Provider value={{ caller }}>
-            <View className="flex-1">
-                {children}
-                <FlashMessage position="top" />
-            </View>
-        </NotifyContext.Provider>
+        <View style={{
+            flex: 1,
+            paddingTop: insets.top,
+            paddingBottom: insets.bottom,
+            paddingLeft: insets.left,
+            paddingRight: insets.right,
+        }}>
+            <NotifyContext.Provider value={{ caller }}>
+                <View className="flex-1">
+                    {children}
+                    <FlashMessage position="top" />
+                </View>
+            </NotifyContext.Provider>
+        </View>
     );
 };
 

@@ -7,5 +7,6 @@ const Animation = {
   MainError: require('../../assets/Animation/MainError.json'),
   ProductUpLoad: require('../../assets/Animation/ProductUpLoad.json'),
   UploadingError: require('../../assets/Animation/UploadeRrror.json'),
+  SubLoader: require('../../assets/Animation/SubLoader.json'),
 };
 export default Animation;

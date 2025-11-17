@@ -3,7 +3,7 @@ import './gesture-handler';
 import React, { Fragment, useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StatusBar, StyleSheet, View } from 'react-native';
 import MainNavigation from './src/navigation/main/MainNavigation';
 import MainStacknavigation from './src/navigation/main/MainStacknavigation';
 import AuthNavigation from './src/navigation/auth/AuthNavigation';
@@ -12,13 +12,12 @@ import Token from './src/constant/tokens/Token';
 import { ContextProvider, userContext } from './src/util/context/ContextProvider';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Wraper from './src/components/wraper/Wraper';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const Stack = createNativeStackNavigator();
-
 const AppContent = () => {
   const [handleRoute, setHandleRoute] = useState<any | null>(null);
   const { setAdminLocalData } = userContext();
-
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -70,13 +69,16 @@ const AppContent = () => {
 const App = () => {
   return (
     <Fragment>
-      <GestureHandlerRootView style={styles.container}>
-        <ContextProvider>
-          <Wraper>
-            <AppContent />
-          </Wraper>
-        </ContextProvider>
-      </GestureHandlerRootView>
+      <SafeAreaProvider>
+        <StatusBar backgroundColor={"white"} barStyle={"dark-content"} />
+        <GestureHandlerRootView style={styles.container}>
+          <ContextProvider>
+            <Wraper>
+              <AppContent />
+            </Wraper>
+          </ContextProvider>
+        </GestureHandlerRootView>
+      </SafeAreaProvider>
     </Fragment>
   );
 };
