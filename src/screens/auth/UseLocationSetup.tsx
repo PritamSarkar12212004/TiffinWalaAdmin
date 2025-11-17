@@ -1,120 +1,220 @@
-import { View, Text, TouchableOpacity, ActivityIndicator, } from 'react-native'
-import React, { useState, useRef, useEffect } from 'react'
+import { View, Text, TouchableOpacity, ActivityIndicator, Alert, LogBox } from 'react-native'
+import React, { useState, useRef } from 'react'
 import AuthHeader from '../../components/header/AuthHeader'
-import MapView, { Marker } from 'react-native-maps'
+import MapView, { Marker, PROVIDER_GOOGLE, Region } from 'react-native-maps'
 import GetCurrentLocation from '../../functions/location/GetCurrentLocation'
 import { CommonActions, useNavigation, useRoute } from '@react-navigation/native'
+import Icon from '../../MainLogo/icon/Icon'
 
-type LatLng = { latitude: number; longitude: number; };
+LogBox.ignoreLogs([
+    '[Reanimated] Reading from `value` during component render',
+]);
+
+type LatLng = {
+    latitude: number;
+    longitude: number;
+    address?: string;
+};
+
+type LocationState = {
+    coords: LatLng;
+    address: string;
+    timestamp: number;
+} | null;
 
 const UseLocationSetup = () => {
     const route = useRoute();
     const navigation = useNavigation();
     const [loading, setLoading] = useState(false);
-    const [location] = useState<LatLng | null>(null); // not used, but keep for region logic
-    const [currentLocation, setcurrentLocation] = useState<any | null>(null);
+    const [currentLocation, setCurrentLocation] = useState<LocationState>(null);
     const [error, setError] = useState<string | null>(null);
-    const mapRef = useRef<MapView>(null);
 
-    const region = location
+    const mapRef = useRef<MapView>(null);
+    const defaultRegion: Region = {
+        latitude: 20.5937,
+        longitude: 78.9629,
+        latitudeDelta: 15,
+        longitudeDelta: 15,
+    };
+    const currentRegion = currentLocation?.coords?.latitude
         ? {
-            latitude: location.latitude,
-            longitude: location.longitude,
+            latitude: currentLocation.coords.latitude,
+            longitude: currentLocation.coords.longitude,
             latitudeDelta: 0.005,
             longitudeDelta: 0.005,
         }
-        : {
-            latitude: 21.146633,
-            longitude: 79.08886,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-        };
-
-    // Animate to marker when currentLocation is set
-    useEffect(() => {
-        if (currentLocation && mapRef.current) {
-            mapRef.current.animateToRegion({
-                latitude: currentLocation.latitude,
-                longitude: currentLocation.longitude,
-                latitudeDelta: 0.002,
-                longitudeDelta: 0.002,
-            }, 800);
-        }
-    }, [currentLocation]);
-
-    const handleLocation = async () => {
+        : defaultRegion;
+    const handleGetLocation = async () => {
         setError(null);
+        setLoading(true);
+
         try {
-            await GetCurrentLocation({ setLoading: setLoading, setLocation: setcurrentLocation }).getCurrentLocation();
+            const location = await GetCurrentLocation({
+                setLoading,
+                setLocation: (location: any) => { }
+            }).getCurrentLocation();
+
+            if (
+                !location ||
+                location.latitude == null ||
+                location.longitude == null ||
+                isNaN(location.latitude) ||
+                isNaN(location.longitude)
+            ) {
+                throw new Error("Invalid coordinates received");
+            }
+            setCurrentLocation({
+                coords: {
+                    latitude: location.latitude,
+                    longitude: location.longitude,
+                },
+                address: location?.address || 'Address not available',
+                timestamp: Date.now(),
+            });
+            mapRef.current?.animateToRegion(
+                {
+                    latitude: location.latitude,
+                    longitude: location.longitude,
+                    latitudeDelta: 0.005,
+                    longitudeDelta: 0.005,
+                },
+                1000
+            );
+
         } catch (err: any) {
-            setError('Failed to get location. Please enable location services and try again.');
+            Alert.alert("Error", err.message);
         }
-    }
+
+    };
+    const handleRetryLocation = () => {
+        handleGetLocation();
+    };
+    const handleConfirmLocation = () => {
+        if (!currentLocation) {
+            setError('Please select a location first');
+            return;
+        }
+        navigation.dispatch(
+            CommonActions.reset({
+                index: 0,
+                routes: [
+                    {
+                        name: "MainProfileSetup",
+                        params: {
+                            ...route.params,
+                            location: currentLocation
+                        },
+                    },
+                ],
+            })
+        );
+    };
 
     return (
-        <View className='flex-1 pt-3 bg-white'>
-            <View className='w-full px-4'>
-                <AuthHeader title="Location Setup" />
+        <View className='flex-1 bg-white'>
+            <View className='w-full px-6 pt-6 pb-4'>
+                <AuthHeader
+                    title="Location Setup"
+                />
             </View>
-            <View className='flex-1 mt-5 relative'>
+            <View className='flex-1 relative'>
                 <MapView
                     ref={mapRef}
-                    style={{ flex: 1, borderRadius: 20 }}
-                    region={region}
-                    provider='google'
+                    style={{ flex: 1 }}
+                    initialRegion={defaultRegion}
+                    region={currentRegion}
+                    provider={PROVIDER_GOOGLE}
                     userInterfaceStyle="light"
+                    showsUserLocation={false}
+                    showsMyLocationButton={false}
+                    className='rounded-2xl mx-4'
                 >
                     {currentLocation && (
                         <Marker
                             coordinate={{
-                                latitude: currentLocation.latitude,
-                                longitude: currentLocation.longitude,
-                            }}
-                            title="Your Location"
-                            description="This is your current location"
-                        />
+                                latitude: currentLocation.coords.latitude,
+                                longitude: currentLocation.coords.longitude,
+                            }} title="Your Location"
+                            description={currentLocation.address}
+                        >
+                            <View className="items-center justify-center">
+                                <View className="w-8 h-8 bg-[#007AFF] rounded-full items-center justify-center border-2 border-white shadow-lg">
+                                    <Icon type={"solid"} name="location-dot" size={16} color="white" />
+                                </View>
+                                <View className="w-2 h-2 bg-[#007AFF] rounded-full -mt-1 rotate-45" />
+                            </View>
+                        </Marker>
                     )}
                 </MapView>
-                <View className='w-full absolute bottom-0 py-5 h-52 bg-[#FDD1E5] rounded-t-[40px] flex items-center justify-between shadow-lg'>
-                    <View className='w-full px-10 h-full flex items-center justify-between gap-3'>
-                        <View className='w-full'>
-                            <Text className='text-zinc-600 font-semibold text-lg mb-1'>Your Location: </Text>
-                            <Text className='text-sm text-black'>{currentLocation?.address || 'No location selected yet.'}</Text>
-                        </View>
-                        {error && <Text style={{ color: '#ef4444', marginTop: 4, fontWeight: '500', fontSize: 15 }}>{error}</Text>}
-                        <TouchableOpacity
-                            activeOpacity={0.85}
-                            onPress={() => {
-                                if (currentLocation) {
-                                    navigation.dispatch(
-                                        CommonActions.reset({
-                                            index: 0,
-                                            routes: [
-                                                {
-                                                    name: "MainProfileSetup",
-                                                    params: {
-                                                        ...route.params,
-                                                        location: currentLocation
-                                                    },
-                                                },
-                                            ],
-                                        })
-                                    );
+                <View className='absolute top-4 right-4 gap-3'>
+                    <TouchableOpacity
+                        onPress={handleGetLocation}
+                        disabled={loading}
+                        className='w-12 h-12 bg-white rounded-2xl items-center justify-center shadow-lg'
+                    >
+                        {loading ? (
+                            <ActivityIndicator size="small" color="#007AFF" />
+                        ) : (
+                            <Icon type={"solid"} name="location-dot" size={24} color="#007AFF" />
+                        )}
+                    </TouchableOpacity>
+                </View>
 
-                                } else {
-                                    handleLocation();
-                                }
-                            }}
-                            className={`w-full h-14 flex items-center justify-center rounded-full ${currentLocation ? 'bg-green-600' : 'bg-[#FF2374]'}`}
-                            style={{ shadowColor: '#FF2374', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 6 }}
+            </View>
+            <View className='bg-white rounded-t-3xl pt-4 px-6 pb-8 shadow-2xl'>
+                <View className='w-12 h-1 bg-gray-300 rounded-full self-center mb-4' />
+                <View className='gap-4'>
+                    <View className='flex-row items-start gap-3'>
+                        <Icon type={"solid"} name="location-dot" size={16} color="#007AFF" />
+                        <View className='flex-1'>
+                            <Text className='text-gray-500 text-sm font-medium mb-1'>YOUR LOCATION</Text>
+                            <Text className='text-gray-900 text-lg font-semibold'>
+                                {currentLocation ? currentLocation.address : 'No location selected'}
+                            </Text>
+
+                        </View>
+                    </View>
+                    {error && (
+                        <View className='bg-red-50 rounded-2xl p-4 flex-row items-center gap-3'>
+                            <Icon type={"solid"} name="warning-outline" size={16} color="#DC2626" />
+                            <Text className='text-red-700 flex-1 text-sm'>{error}</Text>
+                            <TouchableOpacity onPress={handleRetryLocation}>
+                                <Text className='text-red-700 font-semibold'>Retry</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
+
+                    <View className='flex-row gap-3 pt-2'>
+                        <TouchableOpacity
+                            onPress={handleGetLocation}
+                            disabled={loading}
+                            className='flex-1 h-14 bg-gray-100 rounded-2xl flex-row items-center justify-center gap-2'
                         >
-                            {loading ? (
-                                <ActivityIndicator size="small" color="#fff" />
-                            ) : currentLocation ? (
-                                <Text className='text-white font-semibold '>Set Profile</Text>
-                            ) : (
-                                <Text className='text-white font-semibold '>Get Current Location</Text>
-                            )}
+                            <Icon
+                                type={"solid"}
+                                name="arrow-rotate-right"
+                                size={20}
+                                color={loading ? '#9CA3AF' : '#4B5563'}
+                            />
+                            <Text className={`font-semibold text-base ${loading ? 'text-gray-400' : 'text-gray-700'}`}>
+                                {currentLocation ? 'Refresh' : 'Get Location'}
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={handleConfirmLocation}
+                            disabled={!currentLocation || loading}
+                            className={`flex-1 h-14 rounded-2xl flex-row items-center justify-center gap-2 ${currentLocation ? 'bg-[#007AFF]' : 'bg-gray-300'
+                                }`}
+                        >
+                            <Icon
+                                type={"solid"}
+                                name="check"
+                                size={20}
+                                color="white"
+                            />
+                            <Text className='text-white font-semibold text-base'>
+                                {currentLocation ? 'Confirm Location' : 'Select Location First'}
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 </View>

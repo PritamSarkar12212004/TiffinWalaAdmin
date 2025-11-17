@@ -36,7 +36,7 @@ const Wraper = ({ children }: any) => {
         <NotifyContext.Provider value={{ caller }}>
             <View className="flex-1">
                 {children}
-                <FlashMessage position="top" style={{ paddingTop: 30 }} />
+                <FlashMessage position="top" />
             </View>
         </NotifyContext.Provider>
     );

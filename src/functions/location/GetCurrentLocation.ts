@@ -1,18 +1,10 @@
 import Geolocation from '@react-native-community/geolocation';
 import axios from 'axios';
 
-interface Position {
-  coords: {
-    latitude: number;
-    longitude: number;
-    accuracy: number;
-  };
-}
-
 interface LocationData {
   latitude: number;
   longitude: number;
-  address?: string;
+  address: string | undefined;
 }
 
 const GetCurrentLocation = ({
@@ -22,7 +14,6 @@ const GetCurrentLocation = ({
   setLoading: (loading: boolean) => void;
   setLocation: (location: LocationData) => void;
 }) => {
-  // Create axios instance with defaults
   const geocodeAPI = axios.create({
     baseURL: 'https://nominatim.openstreetmap.org',
     timeout: 5000,
@@ -30,43 +21,31 @@ const GetCurrentLocation = ({
       'User-Agent': 'MyAwesomeApp/1.0',
     },
   });
-
-  const getCurrentLocation = async () => {
+  const getCurrentLocation = async (): Promise<LocationData> => {
     setLoading(true);
-
     try {
-      // Reduce timeout and accuracy requirements for faster response
-      const position: Position = await new Promise((resolve, reject) => {
+      const position: any = await new Promise((resolve, reject) => {
         Geolocation.getCurrentPosition(resolve, reject, {
-          enableHighAccuracy: false, // Set to false for faster response
-          timeout: 5000, // Reduced timeout
-          maximumAge: 60000, // Cache location for 1 minute
+          enableHighAccuracy: false,
+          timeout: 5000,
+          maximumAge: 60000,
         });
       });
-
       const {latitude, longitude} = position.coords;
-
-      // Set location immediately without address
-      setLocation({latitude, longitude});
-
-      // Fetch address in background
-      reverseGeocode(latitude, longitude)
-        .then(address => {
-          if (address) {
-            setLocation(prev => ({...prev, address}));
-          }
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-
-      return {latitude, longitude};
+      const address = await reverseGeocode(latitude, longitude);
+      const finalLocation: LocationData = {
+        latitude,
+        longitude,
+        address,
+      };
+      setLocation(finalLocation);
+      setLoading(false);
+      return finalLocation;
     } catch (error) {
       setLoading(false);
       throw error;
     }
   };
-
   const reverseGeocode = async (
     latitude: number,
     longitude: number,
@@ -77,8 +56,6 @@ const GetCurrentLocation = ({
           lat: latitude,
           lon: longitude,
           format: 'json',
-          // Limit the response data
-          addressdetails: 0,
           'accept-language': 'en',
         },
       });
@@ -90,9 +67,7 @@ const GetCurrentLocation = ({
     }
   };
 
-  return {
-    getCurrentLocation,
-  };
+  return {getCurrentLocation};
 };
 
 export default GetCurrentLocation;
