@@ -36,12 +36,13 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
-         release {
-            storeFile file('tiffinadmin-release-key.keystore')
-            storePassword 'PritamSarkar@2004'
-            keyAlias 'tiffinadmin'
-            keyPassword 'PritamSarkar@2004'
-        }
+       release {
+         storeFile file('tiffinadmin-release-key.keystore')
+         storePassword 'PritamSarkar@2004'
+         keyAlias 'tiffinadmin'        
+         keyPassword 'PritamSarkar@2004'
+}
+
     }
   buildTypes {
     debug {

@@ -3,8 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "build": "cd android && gradlew assembleRelease && gradlew bundleRelease && cd .. && if not exist builds mkdir builds && copy android\\app\\build\\outputs\\apk\\release\\TiffinWalaAdmin-1.0.apk builds\\ && copy android\\app\\build\\outputs\\bundle\\release\\app-release.aab builds\\",
-    "dev": "npx react-native run-android",
+    "build": "cd android && gradlew clean && gradlew assembleRelease && gradlew bundleRelease && cd .. && if not exist builds mkdir builds && copy android\\app\\build\\outputs\\apk\\release\\TiffinWalaAdmin-1.0.1.apk builds\\ && copy android\\app\\build\\outputs\\bundle\\release\\app-release.aab builds\\",
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
