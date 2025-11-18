@@ -16,6 +16,7 @@ import ViewProductDetiles from '../../screens/main/page/ViewProductDetiles';
 import ViewProductAnalazeDetiles from '../../screens/main/page/ViewProductAnalazeDetiles';
 import FollowerPage from '../../screens/main/page/FollowerPage';
 import UploadProduct from '../../screens/main/UploadProduct';
+import MapHelper from '../../screens/main/helper/MapHelper';
 
 const Stack = createStackNavigator();
 const MainStacknavigation = () => {
@@ -96,6 +97,11 @@ const MainStacknavigation = () => {
                     }
                 } />
                 <Stack.Screen name="FollowerPage" component={FollowerPage} options={
+                    {
+                        animation: 'slide_from_right'
+                    }
+                } />
+                <Stack.Screen name="MapHelper" component={MapHelper} options={
                     {
                         animation: 'slide_from_right'
                     }

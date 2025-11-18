@@ -58,24 +58,7 @@ const PersonalInfo = () => {
                 navigation.navigate('ProfileEdit', { field: 'address', value: userData.address })
             }
         },
-        {
-            title: userData.role,
-            subtitle: "Role",
-            icon: 'user-tie',
-            color: '#FF6B6B',
-            function: () => {
-                Alert.alert("Role", "Admin role cannot be changed")
-            }
-        },
-        {
-            title: userData.joinDate,
-            subtitle: "Joined Date",
-            icon: 'calendar',
-            color: '#4ECDC4',
-            function: () => {
-                Alert.alert("Join Date", "Join date cannot be modified")
-            }
-        }
+
     ]
 
     return (
@@ -107,25 +90,6 @@ const PersonalInfo = () => {
                             </View>
                         </TouchableOpacity>
                     ))}
-                </View>
-
-                {/* Additional Info Section */}
-                <View className='bg-white rounded-2xl p-4 mb-6 shadow-sm border border-gray-100'>
-                    <Text className='text-gray-900 text-lg font-bold mb-3'>Account Statistics</Text>
-                    <View className='flex-row justify-between'>
-                        <View className='items-center'>
-                            <Text className='text-2xl font-bold text-[#FF7622]'>156</Text>
-                            <Text className='text-gray-600 text-xs'>Orders Handled</Text>
-                        </View>
-                        <View className='items-center'>
-                            <Text className='text-2xl font-bold text-[#FF7622]'>89%</Text>
-                            <Text className='text-gray-600 text-xs'>Satisfaction Rate</Text>
-                        </View>
-                        <View className='items-center'>
-                            <Text className='text-2xl font-bold text-[#FF7622]'>24</Text>
-                            <Text className='text-gray-600 text-xs'>Days Active</Text>
-                        </View>
-                    </View>
                 </View>
             </ScrollView>
         </View>
