@@ -1,8 +1,6 @@
 import { ActivityIndicator, ScrollView, View, Text, Image, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { useNavigation } from '@react-navigation/native'
-import ProfileOptionContainer from '../../components/profile/ProfileOptionContainer'
-import ProfileView from '../../components/profile/ProfileView'
 import { userContext } from '../../util/context/ContextProvider'
 import Icon from '../../MainLogo/icon/Icon'
 
@@ -97,28 +95,26 @@ const Profile = () => {
             className='flex-1'
             showsVerticalScrollIndicator={false}
           >
-            {/* Header Section */}
             <View className='bg-gradient-to-b from-orange-500 to-amber-500 pb-8 pt-12 px-6 rounded-b-3xl shadow-lg'>
               <View className='items-center '>
-                <TouchableOpacity 
-                  activeOpacity={0.9} 
+                <TouchableOpacity
+                  activeOpacity={0.9}
                   onPress={() => navigation.navigate({
                     name: 'page',
                     params: { screen: 'PersonalInfo' },
-                  } as never)} 
+                  } as never)}
                   className='w-full bg-white/20 rounded-3xl px-6 py-6 flex-row items-center backdrop-blur-sm border border-white/30'
                 >
                   {user.image ? (
-                    <Image 
-                      source={{ uri: user.image }} 
-                      className='w-20 h-20 rounded-full border-4 border-white shadow-lg' 
+                    <Image
+                      source={{ uri: user.image }}
+                      className='w-20 h-20 rounded-full border-4 border-white shadow-lg'
                     />
                   ) : (
                     <View className='w-20 h-20 rounded-full bg-white/20 border-4 border-white items-center justify-center shadow-lg'>
                       <Icon name='user' size={32} color='white' type='solid' />
                     </View>
                   )}
-
                   <View className='flex-1 ml-4'>
                     <Text className='text-black text-xl font-bold tracking-wide mb-1'>{user.name}</Text>
                     <Text className='text-black/90 text-sm font-medium'>{user.email}</Text>
@@ -130,22 +126,19 @@ const Profile = () => {
                 </TouchableOpacity>
               </View>
             </View>
-
-            {/* Content Section */}
             <View className='flex-1 px-6 pt-8 -mt-6'>
-              {/* Account Section */}
               <View className='mb-8'>
                 <Text className='text-slate-800 text-xl font-bold mb-4 tracking-wide'>Account</Text>
                 <View className='bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden'>
                   {accountOptions.map((item: any, index: any) => (
-                    <TouchableOpacity 
-                      onPress={() => item.function()} 
-                      activeOpacity={0.7} 
-                      key={index} 
+                    <TouchableOpacity
+                      onPress={() => item.function()}
+                      activeOpacity={0.7}
+                      key={index}
                       className='flex-row items-center justify-between px-6 py-5 border-b border-slate-100 last:border-b-0'
                     >
                       <View className='flex-row items-center flex-1'>
-                        <View 
+                        <View
                           className='w-12 h-12 rounded-2xl items-center justify-center mr-4'
                           style={{ backgroundColor: `${item.color}15` }}
                         >
@@ -172,20 +165,18 @@ const Profile = () => {
                   ))}
                 </View>
               </View>
-
-              {/* General Section */}
               <View className='mb-8'>
                 <Text className='text-slate-800 text-xl font-bold mb-4 tracking-wide'>General</Text>
                 <View className='bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden'>
                   {supportOptions.map((item: any, index: any) => (
-                    <TouchableOpacity 
-                      onPress={() => item.function()} 
-                      activeOpacity={0.7} 
-                      key={index} 
+                    <TouchableOpacity
+                      onPress={() => item.function()}
+                      activeOpacity={0.7}
+                      key={index}
                       className='flex-row items-center justify-between px-6 py-5 border-b border-slate-100 last:border-b-0'
                     >
                       <View className='flex-row items-center flex-1'>
-                        <View 
+                        <View
                           className='w-12 h-12 rounded-2xl items-center justify-center mr-4'
                           style={{ backgroundColor: `${item.color}15` }}
                         >

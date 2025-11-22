@@ -12,6 +12,12 @@ interface ContextinterFace {
   productData: any;
   setProductData: any;
   removeProductAfterDelete: any;
+  tempLocation: {
+    address: any;
+    latitude: any;
+    longitude: any;
+  };
+  setTempLocation: any;
 }
 
 export {ContextinterFace};

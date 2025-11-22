@@ -30,6 +30,7 @@ const useUpdateProfile = () => {
       setLoading: any;
     };
   }) => {
+    console.log(payload);
     await api
       .post(ApiCon.Upload.productUpload, {
         id: payload.id,

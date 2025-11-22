@@ -31,8 +31,6 @@ export const ContextProvider = ({ children }: { children: React.ReactNode }) => 
 
     });
 
-    // function
-    // product functions
     const removeProductAfterDelete = (id: any) => {
         if (!productData) return;
 
@@ -42,6 +40,8 @@ export const ContextProvider = ({ children }: { children: React.ReactNode }) => 
 
         setProductData(updatedProductData);
     };
+    const [tempLocation, setTempLocation] = useState<any>(null)
+
     return (
         <Context.Provider
             value={{
@@ -58,6 +58,8 @@ export const ContextProvider = ({ children }: { children: React.ReactNode }) => 
                 productData,
                 setProductData,
                 removeProductAfterDelete,
+                tempLocation,
+                setTempLocation
             }}
         >
             {children}

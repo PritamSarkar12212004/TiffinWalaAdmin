@@ -7,63 +7,71 @@ interface LocationData {
   address: string | undefined;
 }
 
-const GetCurrentLocation = ({
-  setLoading,
-  setLocation,
-}: {
-  setLoading: (loading: boolean) => void;
-  setLocation: (location: LocationData) => void;
-}) => {
-  const geocodeAPI = axios.create({
-    baseURL: 'https://nominatim.openstreetmap.org',
-    timeout: 5000,
-    headers: {
-      'User-Agent': 'MyAwesomeApp/1.0',
-    },
-  });
+const GetCurrentLocation = ({setLoading, setLocation}: any) => {
   const getCurrentLocation = async (): Promise<LocationData> => {
     setLoading(true);
+
     try {
       const position: any = await new Promise((resolve, reject) => {
         Geolocation.getCurrentPosition(resolve, reject, {
-          enableHighAccuracy: false,
-          timeout: 5000,
-          maximumAge: 60000,
+          enableHighAccuracy: true,
+          timeout: 20000, // FIXED: timeout increased
+          maximumAge: 5000, // FIXED: use cached location if available
+          forceRequestLocation: true,
+          showLocationDialog: true,
         });
       });
+
       const {latitude, longitude} = position.coords;
-      const address = await reverseGeocode(latitude, longitude);
-      const finalLocation: LocationData = {
+
+      const geocodeData = await reverseGeocode(latitude, longitude);
+
+      const finalLocation = {
         latitude,
         longitude,
-        address,
+        address: geocodeData.address,
       };
+
       setLocation(finalLocation);
       setLoading(false);
+
       return finalLocation;
-    } catch (error) {
+    } catch (error: any) {
       setLoading(false);
+      console.warn('Location Error:', error?.message);
+
       throw error;
     }
   };
-  const reverseGeocode = async (
-    latitude: number,
-    longitude: number,
-  ): Promise<string | undefined> => {
-    try {
-      const {data} = await geocodeAPI.get('/reverse', {
-        params: {
-          lat: latitude,
-          lon: longitude,
-          format: 'json',
-          'accept-language': 'en',
-        },
-      });
 
-      return data?.display_name;
-    } catch (error) {
-      console.warn('Geocoding failed:', error);
-      return undefined;
+  const reverseGeocode = async (lat: number, lon: number) => {
+    try {
+      const {data} = await axios.get(
+        'https://nominatim.openstreetmap.org/reverse',
+        {
+          params: {
+            lat,
+            lon,
+            format: 'json',
+          },
+          headers: {
+            'User-Agent': 'MyAwesomeApp/1.0',
+          },
+        },
+      );
+
+      return {
+        latitude: lat,
+        longitude: lon,
+        address: data?.display_name,
+      };
+    } catch (err) {
+      console.warn('Reverse Geocode Failed:', err);
+      return {
+        latitude: lat,
+        longitude: lon,
+        address: undefined,
+      };
     }
   };
 

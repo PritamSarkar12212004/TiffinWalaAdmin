@@ -12,7 +12,7 @@ import {
     Keyboard
 } from 'react-native'
 import React, { useEffect, useState, useMemo, useCallback } from 'react'
-import { useNavigation } from '@react-navigation/native'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import Icon from '../../../MainLogo/icon/Icon'
 import SingleImgPicker from '../../../functions/image/SingleImgPicker'
 import { userContext } from '../../../util/context/ContextProvider'
@@ -21,29 +21,26 @@ import UploadingModel from '../../../components/modal/Upload/UploadingModel'
 import AnimationComp from '../../../components/elements/AnimationComp'
 import Animation from '../../../constant/animation/Animation'
 import ModernInputField from '../../../components/profile/ModernInputField'
-
 const ProfileEdit = () => {
     const navigation = useNavigation();
-    const { adminDatabase } = userContext()
+    const { adminDatabase, tempLocation, setTempLocation } = userContext()
     const { updateProfile } = useUpdateProfile()
     const userData = useMemo(() => {
         if (!adminDatabase?.adminMainData) return null;
         return {
             name: adminDatabase.adminMainData.User_Name || '',
-            email: adminDatabase.adminMainData.User_Email || '',
             phone: adminDatabase.adminMainData.User_Phone_Number ? '+91 ' + adminDatabase.adminMainData.User_Phone_Number : '',
             address: adminDatabase.adminMainData.User_Address?.address || '',
             gender: adminDatabase.adminMainData.User_Gender || '',
             bio: adminDatabase.adminMainData.User_Bio || '',
             profileImage: adminDatabase.adminMainData.User_Image || '',
+            email: adminDatabase.adminMainData.User_Email || '',
         };
     }, [adminDatabase?.adminMainData]);
-
     const [selectedImg, setSelectedImg] = useState('')
     const [loading, setLoading] = useState(false)
     const [activeField, setActiveField] = useState('')
     const [isInitialized, setIsInitialized] = useState(false)
-
     const [formData, setFormData] = useState({
         profileImage: '',
         name: '',
@@ -52,6 +49,8 @@ const ProfileEdit = () => {
         address: '',
         bio: '',
         email: '',
+        latitude: 0,
+        longitude: 0,
     })
     useEffect(() => {
         if (userData && !isInitialized) {
@@ -63,11 +62,17 @@ const ProfileEdit = () => {
                 address: userData.address,
                 bio: userData.bio,
                 email: userData.email,
+                latitude: adminDatabase?.adminMainData?.User_Address?.latitude || 0,
+                longitude: adminDatabase?.adminMainData?.User_Address?.longitude || 0,
             })
             setSelectedImg(userData.profileImage)
             setIsInitialized(true)
         }
-    }, [userData, isInitialized])
+        return () => {
+            setTempLocation(null)
+        };
+
+    }, [userData, isInitialized, adminDatabase])
 
     const updateField = useCallback((fieldName: any, value: any) => {
         setFormData(prev => ({
@@ -96,6 +101,8 @@ const ProfileEdit = () => {
                 gender: formData.gender,
                 profileImage: selectedImg,
                 id: adminDatabase.adminMainData._id,
+                latitude: formData.latitude,
+                longitude: formData.longitude,
             },
             payloadHelper: {
                 setLoading: setLoading,
@@ -113,7 +120,18 @@ const ProfileEdit = () => {
             </View>
         )
     }
-
+    useFocusEffect(
+        useCallback(() => {
+            if (tempLocation) {
+                setFormData(prev => ({
+                    ...prev,
+                    location: tempLocation.address,
+                    latitude: tempLocation.latitude,
+                    longitude: tempLocation.longitude
+                }));
+            }
+        }, [tempLocation])
+    );
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
@@ -129,9 +147,7 @@ const ProfileEdit = () => {
                         >
                             <Icon name="arrow-left" type="solid" size={20} color="#374151" />
                         </TouchableOpacity>
-
                         <Text className='text-black text-xl font-bold'>Edit Profile</Text>
-
                         <TouchableOpacity activeOpacity={0.9}
                             onPress={handleSave}
                             disabled={loading}
@@ -201,17 +217,6 @@ const ProfileEdit = () => {
                             setActiveField={setActiveField}
                         />
                         <ModernInputField
-                            fieldName="email"
-                            label="Email Address"
-                            placeholder="Enter your email"
-                            keyboardType="email-address"
-                            icon="envelope"
-                            value={formData.email}
-                            onChange={updateField}
-                            isActive={activeField === "email"}
-                            setActiveField={setActiveField}
-                        />
-                        <ModernInputField
                             fieldName="bio"
                             label="About Me"
                             placeholder="Tell us about yourself..."
@@ -222,23 +227,30 @@ const ProfileEdit = () => {
                             isActive={activeField === "bio"}
                             setActiveField={setActiveField}
                         />
-                        <TouchableOpacity className='w-full flex gap-3' activeOpacity={0.9} onPress={() => navigation.navigate("MapHelper" as never)}>
-                            <View className='flex flex-row items-center  w-full'>
-                                <View className='w-8 h-8  bg-orange-100 rounded-lg items-center justify-center mr-3'>
+                        <TouchableOpacity
+                            className='w-full flex gap-3'
+                            activeOpacity={0.9}
+                            onPress={() => navigation.navigate("MapHelper" as never)}
+                        >
+                            <View className='flex flex-row items-center w-full'>
+                                <View className='w-8 h-8 bg-orange-100 rounded-lg items-center justify-center mr-3'>
                                     <Icon name={"map"} type="solid" size={16} color="#FF7622" />
                                 </View>
                                 <Text className='text-slate-700 text-sm font-bold tracking-wide'>Address</Text>
                             </View>
-                            <View className='w-full flex rounded-xl bg-white border ${isActive  border-slate-300 px-4 py-2 '>
-                                <View className='flex-row items-center mb-3'>
+                            <View className='w-full flex rounded-xl bg-white border border-slate-300 px-4 py-3'>
+                                <View className='flex-row items-center justify-between mb-2'>
                                     <Text className='text-slate-700 text-sm font-bold tracking-wide'>Address</Text>
+                                    <Text className='text-orange-500 text-xs font-medium'>Tap to change</Text>
                                 </View>
-
-                                <Text>
-                                    {
-                                        formData.address
-                                    }
+                                <Text className='text-slate-600 text-sm'>
+                                    {formData.address || 'No address selected'}
                                 </Text>
+                                {(formData.latitude !== 0 || formData.longitude !== 0) && (
+                                    <Text className='text-slate-400 text-xs mt-1'>
+                                        Coordinates: {formData.latitude.toFixed(6)}, {formData.longitude.toFixed(6)}
+                                    </Text>
+                                )}
                             </View>
                         </TouchableOpacity>
                     </View>

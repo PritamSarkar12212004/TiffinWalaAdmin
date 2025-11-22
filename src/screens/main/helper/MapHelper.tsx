@@ -1,9 +1,12 @@
+// MapHelper.tsx
 import { View, Text, TouchableOpacity, ActivityIndicator, Alert, LogBox } from 'react-native'
 import React, { useState, useRef } from 'react'
 import MapView, { Marker, PROVIDER_GOOGLE, Region } from 'react-native-maps'
 import Icon from '../../../MainLogo/icon/Icon';
 import GetCurrentLocation from '../../../functions/location/GetCurrentLocation';
 import PageNavigation from '../../../layout/navigation/PageNavigation';
+import { useNavigation } from '@react-navigation/native';
+import { userContext } from '../../../util/context/ContextProvider';
 
 LogBox.ignoreLogs([
     '[Reanimated] Reading from `value` during component render',
@@ -22,6 +25,8 @@ type LocationState = {
 } | null;
 
 const MapHelper = () => {
+    const navigation = useNavigation();
+    const { setTempLocation } = userContext()
     const [loading, setLoading] = useState(false);
     const [currentLocation, setCurrentLocation] = useState<LocationState>(null);
     const [error, setError] = useState<string | null>(null);
@@ -33,6 +38,7 @@ const MapHelper = () => {
         latitudeDelta: 15,
         longitudeDelta: 15,
     };
+
     const currentRegion = currentLocation?.coords?.latitude
         ? {
             latitude: currentLocation.coords.latitude,
@@ -41,6 +47,7 @@ const MapHelper = () => {
             longitudeDelta: 0.005,
         }
         : defaultRegion;
+
     const handleGetLocation = async () => {
         setError(null);
         setLoading(true);
@@ -80,17 +87,27 @@ const MapHelper = () => {
 
         } catch (err: any) {
             Alert.alert("Error", err.message);
+        } finally {
+            setLoading(false);
         }
-
     };
+
     const handleRetryLocation = () => {
         handleGetLocation();
     };
-    const handleConfirmLocation = () => {
+
+    const handleConfirmLocation = async () => {
         if (!currentLocation) {
             setError('Please select a location first');
             return;
         }
+        console.log(currentLocation)
+        await setTempLocation({
+            address: currentLocation.address,
+            latitude: currentLocation.coords.latitude,
+            longitude: currentLocation.coords.longitude
+        })
+        navigation.goBack()
     };
 
     return (
@@ -117,7 +134,8 @@ const MapHelper = () => {
                             coordinate={{
                                 latitude: currentLocation.coords.latitude,
                                 longitude: currentLocation.coords.longitude,
-                            }} title="Your Location"
+                            }}
+                            title="Your Location"
                             description={currentLocation.address}
                         >
                             <View className="items-center justify-center">
@@ -143,7 +161,6 @@ const MapHelper = () => {
                         )}
                     </TouchableOpacity>
                 </View>
-
             </View>
             <View className='bg-white rounded-t-3xl pt-4 px-6 pb-8 shadow-2xl'>
                 <View className='w-12 h-1 bg-gray-300 rounded-full self-center mb-4' />
@@ -155,7 +172,11 @@ const MapHelper = () => {
                             <Text className='text-gray-900 text-lg font-semibold'>
                                 {currentLocation ? currentLocation.address : 'No location selected'}
                             </Text>
-
+                            {currentLocation && (
+                                <Text className='text-gray-500 text-xs mt-1'>
+                                    Lat: {currentLocation.coords.latitude.toFixed(6)}, Lng: {currentLocation.coords.longitude.toFixed(6)}
+                                </Text>
+                            )}
                         </View>
                     </View>
                     {error && (
