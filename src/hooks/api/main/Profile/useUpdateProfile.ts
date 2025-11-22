@@ -4,6 +4,8 @@ import api from '../../../../util/api/Axios';
 import {userContext} from '../../../../util/context/ContextProvider';
 import ApiCon from '../../../../constant/api/ApiCon';
 import {useNotify} from '../../../../components/wraper/Wraper';
+import setStorage from '../../../../functions/token/setStorage';
+import Token from '../../../../constant/tokens/Token';
 
 const useUpdateProfile = () => {
   const {setAdminDatabase} = userContext();
@@ -30,7 +32,6 @@ const useUpdateProfile = () => {
       setLoading: any;
     };
   }) => {
-    console.log(payload);
     await api
       .post(ApiCon.Upload.productUpload, {
         id: payload.id,
@@ -56,11 +57,16 @@ const useUpdateProfile = () => {
           adminMainData: res.data.data,
           ProductData: res.data.productData.productData,
         });
+        await setStorage(Token.DataToken.UserInformation, {
+          ...res.data.data,
+          User_Phone_Number: payload.phone,
+        });
         caller({
           message: 'Profile Updated',
           description: 'Your changes have been saved.',
           type: 'success',
         });
+
         navigation.dispatch(
           CommonActions.reset({
             index: 0,

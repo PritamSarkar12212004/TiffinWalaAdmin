@@ -14,7 +14,6 @@ const useMainDataRicive = () => {
         phone: phone,
       })
       .then(async res => {
-        console.log(res.data.data);
         setAdminProductCount(res.data.data.User_Post_Count);
         setAdminDatabase({
           AdminFollowers: res.data.productData.AdminFollowers,
@@ -31,7 +30,7 @@ const useMainDataRicive = () => {
         return true;
       })
       .catch(err => {
-        console.log(err);
+        console.log(err.response);
         return null;
       });
   };

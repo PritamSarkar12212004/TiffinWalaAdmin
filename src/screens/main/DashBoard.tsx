@@ -45,21 +45,31 @@ const DashBoard = () => {
     setloading,
     productData,
     setProductData,
+    tempPhone
   } = userContext();
 
   const fetchData = async () => {
     setloading(true);
     try {
       let userInfo = adminLocalData;
+
       if (!userInfo?.User_Phone_Number) {
         userInfo = await getStorage(Token.DataToken.UserInformation);
         setAdminLocalData(userInfo);
       }
+      if (tempPhone) {
+        await riciveData(
+          tempPhone,
+          setAdminDatabase,
+          setAdminProductCount
+        );
+      } else { }
       await riciveData(
         userInfo.User_Phone_Number,
         setAdminDatabase,
         setAdminProductCount
       );
+
     } catch (err) {
       console.error('Fetch error:', err);
     } finally {

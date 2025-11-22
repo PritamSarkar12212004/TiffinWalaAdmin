@@ -41,6 +41,7 @@ export const ContextProvider = ({ children }: { children: React.ReactNode }) => 
         setProductData(updatedProductData);
     };
     const [tempLocation, setTempLocation] = useState<any>(null)
+    const [tempPhone, setTempPhone] = useState<any>(null)
 
     return (
         <Context.Provider
@@ -59,7 +60,9 @@ export const ContextProvider = ({ children }: { children: React.ReactNode }) => 
                 setProductData,
                 removeProductAfterDelete,
                 tempLocation,
-                setTempLocation
+                setTempLocation,
+                tempPhone,
+                setTempPhone
             }}
         >
             {children}

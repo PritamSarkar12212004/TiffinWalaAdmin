@@ -21,15 +21,17 @@ import UploadingModel from '../../../components/modal/Upload/UploadingModel'
 import AnimationComp from '../../../components/elements/AnimationComp'
 import Animation from '../../../constant/animation/Animation'
 import ModernInputField from '../../../components/profile/ModernInputField'
+import { useNotify } from '../../../components/wraper/Wraper'
 const ProfileEdit = () => {
+    const { caller } = useNotify();
     const navigation = useNavigation();
-    const { adminDatabase, tempLocation, setTempLocation } = userContext()
+    const { adminDatabase, tempLocation, setTempLocation, tempPhone, setTempPhone } = userContext()
     const { updateProfile } = useUpdateProfile()
     const userData = useMemo(() => {
         if (!adminDatabase?.adminMainData) return null;
         return {
             name: adminDatabase.adminMainData.User_Name || '',
-            phone: adminDatabase.adminMainData.User_Phone_Number ? '+91 ' + adminDatabase.adminMainData.User_Phone_Number : '',
+            phone: adminDatabase.adminMainData.User_Phone_Number ? adminDatabase.adminMainData.User_Phone_Number : '',
             address: adminDatabase.adminMainData.User_Address?.address || '',
             gender: adminDatabase.adminMainData.User_Gender || '',
             bio: adminDatabase.adminMainData.User_Bio || '',
@@ -83,19 +85,20 @@ const ProfileEdit = () => {
 
     const handleSave = async () => {
         Keyboard.dismiss();
-
         if (!adminDatabase?.adminMainData?._id) {
-            Alert.alert('Error', 'User data not available')
+            caller({
+                message: 'Error',
+                description: 'User data not available',
+                type: 'Error',
+            });
             return
         }
-
         setLoading(true)
-
         updateProfile({
             payload: {
                 name: formData.name,
                 email: formData.email,
-                phone: formData.phone.replace('+91 ', ''),
+                phone: formData.phone,
                 address: formData.address,
                 bio: formData.bio,
                 gender: formData.gender,
@@ -103,11 +106,16 @@ const ProfileEdit = () => {
                 id: adminDatabase.adminMainData._id,
                 latitude: formData.latitude,
                 longitude: formData.longitude,
+                selectImage: selectedImg
             },
             payloadHelper: {
                 setLoading: setLoading,
                 onSuccess: () => navigation.goBack(),
-                onError: (error) => Alert.alert('Error', error || 'Failed to update profile')
+                onError: (error: any) => caller({
+                    message: 'Error',
+                    description: error || 'Failed to update profile',
+                    type: 'Error',
+                })
             }
         })
     }
@@ -130,7 +138,13 @@ const ProfileEdit = () => {
                     longitude: tempLocation.longitude
                 }));
             }
-        }, [tempLocation])
+            if (tempPhone) {
+                setFormData(prev => ({
+                    ...prev,
+                    phone: tempPhone,
+                }));
+            }
+        }, [tempLocation, tempPhone])
     );
     return (
         <KeyboardAvoidingView
@@ -205,17 +219,27 @@ const ProfileEdit = () => {
                             isActive={activeField === "name"}
                             setActiveField={setActiveField}
                         />
-                        <ModernInputField
-                            fieldName="phone"
-                            label="Phone Number"
-                            placeholder="Enter your phone number"
-                            keyboardType="phone-pad"
-                            icon="phone"
-                            value={formData.phone}
-                            onChange={updateField}
-                            isActive={activeField === "phone"}
-                            setActiveField={setActiveField}
-                        />
+                        <TouchableOpacity
+                            className='w-full flex gap-3 mb-3'
+                            activeOpacity={0.9}
+                            onPress={() => navigation.navigate("PhoneNumberChange" as never)}
+                        >
+                            <View className='flex flex-row items-center w-full'>
+                                <View className='w-8 h-8 bg-orange-100 rounded-lg items-center justify-center mr-3'>
+                                    <Icon name={"phone"} type="solid" size={16} color="#FF7622" />
+                                </View>
+                                <Text className='text-slate-700 text-sm font-bold tracking-wide'>Phone Number</Text>
+                            </View>
+                            <View className='w-full flex rounded-xl bg-white border border-slate-300 px-4 py-3'>
+                                <View className='flex-row items-center justify-between mb-2'>
+                                    <Text className='text-orange-500 text-xs font-medium'>Tap to change</Text>
+                                </View>
+                                <Text className='text-slate-600 text-sm'>
+                                    {formData.phone}
+                                </Text>
+
+                            </View>
+                        </TouchableOpacity>
                         <ModernInputField
                             fieldName="bio"
                             label="About Me"

@@ -17,6 +17,7 @@ import ViewProductAnalazeDetiles from '../../screens/main/page/ViewProductAnalaz
 import FollowerPage from '../../screens/main/page/FollowerPage';
 import UploadProduct from '../../screens/main/UploadProduct';
 import MapHelper from '../../screens/main/helper/MapHelper';
+import PhoneNumberChange from '../../screens/main/helper/PhoneNumberChange';
 
 const Stack = createStackNavigator();
 const MainStacknavigation = () => {
@@ -102,6 +103,11 @@ const MainStacknavigation = () => {
                     }
                 } />
                 <Stack.Screen name="MapHelper" component={MapHelper} options={
+                    {
+                        animation: 'slide_from_right'
+                    }
+                } />
+                <Stack.Screen name="PhoneNumberChange" component={PhoneNumberChange} options={
                     {
                         animation: 'slide_from_right'
                     }

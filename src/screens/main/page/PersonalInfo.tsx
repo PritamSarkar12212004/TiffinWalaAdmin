@@ -9,17 +9,13 @@ const PersonalInfo = () => {
     const navigation = useNavigation()
     const { adminDatabase } = userContext()
 
-
-    const [userData, setUserData] = useState({
+    const userData = {
         name: adminDatabase.adminMainData.User_Name,
         email: adminDatabase.adminMainData.User_Email,
-        phone: '+91 ' + adminDatabase.adminMainData.User_Phone_Number,
+        phone: adminDatabase.adminMainData.User_Phone_Number,
         address: adminDatabase.adminMainData.User_Address.address,
-        role: "Admin",
-        joinDate: "15 March 2024",
-        status: "Active",
         gender: adminDatabase.adminMainData.User_Gender
-    })
+    }
 
     const options = [
         {

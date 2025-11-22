@@ -1,4 +1,3 @@
-// MapHelper.tsx
 import { View, Text, TouchableOpacity, ActivityIndicator, Alert, LogBox } from 'react-native'
 import React, { useState, useRef } from 'react'
 import MapView, { Marker, PROVIDER_GOOGLE, Region } from 'react-native-maps'
@@ -7,30 +6,25 @@ import GetCurrentLocation from '../../../functions/location/GetCurrentLocation';
 import PageNavigation from '../../../layout/navigation/PageNavigation';
 import { useNavigation } from '@react-navigation/native';
 import { userContext } from '../../../util/context/ContextProvider';
-
 LogBox.ignoreLogs([
     '[Reanimated] Reading from `value` during component render',
 ]);
-
 type LatLng = {
     latitude: number;
     longitude: number;
     address?: string;
 };
-
 type LocationState = {
     coords: LatLng;
     address: string;
     timestamp: number;
 } | null;
-
 const MapHelper = () => {
     const navigation = useNavigation();
     const { setTempLocation } = userContext()
     const [loading, setLoading] = useState(false);
     const [currentLocation, setCurrentLocation] = useState<LocationState>(null);
     const [error, setError] = useState<string | null>(null);
-
     const mapRef = useRef<MapView>(null);
     const defaultRegion: Region = {
         latitude: 20.5937,
@@ -38,7 +32,6 @@ const MapHelper = () => {
         latitudeDelta: 15,
         longitudeDelta: 15,
     };
-
     const currentRegion = currentLocation?.coords?.latitude
         ? {
             latitude: currentLocation.coords.latitude,
@@ -47,11 +40,9 @@ const MapHelper = () => {
             longitudeDelta: 0.005,
         }
         : defaultRegion;
-
     const handleGetLocation = async () => {
         setError(null);
         setLoading(true);
-
         try {
             const location = await GetCurrentLocation({
                 setLoading,
@@ -84,24 +75,20 @@ const MapHelper = () => {
                 },
                 1000
             );
-
         } catch (err: any) {
             Alert.alert("Error", err.message);
         } finally {
             setLoading(false);
         }
     };
-
     const handleRetryLocation = () => {
         handleGetLocation();
     };
-
     const handleConfirmLocation = async () => {
         if (!currentLocation) {
             setError('Please select a location first');
             return;
         }
-        console.log(currentLocation)
         await setTempLocation({
             address: currentLocation.address,
             latitude: currentLocation.coords.latitude,
@@ -109,7 +96,6 @@ const MapHelper = () => {
         })
         navigation.goBack()
     };
-
     return (
         <View className='flex-1 bg-white'>
             <View className='w-full px-3'>

@@ -81,16 +81,25 @@ const Profile = () => {
   ]
 
   const user = {
-    name: adminDatabase.adminMainData.User_Name,
-    email: adminDatabase.adminMainData.User_Email,
-    phone: '+91 ' + adminDatabase.adminMainData.User_Phone_Number,
-    image: adminDatabase.adminMainData.User_Image
+    name: adminDatabase?.adminMainData?.User_Name ?? "User",
+    email: adminDatabase?.adminMainData?.User_Email ?? "Email Not Found",
+    phone: adminDatabase?.adminMainData?.User_Phone_Number ?? "N/A",
+    image: adminDatabase?.adminMainData?.User_Image ?? null,
+  };
+
+  if (!adminDatabase || !adminDatabase.adminMainData) {
+    return (
+      <View className='flex-1 justify-center items-center bg-slate-50'>
+        <ActivityIndicator size="large" color="#FF7622" />
+        <Text className='text-slate-500 mt-4 font-medium'>Loading profile...</Text>
+      </View>
+    );
   }
 
   return (
-    <View className='flex-1 bg-slate-50'>
+    <View className='flex-1 bg-white'>
       {
-        adminDatabase ? (
+        adminDatabase !== null ? (
           <ScrollView
             className='flex-1'
             showsVerticalScrollIndicator={false}

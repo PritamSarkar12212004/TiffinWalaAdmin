@@ -18,6 +18,8 @@ interface ContextinterFace {
     longitude: any;
   };
   setTempLocation: any;
+  tempPhone: any;
+  setTempPhone: any;
 }
 
 export {ContextinterFace};
