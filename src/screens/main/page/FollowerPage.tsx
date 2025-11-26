@@ -115,9 +115,7 @@ const FollowerPage = (): React.JSX.Element => {
     }, [adminId]);
 
     const renderItem = useCallback(({ item }: any) => (
-        <TouchableOpacity
-            onPress={() => handleRemoveFollower(item._id)}
-            activeOpacity={0.7}
+        <View
             className="w-full bg-white px-4 py-3 mb-3 rounded-xl flex gap-1 shadow-sm"
             style={{
                 shadowOffset: { width: 0, height: 1 },
@@ -141,16 +139,12 @@ const FollowerPage = (): React.JSX.Element => {
                     </View>
                 </View>
                 <View className="ml-2">
-                    {loadingFetch?.id === item.followingId ? (
-                        <ActivityIndicator size="small" color="#F97316" />
-                    ) : (
-                        <View className="bg-orange-100 px-3 py-1.5 rounded-full">
-                            <Text className="font-semibold text-orange-600 text-xs">Following</Text>
-                        </View>
-                    )}
+                    <View className="bg-orange-100 px-3 py-1.5 rounded-full">
+                        <Text className="font-semibold text-orange-600 text-xs">Following</Text>
+                    </View>
                 </View>
             </View>
-        </TouchableOpacity>
+        </View>
     ), [loadingFetch]);
 
     return (
