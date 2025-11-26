@@ -169,7 +169,7 @@ const Notification = () => {
       </View>
 
       {adminProductCount?.length > 0 ? (
-        !loading ? (
+        !loading && adminDatabase !== null ? (
           data.length > 0 ? (
             <ScrollView
               className="flex-1"

@@ -1,13 +1,49 @@
 import { View, ScrollView, StyleSheet, Dimensions, Animated } from 'react-native';
-import React from 'react';
-import AnimationComp from '../../components/elements/AnimationComp';
-import LoadingAnimation from '../../assets/Animation/Loading.json';
+import React, { useEffect, useRef } from 'react';
 
 const { width } = Dimensions.get('window');
 
-const SkeletonBox = ({ style }: { style?: any }) => (
-  <Animated.View style={[styles.skeletonBox, style]} />
-);
+const ShimmerSkeleton = ({ style, circle = false }: { style?: any; circle?: boolean }) => {
+  const shimmerAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const animation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(shimmerAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(shimmerAnim, {
+          toValue: 0,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    animation.start();
+
+    return () => animation.stop();
+  }, []);
+
+  const translateX = shimmerAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-100, 100],
+  });
+
+  return (
+    <View style={[styles.shimmerContainer, circle && { borderRadius: 999 }, style]}>
+      <Animated.View
+        style={[
+          styles.shimmer,
+          {
+            transform: [{ translateX }],
+          },
+        ]}
+      />
+    </View>
+  );
+};
 
 const DashboardSkeleton = () => {
   return (
@@ -16,69 +52,71 @@ const DashboardSkeleton = () => {
         {/* Header Skeleton */}
         <View style={styles.header}>
           <View style={styles.headerContent}>
-            <SkeletonBox style={styles.headerTitleSkeleton} />
-            <SkeletonBox style={styles.headerSubtitleSkeleton} />
+            <ShimmerSkeleton style={styles.headerTitleSkeleton} />
+            <ShimmerSkeleton style={styles.headerSubtitleSkeleton} />
           </View>
-          <SkeletonBox style={styles.headerIconSkeleton} />
+          <ShimmerSkeleton style={styles.headerIconSkeleton} circle />
         </View>
 
-        {/* Top Metrics Row Skeleton */}
-        <View style={styles.metricsRow}>
-          <SkeletonBox style={styles.metricCardSkeleton} />
-          <SkeletonBox style={styles.metricCardSkeleton} />
-        </View>
-        {/* Second Metrics Row Skeleton */}
-        <View style={styles.metricsRow}>
-          <SkeletonBox style={styles.metricCardSkeleton} />
-          <SkeletonBox style={styles.metricCardSkeleton} />
-        </View>
-
-        {/* Charts Section Skeleton */}
-        <View style={styles.chartsSection}>
-          <View style={styles.chartCardSkeleton}>
-            <View style={styles.chartHeaderSkeleton}>
-              <SkeletonBox style={styles.chartIconSkeleton} />
-              <SkeletonBox style={styles.chartTitleSkeleton} />
-            </View>
-            <View style={styles.chartSkeletonContent}>
-              <AnimationComp path={LoadingAnimation} height={80} width={width - 120} />
+        {/* Metrics Grid */}
+        <View style={styles.metricsGrid}>
+          <View style={styles.metricCard}>
+            <ShimmerSkeleton style={styles.metricIcon} circle />
+            <View style={styles.metricContent}>
+              <ShimmerSkeleton style={styles.metricValue} />
+              <ShimmerSkeleton style={styles.metricLabel} />
             </View>
           </View>
-          <View style={styles.chartCardSkeleton}>
-            <View style={styles.chartHeaderSkeleton}>
-              <SkeletonBox style={styles.chartIconSkeleton} />
-              <SkeletonBox style={styles.chartTitleSkeleton} />
-            </View>
-            <View style={styles.chartSkeletonContent}>
-              <AnimationComp path={LoadingAnimation} height={80} width={width - 120} />
+          <View style={styles.metricCard}>
+            <ShimmerSkeleton style={styles.metricIcon} circle />
+            <View style={styles.metricContent}>
+              <ShimmerSkeleton style={styles.metricValue} />
+              <ShimmerSkeleton style={styles.metricLabel} />
             </View>
           </View>
-          <View style={styles.chartCardSkeleton}>
-            <View style={styles.chartHeaderSkeleton}>
-              <SkeletonBox style={styles.chartIconSkeleton} />
-              <SkeletonBox style={styles.chartTitleSkeleton} />
+          <View style={styles.metricCard}>
+            <ShimmerSkeleton style={styles.metricIcon} circle />
+            <View style={styles.metricContent}>
+              <ShimmerSkeleton style={styles.metricValue} />
+              <ShimmerSkeleton style={styles.metricLabel} />
             </View>
-            <View style={styles.chartSkeletonContent}>
-              <AnimationComp path={LoadingAnimation} height={80} width={width - 120} />
+          </View>
+          <View style={styles.metricCard}>
+            <ShimmerSkeleton style={styles.metricIcon} circle />
+            <View style={styles.metricContent}>
+              <ShimmerSkeleton style={styles.metricValue} />
+              <ShimmerSkeleton style={styles.metricLabel} />
             </View>
           </View>
         </View>
 
-        {/* Recent Activity Skeleton */}
-        <View style={styles.recentActivityCardSkeleton}>
-          <View style={styles.cardHeaderSkeleton}>
-            <SkeletonBox style={styles.cardTitleSkeleton} />
-            <SkeletonBox style={styles.seeAllSkeleton} />
+        {/* Charts Section */}
+        <View style={styles.section}>
+          <ShimmerSkeleton style={styles.sectionTitle} />
+          <View style={styles.chartCard}>
+            <View style={styles.chartHeader}>
+              <ShimmerSkeleton style={styles.chartTitle} />
+              <ShimmerSkeleton style={styles.chartFilter} />
+            </View>
+            <ShimmerSkeleton style={styles.chartArea} />
           </View>
-          <View style={styles.activityListSkeleton}>
-            {[1, 2, 3, 4].map((_, idx) => (
-              <View key={idx} style={styles.activityItemSkeleton}>
-                <SkeletonBox style={styles.activityIconSkeleton} />
-                <View style={styles.activityContentSkeleton}>
-                  <SkeletonBox style={styles.activityTextSkeleton} />
-                  <SkeletonBox style={styles.activityTimeSkeleton} />
+        </View>
+
+        {/* Recent Activity */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <ShimmerSkeleton style={styles.sectionTitle} />
+            <ShimmerSkeleton style={styles.seeAllButton} />
+          </View>
+          <View style={styles.activityCard}>
+            {[1, 2, 3, 4].map((item) => (
+              <View key={item} style={styles.activityItem}>
+                <ShimmerSkeleton style={styles.activityAvatar} circle />
+                <View style={styles.activityContent}>
+                  <ShimmerSkeleton style={styles.activityText} />
+                  <ShimmerSkeleton style={styles.activitySubtext} />
                 </View>
-                <SkeletonBox style={styles.activityIndicatorSkeleton} />
+                <ShimmerSkeleton style={styles.activityTime} />
               </View>
             ))}
           </View>
@@ -91,7 +129,7 @@ const DashboardSkeleton = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#F8FAFC',
   },
   content: {
     padding: 20,
@@ -105,142 +143,159 @@ const styles = StyleSheet.create({
   },
   headerContent: {
     flex: 1,
+    gap: 8,
   },
   headerTitleSkeleton: {
     width: 180,
     height: 32,
     borderRadius: 8,
-    marginBottom: 8,
   },
   headerSubtitleSkeleton: {
     width: 220,
-    height: 18,
-    borderRadius: 8,
+    height: 16,
+    borderRadius: 6,
   },
   headerIconSkeleton: {
     width: 48,
     height: 48,
-    borderRadius: 24,
-    backgroundColor: '#E2E8F0',
   },
-  metricsRow: {
+  metricsGrid: {
     flexDirection: 'row',
-    gap: 16,
-    marginBottom: 20,
-  },
-  metricCardSkeleton: {
-    flex: 1,
-    height: 120,
-    borderRadius: 20,
-    backgroundColor: '#E2E8F0',
-  },
-  chartsSection: {
-    gap: 20,
+    flexWrap: 'wrap',
+    gap: 12,
     marginBottom: 32,
   },
-  chartCardSkeleton: {
+  metricCard: {
+    width: (width - 52) / 2,
     backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 24,
-    marginBottom: 0,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 6,
-  },
-  chartHeaderSkeleton: {
+    borderRadius: 16,
+    padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    marginBottom: 20,
-  },
-  chartIconSkeleton: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    backgroundColor: '#E2E8F0',
-  },
-  chartTitleSkeleton: {
-    width: 100,
-    height: 18,
-    borderRadius: 8,
-    backgroundColor: '#E2E8F0',
-  },
-  chartSkeletonContent: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 80,
-  },
-  recentActivityCardSkeleton: {
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 24,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 6,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
-  cardHeaderSkeleton: {
+  metricIcon: {
+    width: 40,
+    height: 40,
+  },
+  metricContent: {
+    flex: 1,
+    gap: 6,
+  },
+  metricValue: {
+    height: 20,
+    borderRadius: 6,
+  },
+  metricLabel: {
+    height: 14,
+    borderRadius: 4,
+    width: '70%',
+  },
+  section: {
+    marginBottom: 32,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    height: 20,
+    borderRadius: 6,
+    width: 140,
+  },
+  seeAllButton: {
+    height: 16,
+    borderRadius: 6,
+    width: 60,
+  },
+  chartCard: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  chartHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 20,
   },
-  cardTitleSkeleton: {
-    width: 120,
-    height: 20,
-    borderRadius: 8,
-    backgroundColor: '#E2E8F0',
-  },
-  seeAllSkeleton: {
-    width: 60,
+  chartTitle: {
     height: 18,
-    borderRadius: 8,
-    backgroundColor: '#E2E8F0',
+    borderRadius: 6,
+    width: 120,
   },
-  activityListSkeleton: {
-    gap: 16,
+  chartFilter: {
+    height: 28,
+    borderRadius: 14,
+    width: 80,
   },
-  activityItemSkeleton: {
+  chartArea: {
+    height: 200,
+    borderRadius: 12,
+  },
+  activityCard: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  activityItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
-    paddingVertical: 4,
+    gap: 12,
+    paddingVertical: 12,
   },
-  activityIconSkeleton: {
-    width: 36,
-    height: 36,
-    borderRadius: 12,
-    backgroundColor: '#E2E8F0',
+  activityAvatar: {
+    width: 44,
+    height: 44,
   },
-  activityContentSkeleton: {
+  activityContent: {
     flex: 1,
+    gap: 6,
   },
-  activityTextSkeleton: {
-    width: 120,
-    height: 14,
-    borderRadius: 8,
-    backgroundColor: '#E2E8F0',
-    marginBottom: 4,
+  activityText: {
+    height: 16,
+    borderRadius: 6,
   },
-  activityTimeSkeleton: {
-    width: 60,
+  activitySubtext: {
     height: 12,
-    borderRadius: 8,
-    backgroundColor: '#E2E8F0',
+    borderRadius: 4,
+    width: '60%',
   },
-  activityIndicatorSkeleton: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#E2E8F0',
+  activityTime: {
+    height: 12,
+    borderRadius: 4,
+    width: 50,
   },
-  skeletonBox: {
+  shimmerContainer: {
     backgroundColor: '#E2E8F0',
     overflow: 'hidden',
+    position: 'relative',
+  },
+  shimmer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
   },
 });
 
-export default DashboardSkeleton; 
+export default DashboardSkeleton;

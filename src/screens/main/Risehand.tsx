@@ -184,7 +184,7 @@ const Risehand = () => {
           </View>
         )}
 
-        {adminProductCount?.length > 0 ? (
+        {adminProductCount?.length > 0 && adminDatabase !== null ? (
           data?.length > 0 ? (
             <View style={{ flex: 1 }}>
 
