@@ -27,6 +27,7 @@ const useMainDataRicive = () => {
           monthlyTrafic: res.data.data.MonthlyTraffic,
         });
         setProductData(res.data.productData.productData);
+        console.log(res.data.data.data);
         return true;
       })
       .catch(err => {

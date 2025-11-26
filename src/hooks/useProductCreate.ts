@@ -32,25 +32,19 @@ const useProductCreate = () => {
     menuImages,
     adminDatabase,
     setLoading,
-    setUploadStatus,
-    fildReseter,
-    errorHandler,
   }: ProductData) => {
     try {
       setLoading(true);
 
-      // Upload main image
       const uploadedMainImage = await CloudanerysingleImgIpload(
         mainImage,
         'image',
       );
 
-      // Upload menu images
       const uploadedMenuImages = await Promise.all(
         menuImages.map(image => CloudanerysingleImgIpload(image, 'image')),
       );
 
-      // Prepare payload
       const payload = {
         title,
         description,
@@ -67,8 +61,8 @@ const useProductCreate = () => {
       await api
         .post(ApiCon.Product.CreateProduct, payload)
         .then(res => {
-          setUploadStatus('success');
-          fildReseter?.();
+          // setUploadStatus('success');
+          // fildReseter?.();
           caller({
             message: 'Post Created',
             description: 'Your mess post has been published.',
@@ -82,8 +76,8 @@ const useProductCreate = () => {
           setLoading(false);
         })
         .catch(err => {
-          setUploadStatus('error');
-          fildReseter?.();
+          // setUploadStatus('error');
+          // fildReseter?.();
           setLoading(false);
           caller({
             message: 'Creation Failed',
@@ -91,10 +85,11 @@ const useProductCreate = () => {
             type: 'danger',
           });
         });
+      navigation.goBack();
     } catch (err) {
       console.error('❌ Error creating product:', err);
-      setUploadStatus('error');
-      errorHandler?.(err);
+      // setUploadStatus('error');
+      // errorHandler?.(err);
       setLoading(false);
       caller({
         message: 'Creation Failed',

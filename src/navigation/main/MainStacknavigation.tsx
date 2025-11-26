@@ -18,6 +18,7 @@ import FollowerPage from '../../screens/main/page/FollowerPage';
 import UploadProduct from '../../screens/main/UploadProduct';
 import MapHelper from '../../screens/main/helper/MapHelper';
 import PhoneNumberChange from '../../screens/main/helper/PhoneNumberChange';
+import FetchImageScreen from '../../screens/main/helper/FetchImageScreen';
 
 const Stack = createStackNavigator();
 const MainStacknavigation = () => {
@@ -108,6 +109,11 @@ const MainStacknavigation = () => {
                     }
                 } />
                 <Stack.Screen name="PhoneNumberChange" component={PhoneNumberChange} options={
+                    {
+                        animation: 'slide_from_right'
+                    }
+                } />
+                <Stack.Screen name="FetchImageScreen" component={FetchImageScreen} options={
                     {
                         animation: 'slide_from_right'
                     }
