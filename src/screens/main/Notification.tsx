@@ -6,14 +6,13 @@ import {
   TouchableOpacity,
   ScrollView,
   RefreshControl,
-  StyleSheet,
-  Animated
 } from 'react-native';
 import { userContext } from '../../util/context/ContextProvider';
 import NoNotificaProduct from '../../components/noProduct/NoNotificaProduct';
 import useNotiFetch from '../../hooks/api/notification/useNotiFetch';
 import NotificationSkeleton from '../../layout/skelaton/NotificationSkeleton';
 import useDeleteNoti from '../../hooks/api/notification/useDeleteNoti';
+import Icon from '../../MainLogo/icon/Icon';
 
 const Notification = () => {
   const { adminProductCount, adminDatabase } = userContext();
@@ -22,19 +21,12 @@ const Notification = () => {
   const { fetchNoti } = useNotiFetch();
   const [refreshing, setRefreshing] = useState(false);
   const { deleteNoti } = useDeleteNoti();
-  const [fadeAnim] = useState(new Animated.Value(0));
 
   const dataFetch = () => {
     fetchNoti({
       id: adminDatabase.adminMainData._id,
       setdata: (notifications: any[]) => {
         setData(notifications);
-        // Animate when data loads
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 300,
-          useNativeDriver: true,
-        }).start();
       },
       setLoading,
     });
@@ -53,74 +45,10 @@ const Notification = () => {
     }
   }, []);
 
-  // Delete notification handler with animation
   const handleDelete = (id: string) => {
-    Animated.timing(fadeAnim, {
-      toValue: 0,
-      duration: 200,
-      useNativeDriver: true,
-    }).start(() => {
-      deleteNoti(id);
-      setData(prevData => prevData.filter(item => item._id !== id));
-      // Reset animation for remaining items
-      fadeAnim.setValue(1);
-    });
+    deleteNoti(id);
+    setData(prevData => prevData.filter(item => item._id !== id));
   };
-
-  const NotificationCard = ({ item, index }: any) => (
-   
-      <View style={styles.cardContent}>
-        <View style={styles.avatarContainer}>
-          <Image
-            source={{ uri: item.senderImg }}
-            style={styles.senderImage}
-          // defaultSource={require('../../assets/default-avatar.png')} // Add a default avatar
-          />
-          <View style={styles.onlineIndicator} />
-        </View>
-
-        <View style={styles.contentContainer}>
-          <View style={styles.textContainer}>
-            <Text style={styles.title} numberOfLines={1}>{item.title}</Text>
-            <Text style={styles.description} numberOfLines={2}>{item.description}</Text>
-          </View>
-
-          <View style={styles.footerContainer}>
-            <View style={styles.timestampContainer}>
-              <Text style={styles.timestamp}>
-                {new Date(item.date).toLocaleString('en-IN', {
-                  month: 'short',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  hour12: true,
-                })}
-              </Text>
-              <View style={styles.dotSeparator} />
-              <Text style={styles.timeAgo}>
-                {getTimeAgo(item.date)}
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.rightSection}>
-          {item.contentImg && (
-            <Image
-              source={{ uri: item.contentImg }}
-              style={styles.contentImage}
-            />
-          )}
-
-          <TouchableOpacity
-            style={styles.deleteButton}
-            onPress={() => handleDelete(item._id)}
-          >
-            <Text style={styles.deleteIcon}>×</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-  );
 
   const getTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
@@ -133,266 +61,168 @@ const Notification = () => {
     return `${Math.floor(diffInSeconds / 86400)}d ago`;
   };
 
+  const getNotificationIcon = (item: any) => {
+    const title = item.title?.toLowerCase() || '';
+    const description = item.description?.toLowerCase() || '';
+
+    if (title.includes('order') || description.includes('order')) {
+      return { name: 'shopping-bag', color: '#8b5cf6' };
+    }
+    if (title.includes('follow') || description.includes('follow')) {
+      return { name: 'user-plus', color: '#06b6d4' };
+    }
+    if (title.includes('message') || description.includes('message')) {
+      return { name: 'message', color: '#10b981' };
+    }
+    if (title.includes('like') || description.includes('like')) {
+      return { name: 'heart', color: '#ef4444' };
+    }
+    if (title.includes('comment') || description.includes('comment')) {
+      return { name: 'comment', color: '#f59e0b' };
+    }
+
+    return { name: 'bell', color: '#6366f1' };
+  };
+
+  const NotificationCard = ({ item }: any) => {
+    const icon = getNotificationIcon(item);
+
+    return (
+      <View className="bg-white rounded-2xl mb-3 p-2 shadow-sm border border-gray-100 relative overflow-hidden">
+        <View className="flex-row items-start ">
+          <View
+            className="w-11 h-11 rounded-xl justify-center items-center mr-3 mt-0.5"
+            style={{ backgroundColor: `${icon.color}15` }}
+          >
+            <Icon
+              type={'solid'}
+              name={icon.name}
+              size={20}
+              color={icon.color}
+            />
+          </View>
+
+          {/* Main Content */}
+          <View className="flex-1 mr-3">
+            <Text className="text-base font-bold text-gray-900 mb-1.5 leading-5" numberOfLines={2}>
+              {item.title}
+            </Text>
+            <Text className="text-sm text-gray-600 leading-5 mb-3" numberOfLines={3}>
+              {item.description}
+            </Text>
+
+            <View className="flex-row justify-between items-center">
+              <View className="flex-row items-center">
+                <Icon type={'solid'} name={'clock'} size={12} color={'#94a3b8'} />
+                <Text className="text-xs text-gray-500 font-medium ml-1">
+                  {getTimeAgo(item.date)}
+                </Text>
+              </View>
+              <Text className="text-xs text-gray-400 font-medium">
+                {new Date(item.date).toLocaleString('en-IN', {
+                  month: 'short',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: true,
+                })}
+              </Text>
+            </View>
+          </View>
+
+          <View className="items-end gap-2">
+            {item.contentImg && (
+              <Image
+                source={{ uri: item.contentImg }}
+                className="w-12 h-12 rounded-lg bg-gray-50"
+              />
+            )}
+            <TouchableOpacity
+              className="w-8 h-8 rounded-lg bg-gray-50 items-center justify-center border border-gray-200"
+              onPress={() => handleDelete(item._id)}
+            >
+              <Text className='font-bold'>x</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        {!item.read && (
+          <View className="absolute top-4 right-4 w-2 h-2 rounded-full bg-indigo-500" />
+        )}
+      </View>
+    );
+  };
+
   return (
-    <View style={styles.container}>
-      {adminProductCount?.length > 0 ?
-        !loading ?
+    <View className="flex-1 bg-white">
+      <View className="bg-white px-5 pt-3 pb-5 border-b border-gray-200 flex-row justify-between items-center">
+        <View className="flex-row items-center">
+          <View className="w-11 h-11 bg-indigo-500 rounded-xl justify-center items-center mr-3 shadow-lg shadow-indigo-500/30">
+            <Icon type={'solid'} name={'bell'} size={24} color={'white'} />
+          </View>
+          <View>
+            <Text className="text-2xl font-extrabold text-gray-900 mb-1">Notifications</Text>
+            <Text className="text-sm text-gray-500 font-medium">
+              {data.length} {data.length === 1 ? 'notification' : 'notifications'}
+            </Text>
+          </View>
+        </View>
+      </View>
+
+      {adminProductCount?.length > 0 ? (
+        !loading ? (
           data.length > 0 ? (
             <ScrollView
-              style={styles.scrollView}
+              className="flex-1"
               refreshControl={
                 <RefreshControl
                   refreshing={refreshing}
                   onRefresh={onRefresh}
-                  colors={['#FF7622']}
-                  tintColor={'#FF7622'}
+                  colors={['#6366f1']}
+                  tintColor={'#6366f1'}
                   progressBackgroundColor="#ffffff"
                 />
               }
               showsVerticalScrollIndicator={false}
             >
-       
-
-              <View style={styles.listContainer}>
+              <View className="p-4 pb-5">
                 {data.map((item, index) => (
                   <NotificationCard key={item._id} item={item} index={index} />
                 ))}
               </View>
             </ScrollView>
           ) : (
-            // Modern Empty State
-            <View style={styles.emptyState}>
-              <View style={styles.emptyIllustration}>
-                <Text style={styles.emptyEmoji}>🔔</Text>
-                <View style={styles.emptyPulse} />
+            <View className="flex-1 bg-white justify-center items-center px-8">
+              <View className="items-center ">
+                <View className="relative mb-8">
+                  <View className="w-24 h-24 bg-gray-50 rounded-full justify-center items-center border-2 border-gray-200 z-10 relative">
+                    <Icon type={'solid'} name={'bell'} size={32} color={'#cbd5e1'} />
+                  </View>
+                  <View className="absolute -top-2 -left-2 w-28 h-28 rounded-full bg-gray-100 z-0" />
+                </View>
+                <Text className="text-2xl font-extrabold text-gray-900 text-center mb-3">
+                  No Notifications
+                </Text>
+                <Text className="text-base text-gray-500 text-center leading-6 mb-8 px-5">
+                  You're all caught up! When you receive new notifications, they'll appear here.
+                </Text>
+                <TouchableOpacity
+                  activeOpacity={0.9}
+                  className="bg-indigo-500 px-6 py-4 rounded-2xl flex-row items-center shadow-lg shadow-indigo-500/30"
+                  onPress={dataFetch}
+                >
+                  <Text className="text-white font-semibold text-base ml-2">Check for Updates</Text>
+                </TouchableOpacity>
               </View>
-              <Text style={styles.emptyTitle}>No Notifications Yet</Text>
-              <Text style={styles.emptyDescription}>
-                You're all caught up! When you receive new notifications,{'\n'}
-                they'll appear here.
-              </Text>
-              <TouchableOpacity
-                style={styles.refreshButton}
-                onPress={dataFetch}
-              >
-                <Text style={styles.refreshButtonText}>Check for Updates</Text>
-              </TouchableOpacity>
             </View>
           )
-          : (
-            <NotificationSkeleton />
-          )
-        : (
-          <NoNotificaProduct />
-        )}
+        ) : (
+          <NotificationSkeleton />
+        )
+      ) : (
+        <NoNotificaProduct />
+      )}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  header: {
-    paddingHorizontal: 24,
-    paddingTop: 24,
-    paddingBottom: 16,
-    backgroundColor: 'white',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: '800',
-    color: '#1e293b',
-    marginBottom: 4,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: '#64748b',
-    fontWeight: '500',
-  },
-  listContainer: {
-    padding: 16,
-    paddingBottom: 20,
-  },
-  notificationCard: {
-    backgroundColor: 'white',
-    borderRadius: 20,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 4,
-    borderWidth: 1,
-    borderColor: '#f1f5f9',
-  },
-  cardContent: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    padding: 20,
-  },
-  avatarContainer: {
-    position: 'relative',
-    marginRight: 16,
-  },
-  senderImage: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: '#f0f0f0',
-    borderWidth: 2,
-    borderColor: '#ffffff',
-  },
-  onlineIndicator: {
-    position: 'absolute',
-    bottom: 2,
-    right: 2,
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    backgroundColor: '#10b981',
-    borderWidth: 2,
-    borderColor: 'white',
-  },
-  contentContainer: {
-    flex: 1,
-    marginRight: 12,
-  },
-  textContainer: {
-    marginBottom: 8,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#1e293b',
-    marginBottom: 6,
-    letterSpacing: -0.3,
-  },
-  description: {
-    fontSize: 14,
-    color: '#64748b',
-    lineHeight: 20,
-    letterSpacing: -0.2,
-  },
-  footerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  timestampContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  timestamp: {
-    fontSize: 12,
-    color: '#94a3b8',
-    fontWeight: '500',
-  },
-  dotSeparator: {
-    width: 3,
-    height: 3,
-    borderRadius: 1.5,
-    backgroundColor: '#cbd5e1',
-    marginHorizontal: 6,
-  },
-  timeAgo: {
-    fontSize: 12,
-    color: '#FF7622',
-    fontWeight: '600',
-  },
-  rightSection: {
-    alignItems: 'flex-end',
-    gap: 8,
-  },
-  contentImage: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: '#f0f0f0',
-  },
-  deleteButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#fee2e2',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#fecaca',
-  },
-  deleteIcon: {
-    color: '#dc2626',
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: -1,
-  },
-  // Modern Empty State Styles
-  emptyState: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 40,
-    backgroundColor: 'white',
-  },
-  emptyIllustration: {
-    position: 'relative',
-    marginBottom: 32,
-  },
-  emptyEmoji: {
-    fontSize: 64,
-    zIndex: 2,
-    position: 'relative',
-  },
-  emptyPulse: {
-    position: 'absolute',
-    top: -10,
-    left: -10,
-    width: 84,
-    height: 84,
-    borderRadius: 42,
-    backgroundColor: '#FF762220',
-    zIndex: 1,
-  },
-  emptyTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#1e293b',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  emptyDescription: {
-    fontSize: 16,
-    color: '#64748b',
-    textAlign: 'center',
-    lineHeight: 22,
-    marginBottom: 32,
-    letterSpacing: -0.2,
-  },
-  refreshButton: {
-    backgroundColor: '#FF7622',
-    paddingHorizontal: 32,
-    paddingVertical: 14,
-    borderRadius: 14,
-    shadowColor: '#FF7622',
-    shadowOffset: {
-      width: 0,
-      height: 6,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  refreshButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
-    letterSpacing: -0.3,
-  },
-});
 
 export default Notification;
