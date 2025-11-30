@@ -20,8 +20,9 @@ const useVarifyOtpData = () => {
       })
       .then(async res => {
         if (!res.data.login || !res.data.data) {
-          navigation.navigate('UserProfileSetup', {
-            phone: phone,
+          navigation.replace('Auth', {
+            screen: 'UserProfileSetup',
+            params: {phone: phone},
           });
         } else {
           await Promise.all([

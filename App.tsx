@@ -13,7 +13,7 @@ import { ContextProvider, userContext } from './src/util/context/ContextProvider
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Wraper from './src/components/wraper/Wraper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { OrientationLocker, PORTRAIT, LANDSCAPE } from "react-native-orientation-locker";
+import { OrientationLocker } from "react-native-orientation-locker";
 
 const Stack = createNativeStackNavigator();
 const AppContent = () => {

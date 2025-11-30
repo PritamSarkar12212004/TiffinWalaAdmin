@@ -148,6 +148,7 @@ const UseLocationSetup = () => {
                 </MapView>
                 <View className='absolute top-4 right-4 gap-3'>
                     <TouchableOpacity
+                        activeOpacity={0.9}
                         onPress={handleGetLocation}
                         disabled={loading}
                         className='w-12 h-12 bg-white rounded-2xl items-center justify-center shadow-lg'
@@ -178,7 +179,8 @@ const UseLocationSetup = () => {
                         <View className='bg-red-50 rounded-2xl p-4 flex-row items-center gap-3'>
                             <Icon type={"solid"} name="warning-outline" size={16} color="#DC2626" />
                             <Text className='text-red-700 flex-1 text-sm'>{error}</Text>
-                            <TouchableOpacity onPress={handleRetryLocation}>
+                            <TouchableOpacity activeOpacity={0.9}
+                                onPress={handleRetryLocation}>
                                 <Text className='text-red-700 font-semibold'>Retry</Text>
                             </TouchableOpacity>
                         </View>
@@ -186,6 +188,7 @@ const UseLocationSetup = () => {
 
                     <View className='flex-row gap-3 pt-2'>
                         <TouchableOpacity
+                            activeOpacity={0.9}
                             onPress={handleGetLocation}
                             disabled={loading}
                             className='flex-1 h-14 bg-gray-100 rounded-2xl flex-row items-center justify-center gap-2'
@@ -201,17 +204,13 @@ const UseLocationSetup = () => {
                             </Text>
                         </TouchableOpacity>
                         <TouchableOpacity
+                            activeOpacity={0.9}
                             onPress={handleConfirmLocation}
                             disabled={!currentLocation || loading}
-                            className={`flex-1 h-14 rounded-2xl flex-row items-center justify-center gap-2 ${currentLocation ? 'bg-[#007AFF]' : 'bg-gray-300'
+                            className={`flex-1 h-14 rounded-2xl flex flex-row items-center justify-center gap-2 px- ${currentLocation ? 'bg-[#007AFF]' : 'bg-gray-300'
                                 }`}
                         >
-                            <Icon
-                                type={"solid"}
-                                name="check"
-                                size={20}
-                                color="white"
-                            />
+                        
                             <Text className='text-white font-semibold text-base'>
                                 {currentLocation ? 'Confirm Location' : 'Select Location First'}
                             </Text>
