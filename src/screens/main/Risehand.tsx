@@ -179,14 +179,13 @@ const Risehand = () => {
         {adminProductCount?.length > 0 && adminDatabase !== null ? (
           data?.length > 0 ? (
             <View style={{ flex: 1 }}>
-
               <MapView
                 ref={mapRef}
                 key={mapKey}
                 provider={PROVIDER_GOOGLE}
                 style={styles.map}
                 initialRegion={
-                  data.find((user: any) => user?.followerLocation?.coordinates?.length === 2)
+                  data?.find((user: any) => user?.followerLocation?.coordinates?.length === 2)
                     ? {
                       latitude: data[0].followerLocation.coordinates[1],
                       longitude: data[0].followerLocation.coordinates[0],
@@ -201,8 +200,7 @@ const Risehand = () => {
                 loadingIndicatorColor="#3b82f6"
                 onMapReady={() => setMapLoading(false)}
               >
-                {data
-                  .filter((user: any) => user?.followerLocation?.coordinates?.length === 2)
+                {data?.filter((user: any) => user?.followerLocation?.coordinates?.length === 2)
                   .map((user: any) => (
                     <Marker
                       key={user._id}
@@ -266,7 +264,7 @@ const Risehand = () => {
                     contentContainerStyle={styles.scrollContent}
                     showsVerticalScrollIndicator={false}
                   >
-                    {data.map((item: any, index: number) => (
+                    {data?.map((item: any, index: number) => (
                       <TouchableOpacity
                         key={item._id}
                         onPress={() => zoomToUserLocation(item)}

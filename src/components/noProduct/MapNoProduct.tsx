@@ -3,11 +3,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import MapView from 'react-native-maps';
 import Icon from '../../MainLogo/icon/Icon';
 
-const MapNoProduct = ({ navigation }) => {
-    const baseLatitude = 21.1458;
-    const baseLongitude = 79.0882;
-
-    // Assume this is coming from your context or props
+const MapNoProduct = ({ navigation }: any) => {
     const hasProducts = false; // Change this based on your actual product check
     return (
         <View className="flex-1">

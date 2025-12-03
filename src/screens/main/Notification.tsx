@@ -154,7 +154,7 @@ const Notification = () => {
 
   return (
     <View className="flex-1 bg-white">
-      <View className="bg-white px-5 pt-3 pb-5 border-b border-gray-200 flex-row justify-between items-center">
+      <View className="bg-white px-5  pb-5 border-b border-gray-200 flex-row justify-between items-center">
         <View className="flex-row items-center">
           <View className="w-11 h-11 bg-indigo-500 rounded-xl justify-center items-center mr-3 shadow-lg shadow-indigo-500/30">
             <Icon type={'solid'} name={'bell'} size={24} color={'white'} />

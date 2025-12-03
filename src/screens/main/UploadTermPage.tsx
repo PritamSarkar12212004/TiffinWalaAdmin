@@ -22,7 +22,7 @@ const UploadTermPage = () => {
                 className="flex-1"
                 contentContainerStyle={{ paddingBottom: 30 }}
             >
-                <View className="bg-white pt-12 pb-4 px-6 border-b border-gray-100">
+                <View className="bg-white  pb-4 px-6 border-b border-gray-100">
                     <View className="flex-row items-center justify-between">
                         <View className="flex-row items-center">
                             <View className="w-12 h-12 bg-orange-500 rounded-xl items-center justify-center mr-3">
