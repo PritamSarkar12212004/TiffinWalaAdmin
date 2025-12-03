@@ -13,6 +13,7 @@ import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import com.reactnativecompressor.CompressorPackage
 import org.wonday.orientation.OrientationActivityLifecycle
+import com.tiffinwala.admin.location.RNLocationStatusPackage
 
 
 class MainApplication : Application(), ReactApplication {
@@ -24,6 +25,7 @@ class MainApplication : Application(), ReactApplication {
               // Packages that cannot be autolinked yet can be added manually here, for example:
               // add(MyReactNativePackage())
               add(CompressorPackage())
+              add(RNLocationStatusPackage())
             }
 
         override fun getJSMainModuleName(): String = "index"

@@ -14,9 +14,12 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Wraper from './src/components/wraper/Wraper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { OrientationLocker } from "react-native-orientation-locker";
+import useLocationStatus from './src/modules/useLocationStatus';
 
 const Stack = createNativeStackNavigator();
 const AppContent = () => {
+  const { enabled } = useLocationStatus();
+
   const [handleRoute, setHandleRoute] = useState<any | null>(null);
   const { setAdminLocalData } = userContext();
   useEffect(() => {
@@ -41,10 +44,9 @@ const AppContent = () => {
 
     checkAuth();
   }, []);
-
   return (
     <NavigationContainer>
-      {handleRoute ? (
+      {handleRoute || !enabled === null ? (
         <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={handleRoute}>
           <Stack.Screen name="Auth" component={AuthNavigation} />
           <Stack.Screen
