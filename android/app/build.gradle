@@ -13,9 +13,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.tiffinwalaadmin.tiffinwala"
+    namespace "com.tiffinwala.admin"
     defaultConfig {
-        applicationId "com.tiffinwalaadmin.tiffinwala"
+        applicationId "com.tiffinwala.admin"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 3
