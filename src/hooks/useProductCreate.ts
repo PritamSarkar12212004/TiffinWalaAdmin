@@ -44,7 +44,6 @@ const useProductCreate = () => {
       const uploadedMenuImages = await Promise.all(
         menuImages.map(image => CloudanerysingleImgIpload(image, 'image')),
       );
-
       const payload = {
         title,
         description,
@@ -55,14 +54,12 @@ const useProductCreate = () => {
         menuItems: uploadedMenuImages,
         userId: adminDatabase.adminMainData._id,
         address: adminDatabase.adminMainData.User_Address.address,
-        latitude: adminDatabase.adminMainData.User_Address.latitude,
-        longitude: adminDatabase.adminMainData.User_Address.longitude,
+        latitude: adminDatabase.adminMainData.User_Address.coords.latitude,
+        longitude: adminDatabase.adminMainData.User_Address.coords.longitude,
       };
       await api
         .post(ApiCon.Product.CreateProduct, payload)
         .then(res => {
-          // setUploadStatus('success');
-          // fildReseter?.();
           caller({
             message: 'Post Created',
             description: 'Your mess post has been published.',
@@ -76,8 +73,6 @@ const useProductCreate = () => {
           setLoading(false);
         })
         .catch(err => {
-          // setUploadStatus('error');
-          // fildReseter?.();
           setLoading(false);
           caller({
             message: 'Creation Failed',
@@ -87,9 +82,6 @@ const useProductCreate = () => {
         });
       navigation.goBack();
     } catch (err) {
-      console.error('❌ Error creating product:', err);
-      // setUploadStatus('error');
-      // errorHandler?.(err);
       setLoading(false);
       caller({
         message: 'Creation Failed',

@@ -132,14 +132,6 @@ const Risehand = () => {
       console.error(err);
     }
   };
-
-  // Reset map view
-  const resetMapView = () => {
-    mapRef.current?.animateToRegion(defaultRegion, 1000);
-    setSelectedUser(null);
-    sheetRef.current?.snapToIndex(1);
-  };
-
   if (loading) {
     return <RaiseHandMapSkeleton />;
   }
@@ -324,7 +316,7 @@ const Risehand = () => {
             <View style={styles.noDataContainer}>
               <View style={styles.noDataContent}>
                 <View style={styles.noDataIcon}>
-                  <Icon type={'solid'} name={'map-marker-alt'} size={40} color={'#9ca3af'} />
+                  <Icon type={'solid'} name={'map'} size={40} color={'#9ca3af'} />
                 </View>
                 <Text style={styles.noDataTitle}>No Followers Nearby</Text>
                 <Text style={styles.noDataDescription}>
@@ -335,7 +327,7 @@ const Risehand = () => {
                   style={styles.refreshButton}
                   onPress={dataFetch}
                 >
-                  <Icon type={'solid'} name={'redo'} size={18} color={'white'} />
+                  <Icon type={'solid'} name={'rotate'} size={18} color={'white'} />
                   <Text style={styles.refreshButtonText}>Refresh</Text>
                 </TouchableOpacity>
               </View>

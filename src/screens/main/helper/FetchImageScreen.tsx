@@ -5,7 +5,6 @@ import {
     Image,
     TouchableOpacity,
     Text,
-    Alert
 } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import FetchImageModule from '../../../hooks/module/FetchImageModule'
@@ -18,12 +17,11 @@ import {
 } from 'react-native-heroicons/solid'
 import { useRoute } from '@react-navigation/native'
 import useProductCreate from '../../../hooks/useProductCreate'
-
+import { useNotify } from '../../../components/wraper/Wraper'
 const FetchImageScreen = () => {
+    const { caller } = useNotify();
     const { createProduct } = useProductCreate();
-
     const { params } = useRoute();
-
     const {
         title,
         description,
@@ -36,14 +34,17 @@ const FetchImageScreen = () => {
     const [selectedImages, setSelectedImages] = useState<string[]>([])
     const [loading, setLoading] = useState(true)
     const MAX_SELECTION = 6
-
     const fetchData = async () => {
         try {
             setLoading(true)
             const image = await FetchImageModule()
             setImgData(image)
         } catch (error) {
-            Alert.alert('Error', 'Failed to load images from gallery')
+            caller({
+                message: 'Image Loading',
+                description: 'CFailed to load images from gallery',
+                type: 'danger',
+            });
         } finally {
             setLoading(false)
         }
@@ -54,11 +55,11 @@ const FetchImageScreen = () => {
             setSelectedImages(prev => prev.filter(uri => uri !== imageUri))
         } else {
             if (selectedImages.length >= MAX_SELECTION) {
-                Alert.alert(
-                    'Maximum Reached',
-                    `You can only select up to ${MAX_SELECTION} images`,
-                    [{ text: 'OK' }]
-                )
+                caller({
+                    message: 'Maximum Reached',
+                    description: 'You can only select up to ${MAX_SELECTION} images',
+                    type: 'danger',
+                });
                 return
             }
             setSelectedImages(prev => [...prev, imageUri])
@@ -66,9 +67,14 @@ const FetchImageScreen = () => {
     }
     const handleProceed = async () => {
         if (selectedImages.length !== 6) {
-            Alert.alert('No Selection', 'Please select at least one image')
-            return
+            caller({
+                message: 'Invalid Selection',
+                description: 'Please select exactly 6 images to continue.',
+                type: 'danger',
+            });
+            return;
         }
+
         const mainImage = selectedImages[0];
         const menuImages = selectedImages.slice(1, 6);
         await createProduct({
