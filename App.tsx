@@ -15,6 +15,7 @@ import Wraper from './src/components/wraper/Wraper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { OrientationLocker } from "react-native-orientation-locker";
 import useLocationStatus from './src/modules/useLocationStatus';
+import HelperNavigation from './src/navigation/helper/HelperNavigation';
 
 const Stack = createNativeStackNavigator();
 const AppContent = () => {
@@ -58,6 +59,11 @@ const AppContent = () => {
             name="page"
             options={{ animation: 'slide_from_right' }}
             component={MainStacknavigation}
+          />
+          <Stack.Screen
+            name="Helper"
+            options={{ animation: 'slide_from_right' }}
+            component={HelperNavigation}
           />
         </Stack.Navigator>
       ) : (

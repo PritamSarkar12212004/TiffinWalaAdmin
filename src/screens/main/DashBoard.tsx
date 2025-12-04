@@ -28,10 +28,26 @@ import Token from '../../constant/tokens/Token';
 import onScreenNotiFyFunc from '../../functions/notification/manager/onScreenNotiFyFunc';
 import useTokenGet from '../../hooks/api/notification/Noti/useGetToken';
 import requestForNotification from '../../functions/notification/request/requestForNotification';
+import usePermissionManager from '../../hooks/permission/usePermissionManager';
 
 const { width } = Dimensions.get('window');
 
 const DashBoard = () => {
+  const {
+    checkPhotoPermission,
+  } = usePermissionManager();
+  useEffect(() => {
+    loadAllPermissions();
+  }, []);
+
+  const loadAllPermissions = async () => {
+    const check = await checkPhotoPermission()
+    if (check !== "granted") {
+      navigation.replace("Helper", {
+        screen: "PermissionManager"
+      })
+    }
+  };
   const navigation = useNavigation();
   const { riciveData } = useMainDataRicive();
   const {
