@@ -11,6 +11,9 @@ const ImageConstant = {
   Logo: {
     Logo: require('../../assets/image/logo/MainLogo.png'),
   },
+  Modal: {
+    Location: require('../../assets/image/Modal/location.webp'),
+  },
 };
 
 export default ImageConstant;
