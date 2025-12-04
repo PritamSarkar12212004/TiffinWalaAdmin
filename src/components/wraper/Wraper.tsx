@@ -1,12 +1,10 @@
 import React, { createContext, useContext } from "react";
 import {
-    Modal,
     View,
     Platform,
 } from "react-native";
 import FlashMessage, { MessageType, showMessage } from "react-native-flash-message";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { BlurView } from "@react-native-community/blur";
 import { Linking } from "react-native";
 import LocationModal from "../modal/location/LocationModal";
 import useLocationStatus from "../../modules/useLocationStatus";
@@ -26,12 +24,7 @@ export const useNotify = () => {
     return context;
 };
 
-interface NotifyProviderProps {
-    children: React.ReactNode;
-}
-
-
-export const NotifyProvider: React.FC<NotifyProviderProps> = ({ children }) => {
+export const NotifyProvider = ({ children }: any) => {
 
     const caller = ({
         message,
@@ -61,7 +54,9 @@ export const NotifyProvider: React.FC<NotifyProviderProps> = ({ children }) => {
 
     const insets = useSafeAreaInsets();
     const { enabled } = useLocationStatus();
-
+    if (enabled == false) {
+        return <LocationModal onAllow={handleAllowAccess} />
+    }
     return (
         <View className="flex-1" style={{
             paddingTop: insets.top,
@@ -72,34 +67,6 @@ export const NotifyProvider: React.FC<NotifyProviderProps> = ({ children }) => {
             <NotifyContext.Provider value={{ caller }}>
                 {children}
                 <FlashMessage position="top" />
-
-                <Modal
-                    visible={!enabled}
-                    animationType="slide"
-                    transparent={true}
-                    statusBarTranslucent
-                >
-                    <View className="flex-1">
-                        {Platform.OS === 'ios' ? (
-                            <BlurView
-                                style={{ flex: 1 }}
-                                blurType="light"
-                                blurAmount={10}
-                                reducedTransparencyFallbackColor="white"
-                            >
-                                <LocationModal
-                                    onAllow={handleAllowAccess}
-                                />
-                            </BlurView>
-                        ) : (
-                            <View className="flex-1 bg-black/50">
-                                <LocationModal
-                                    onAllow={handleAllowAccess}
-                                />
-                            </View>
-                        )}
-                    </View>
-                </Modal>
             </NotifyContext.Provider>
         </View>
     );
