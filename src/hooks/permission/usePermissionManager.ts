@@ -12,10 +12,14 @@ const usePermissionManager = () => {
   const androidVersion = Number(Platform.Version) || 0;
   const photoPermissionType: Permission =
     Platform.OS === 'android'
-      ? androidVersion >= 338979
-        ? PERMISSIONS.ANDROID.READ_MEDIA_IMAGES
-        : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE
+      ? androidVersion >= 33
+        ? PERMISSIONS.ANDROID.READ_MEDIA_IMAGES // Android 13+
+        : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE // Android 10–12
       : PERMISSIONS.IOS.PHOTO_LIBRARY;
+  const mediaLocationPermission =
+    Platform.OS === 'android' && androidVersion >= 29 && androidVersion < 33
+      ? PERMISSIONS.ANDROID.ACCESS_MEDIA_LOCATION
+      : null;
 
   const normalizeStatus = (result: string) => {
     switch (result) {
@@ -38,7 +42,23 @@ const usePermissionManager = () => {
 
   const requestPhotoPermission = async () => {
     const result = await request(photoPermissionType);
-    const status = normalizeStatus(result);
+    let status = normalizeStatus(result);
+
+    // Request ACCESS_MEDIA_LOCATION for Android 10–11
+    if (mediaLocationPermission && status === 'granted') {
+      const r2 = await request(mediaLocationPermission);
+      const status2 = normalizeStatus(r2);
+      if (status2 === 'blocked') {
+        Alert.alert(
+          'Media Location Blocked',
+          'Please enable media location permission from settings.',
+          [
+            {text: 'Cancel', style: 'cancel'},
+            {text: 'Open Settings', onPress: openSettings},
+          ],
+        );
+      }
+    }
 
     if (status === 'blocked') {
       Alert.alert(
