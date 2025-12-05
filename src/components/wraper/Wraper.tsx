@@ -8,6 +8,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Linking } from "react-native";
 import LocationModal from "../modal/location/LocationModal";
 import useLocationStatus from "../../modules/useLocationStatus";
+import useUpdateChaker from "../../hooks/api/update/useUpdateChaker";
+import UpdateCheker from "../../screens/helper/UpdateCheker";
 
 interface NotifyContextType {
     caller: (params: { message: string; description: string; type: MessageType }) => void;
@@ -26,22 +28,24 @@ export const useNotify = () => {
 
 export const NotifyProvider = ({ children }: any) => {
 
-    const caller = ({
-        message,
-        description,
-        type,
-    }: {
-        message: string;
-        description: string;
-        type: MessageType;
-    }) => {
-        showMessage({
-            message,
-            description,
-            type,
-        });
-    };
+    const { apiCall } = useUpdateChaker();
+    const { enabled } = useLocationStatus();
+    const insets = useSafeAreaInsets();
 
+    const [updateRequired, setUpdateRequired] = React.useState(false);
+    React.useEffect(() => {
+        const checkUpdate = async () => {
+            const res = await apiCall();
+            if (res === false) {
+                setUpdateRequired(true);
+            }
+        };
+        checkUpdate();
+    }, []);
+
+    const caller = ({ message, description, type }: any) => {
+        showMessage({ message, description, type });
+    };
 
     const handleAllowAccess = () => {
         if (Platform.OS === "ios") {
@@ -51,19 +55,24 @@ export const NotifyProvider = ({ children }: any) => {
         }
     };
 
-
-    const insets = useSafeAreaInsets();
-    const { enabled } = useLocationStatus();
     if (enabled == false) {
         return <LocationModal onAllow={handleAllowAccess} />
     }
+    if (updateRequired) {
+        return <UpdateCheker />
+    }
+
+
     return (
-        <View className="flex-1" style={{
-            paddingTop: insets.top,
-            paddingBottom: insets.bottom,
-            paddingLeft: insets.left,
-            paddingRight: insets.right,
-        }}>
+        <View
+            className="flex-1"
+            style={{
+                paddingTop: insets.top,
+                paddingBottom: insets.bottom,
+                paddingLeft: insets.left,
+                paddingRight: insets.right,
+            }}
+        >
             <NotifyContext.Provider value={{ caller }}>
                 {children}
                 <FlashMessage position="top" />

@@ -1,6 +1,6 @@
 import axios from 'axios';
 const api = axios.create({
-    baseURL: 'https://tiffin-wala-admin-backend.vercel.app',
+    baseURL: 'http://192.168.1.5:8000',
 });
 export default api;
 // baseURL: 'https://tiffin-wala-admin-backend.vercel.app',

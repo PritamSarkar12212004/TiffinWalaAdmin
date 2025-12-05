@@ -26,5 +26,8 @@ const ApiCon = {
   Product: {
     CreateProduct: "/product/create",
   },
+  Update:{
+    AppUpdateChaker:"/app/update"
+  }
 };
 export default ApiCon;
