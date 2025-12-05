@@ -57,7 +57,7 @@ const FetchImageScreen = () => {
             if (selectedImages.length >= MAX_SELECTION) {
                 caller({
                     message: 'Maximum Reached',
-                    description: 'You can only select up to ${MAX_SELECTION} images',
+                    description: `You can only select up to ${MAX_SELECTION} images`,
                     type: 'danger',
                 });
                 return
@@ -74,7 +74,6 @@ const FetchImageScreen = () => {
             });
             return;
         }
-
         const mainImage = selectedImages[0];
         const menuImages = selectedImages.slice(1, 6);
         await createProduct({

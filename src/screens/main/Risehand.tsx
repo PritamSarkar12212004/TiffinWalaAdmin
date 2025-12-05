@@ -37,8 +37,6 @@ const Risehand = () => {
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [removeModalVisible, setRemoveModalVisible] = useState(false);
   const [followerToRemove, setFollowerToRemove] = useState<any>(null);
-
-  // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.9)).current;
 
@@ -48,7 +46,7 @@ const Risehand = () => {
   const dataFetch = () => {
     setLoading(true);
     fetchFollower({
-      id: adminDatabase.adminMainData._id,
+      id: adminDatabase?.adminMainData?._id,
       setLoading,
       setData,
     });
@@ -73,7 +71,7 @@ const Risehand = () => {
           useNativeDriver: true,
         })
       ]).start();
-    }, [adminDatabase.adminMainData._id])
+    }, [adminDatabase?.adminMainData?._id])
   );
 
   const defaultRegion: Region = {
@@ -176,7 +174,7 @@ const Risehand = () => {
           </View>
         )}
 
-        {adminProductCount?.length > 0 && adminDatabase !== null ? (
+        {adminDatabase != null ? (
           data?.length > 0 ? (
             <View style={{ flex: 1 }}>
               <MapView

@@ -1,8 +1,8 @@
 import {useNavigation} from '@react-navigation/native';
+import {useNotify} from '../components/wraper/Wraper';
 import ApiCon from '../constant/api/ApiCon';
 import CloudanerysingleImgIpload from '../functions/image/CloudanerysingleImgIpload';
 import api from '../util/api/Axios';
-import {useNotify} from '../components/wraper/Wraper';
 
 interface ProductData {
   title: string;
@@ -10,18 +10,16 @@ interface ProductData {
   price: any;
   foodType: any;
   openDays: string[];
-  mainImage: File;
-  menuImages: File[];
+  mainImage: any;
+  menuImages: any[];
   adminDatabase: any;
   setLoading: (loading: boolean) => void;
-  fildReseter?: () => void;
-  errorHandler?: (err: any) => void;
-  setUploadStatus: (status: 'success' | 'error') => void;
 }
 
 const useProductCreate = () => {
   const {caller} = useNotify();
   const navigation = useNavigation();
+
   const createProduct = async ({
     title,
     description,
@@ -34,16 +32,16 @@ const useProductCreate = () => {
     setLoading,
   }: ProductData) => {
     try {
+      console.log(adminDatabase.adminMainData?.User_Address?.latitude);
       setLoading(true);
-
       const uploadedMainImage = await CloudanerysingleImgIpload(
         mainImage,
         'image',
       );
-
       const uploadedMenuImages = await Promise.all(
-        menuImages.map(image => CloudanerysingleImgIpload(image, 'image')),
+        menuImages.map(img => CloudanerysingleImgIpload(img, 'image')),
       );
+
       const payload = {
         title,
         description,
@@ -54,35 +52,27 @@ const useProductCreate = () => {
         menuItems: uploadedMenuImages,
         userId: adminDatabase.adminMainData._id,
         address: adminDatabase.adminMainData.User_Address.address,
-        latitude: adminDatabase.adminMainData.User_Address.coords.latitude,
-        longitude: adminDatabase.adminMainData.User_Address.coords.longitude,
-      };
-      await api
-        .post(ApiCon.Product.CreateProduct, payload)
-        .then(res => {
-          caller({
-            message: 'Post Created',
-            description: 'Your mess post has been published.',
-            type: 'success',
-          });
+        latitude:
+          adminDatabase.adminMainData?.User_Address?.latitude ??
+          adminDatabase.adminMainData?.User_Address?.coords?.latitude,
 
-          navigation.reset({
-            index: 0,
-            routes: [{name: 'Home'}],
-          });
-          setLoading(false);
-        })
-        .catch(err => {
-          setLoading(false);
-          caller({
-            message: 'Creation Failed',
-            description: 'Could not publish your mess post. Try again.',
-            type: 'danger',
-          });
-        });
-      navigation.goBack();
+        longitude:
+          adminDatabase.adminMainData?.User_Address?.longitude ??
+          adminDatabase.adminMainData?.User_Address?.coords?.longitude,
+      };
+      await api.post(ApiCon.Product.CreateProduct, payload);
+
+      caller({
+        message: 'Post Created',
+        description: 'Your mess post has been published.',
+        type: 'success',
+      });
+
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Home'}],
+      });
     } catch (err) {
-      setLoading(false);
       caller({
         message: 'Creation Failed',
         description: 'Could not publish your mess post. Try again.',
