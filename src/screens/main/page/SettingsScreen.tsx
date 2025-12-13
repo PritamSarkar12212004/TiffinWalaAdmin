@@ -75,25 +75,7 @@ const SettingsScreen = () => {
                     </View>
                 ))}
 
-                {/* App Info */}
-                <View className='bg-white rounded-2xl p-4 mb-6 shadow-sm border border-gray-100'>
-                    <Text className='text-gray-700 text-lg font-bold mb-3'>App Information</Text>
-                    <View className='space-y-3'>
-                        <View className='flex-row justify-between items-center'>
-                            <Text className='text-gray-600'>Version</Text>
-                            <Text className='text-gray-900 font-medium'>1.0.0</Text>
-                        </View>
-                        <View className='flex-row justify-between items-center'>
-                            <Text className='text-gray-600'>Build</Text>
-                            <Text className='text-gray-900 font-medium'>2024.03.15</Text>
-                        </View>
-                        <View className='flex-row justify-between items-center'>
-                            <Text className='text-gray-600'>Storage Used</Text>
-                            <Text className='text-gray-900 font-medium'>45.2 MB</Text>
-                        </View>
-                    </View>
-                </View>
-
+               
                 {/* Logout Button */}
                 <TouchableOpacity
                     onPress={() => {

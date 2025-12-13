@@ -144,98 +144,97 @@ const Risehand = () => {
   }
 
   return (
-    <GestureHandlerRootView style={styles.container}>
-      <View style={styles.container}>
+    <View style={styles.container}>
 
-        {/* MAP */}
-        <MapView
-          ref={mapRef}
-          provider={PROVIDER_GOOGLE}
-          style={styles.map}
-          initialRegion={initialRegion}
-          onMapReady={() => setMapReady(true)}
-        >
-          {usersWithLocation.map(user => (
-            <Marker
+      {/* MAP */}
+      <MapView
+        ref={mapRef}
+        provider={PROVIDER_GOOGLE}
+        style={styles.map}
+        initialRegion={initialRegion}
+        onMapReady={() => setMapReady(true)}
+      >
+        {usersWithLocation.map(user => (
+          <Marker
+            key={user._id}
+            coordinate={{
+              latitude: user.followerLocation.coordinates[1],
+              longitude: user.followerLocation.coordinates[0],
+            }}
+            onPress={() => zoomToUser(user)}
+          >
+            <View style={styles.markerWrapper}>
+              <Image
+                source={{ uri: user.followerImg }}
+                style={[
+                  styles.markerImg,
+                  selectedUser?._id === user._id && styles.markerSelected,
+                ]}
+              />
+              <View style={styles.markerDot} />
+            </View>
+
+            <Callout onPress={() => zoomToUser(user)}>
+              <View style={styles.callout}>
+                <Text style={styles.calloutTitle}>{user.follwerName}</Text>
+                <Text style={styles.calloutSub}>Tap to zoom</Text>
+              </View>
+            </Callout>
+          </Marker>
+        ))}
+      </MapView>
+
+      {/* MAP LOADER */}
+      {!mapReady && (
+        <View style={styles.mapLoader}>
+          <ActivityIndicator size="large" color="#3b82f6" />
+          <Text style={styles.mapLoaderText}>Loading map...</Text>
+        </View>
+      )}
+
+      {/* BOTTOM SHEET */}
+      <BottomSheet ref={sheetRef} index={1} snapPoints={snapPoints}>
+        <BottomSheetScrollView contentContainerStyle={styles.sheetContent}>
+          <Text style={styles.sheetTitle}>Your Followers</Text>
+
+          {followers.map(user => (
+            <TouchableOpacity
+              activeOpacity={0.9}
               key={user._id}
-              coordinate={{
-                latitude: user.followerLocation.coordinates[1],
-                longitude: user.followerLocation.coordinates[0],
-              }}
+              style={styles.card}
               onPress={() => zoomToUser(user)}
             >
-              <View style={styles.markerWrapper}>
-                <Image
-                  source={{ uri: user.followerImg }}
-                  style={[
-                    styles.markerImg,
-                    selectedUser?._id === user._id && styles.markerSelected,
-                  ]}
-                />
-                <View style={styles.markerDot} />
+              <Image source={{ uri: user.followerImg }} style={styles.avatar} />
+              <View style={styles.cardInfo}>
+                <Text style={styles.name}>{user.follwerName}</Text>
+                <Text style={styles.subText}>
+                  {user?.followerLocation ? 'Location shared' : 'No location'}
+                </Text>
               </View>
 
-              <Callout onPress={() => zoomToUser(user)}>
-                <View style={styles.callout}>
-                  <Text style={styles.calloutTitle}>{user.follwerName}</Text>
-                  <Text style={styles.calloutSub}>Tap to zoom</Text>
-                </View>
-              </Callout>
-            </Marker>
+            </TouchableOpacity>
           ))}
-        </MapView>
+        </BottomSheetScrollView>
+      </BottomSheet>
 
-        {/* MAP LOADER */}
-        {!mapReady && (
-          <View style={styles.mapLoader}>
-            <ActivityIndicator size="large" color="#3b82f6" />
-            <Text style={styles.mapLoaderText}>Loading map...</Text>
-          </View>
-        )}
-
-        {/* BOTTOM SHEET */}
-        <BottomSheet ref={sheetRef} index={1} snapPoints={snapPoints}>
-          <BottomSheetScrollView contentContainerStyle={styles.sheetContent}>
-            <Text style={styles.sheetTitle}>Your Followers</Text>
-
-            {followers.map(user => (
-              <TouchableOpacity
-                key={user._id}
-                style={styles.card}
-                onPress={() => zoomToUser(user)}
-              >
-                <Image source={{ uri: user.followerImg }} style={styles.avatar} />
-                <View style={styles.cardInfo}>
-                  <Text style={styles.name}>{user.follwerName}</Text>
-                  <Text style={styles.subText}>
-                    {user?.followerLocation ? 'Location shared' : 'No location'}
-                  </Text>
-                </View>
-
+      {/* REMOVE MODAL */}
+      <Modal transparent visible={removeModal} animationType="fade">
+        <View style={styles.modalBg}>
+          <View style={styles.modalBox}>
+            <Icon type="solid" name="user" size={36} color="#ef4444" />
+            <Text style={styles.modalTitle}>Remove follower?</Text>
+            <View style={styles.modalActions}>
+              <TouchableOpacity onPress={() => setRemoveModal(false)}>
+                <Text style={styles.cancelText}>Cancel</Text>
               </TouchableOpacity>
-            ))}
-          </BottomSheetScrollView>
-        </BottomSheet>
-
-        {/* REMOVE MODAL */}
-        <Modal transparent visible={removeModal} animationType="fade">
-          <View style={styles.modalBg}>
-            <View style={styles.modalBox}>
-              <Icon type="solid" name="user" size={36} color="#ef4444" />
-              <Text style={styles.modalTitle}>Remove follower?</Text>
-              <View style={styles.modalActions}>
-                <TouchableOpacity onPress={() => setRemoveModal(false)}>
-                  <Text style={styles.cancelText}>Cancel</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={confirmRemove}>
-                  <Text style={styles.confirmText}>Remove</Text>
-                </TouchableOpacity>
-              </View>
+              <TouchableOpacity onPress={confirmRemove}>
+                <Text style={styles.confirmText}>Remove</Text>
+              </TouchableOpacity>
             </View>
           </View>
-        </Modal>
-      </View>
-    </GestureHandlerRootView>
+        </View>
+      </Modal>
+    </View>
   );
 };
 
