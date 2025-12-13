@@ -32,7 +32,6 @@ const useProductCreate = () => {
     setLoading,
   }: ProductData) => {
     try {
-      console.log(adminDatabase.adminMainData?.User_Address?.latitude);
       setLoading(true);
       const uploadedMainImage = await CloudanerysingleImgIpload(
         mainImage,

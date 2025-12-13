@@ -6,7 +6,6 @@ import {
     Text,
     ActivityIndicator,
     Modal,
-    Alert,
     KeyboardAvoidingView,
     Platform,
     Keyboard
@@ -133,11 +132,12 @@ const ProfileEdit = () => {
             if (tempLocation) {
                 setFormData(prev => ({
                     ...prev,
-                    location: tempLocation.address,
+                    address: tempLocation.address, 
                     latitude: tempLocation.latitude,
                     longitude: tempLocation.longitude
                 }));
             }
+
             if (tempPhone) {
                 setFormData(prev => ({
                     ...prev,
@@ -146,6 +146,7 @@ const ProfileEdit = () => {
             }
         }, [tempLocation, tempPhone])
     );
+
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}

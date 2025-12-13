@@ -11,6 +11,7 @@ const useFetchFollower = () => {
       })
       .then(res => {
         setData(res.data.data);
+        console.log(res.data.data)
         setLoading(false);
       })
       .catch(err => {

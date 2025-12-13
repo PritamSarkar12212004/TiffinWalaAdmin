@@ -11,7 +11,7 @@ const useUpdateChaker = () => {
           version: version,
         },
       });
-      return res.data.data; // true / false / null
+      return res.data.data;
     } catch (error) {
       console.log('Update Check Error:', error);
       return null;
